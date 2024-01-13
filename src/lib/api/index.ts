@@ -68,7 +68,6 @@ export function PipedApi(fetch = globalThis.fetch, baseUrl = defaultInstance) {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ username, password }),
-                cache: 'no-store'
             }).then((r) => r.json()) as Promise<{ token: string }>;
         },
 
@@ -87,8 +86,7 @@ export function PipedApi(fetch = globalThis.fetch, baseUrl = defaultInstance) {
 
         getSubscriptions: ({ authToken }: { authToken: string }) => {
             return fetch(`${baseUrl}/subscriptions`, {
-                headers: { Authorization: authToken },
-                cache: 'no-store'
+                headers: { Authorization: authToken }
             }).then((r) => r.json()) as Promise<subscriptions>;
         },
 
