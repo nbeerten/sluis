@@ -1,14 +1,15 @@
 import { PipedApi } from '$lib/api';
-import { fail } from '@sveltejs/kit';
 
-export const load = async ({ fetch, cookies }) => {
-    const authToken = cookies.get('authToken');
-
-    if (!authToken) {
-        return fail(401, { message: 'Log in to see your feed' });
+export const load = async ({ fetch, cookies, parent }) => {
+    const instance = cookies.get('instance');
+    const { loggedIn } = await parent();
+    if (!loggedIn) {
+        return { loggedIn };
     }
 
+    const authToken = cookies.get('authToken') as string;
+
     return {
-        videos: await PipedApi(fetch).getFeed({ authToken })
+        videos: await PipedApi(fetch, instance).getFeed({ authToken })
     };
 };

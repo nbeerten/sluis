@@ -1,8 +1,9 @@
 import { PipedApi } from '$lib/api';
 import { error } from '@sveltejs/kit';
 
-export const load = async ({ fetch, url }) => {
+export const load = async ({ fetch, url, cookies }) => {
     const query = url.searchParams.get('q');
+    const instance = cookies.get('instance');
     if (!query) {
         error(404, { message: 'Please provide a search query' });
     }
@@ -12,7 +13,7 @@ export const load = async ({ fetch, url }) => {
         error(404, { message: 'Please provide a search filter' });
     }
 
-    const api = PipedApi(fetch);
+    const api = PipedApi(fetch, instance);
     const results = await api.getSearch({ query, filter });
 
     return {

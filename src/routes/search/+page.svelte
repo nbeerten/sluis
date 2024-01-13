@@ -2,8 +2,10 @@
     import VideoCard from '$lib/components/video-card.svelte';
     import { page } from '$app/stores';
     import { PipedApi } from '$lib/api';
-    import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
     import InfiniteScroll from '$lib/components/infinite-scroll.svelte';
+    import * as Select from '$lib/components/ui/select';
+    import ChannelCard from '$lib/components/channel-card.svelte';
+    import { goto } from '$app/navigation';
 
     export let data;
     let { results } = data;
@@ -34,31 +36,65 @@
     }
 
     $: videos = [...videos, ...newBatch];
+
+    const filters = [
+        { value: 'videos', label: 'Videos' } as const,
+        { value: 'channels', label: 'Channels' } as const,
+        { value: 'playlists', label: 'Playlists' } as const
+    ];
 </script>
 
 <main>
-    <hgroup>
+    <hgroup class="flex justify-between">
         <h1 class="text-3xl font-bold">Search: {$page.url.searchParams.get('q')}</h1>
+        <Select.Root
+            items={filters}
+            selected={filters.find(
+                (f) => f.value === ($page.url.searchParams.get('filter') || 'videos')
+            )}
+            preventScroll={false}
+            onSelectedChange={(selected) =>
+                goto(
+                    `/search?${new URLSearchParams({
+                        q: $page.url.searchParams.get('q') ?? '',
+                        filter: selected?.value ?? 'videos'
+                    })}`
+                )}
+        >
+            <Select.Trigger class="w-40">
+                <Select.Value placeholder="Filter" />
+            </Select.Trigger>
+            <Select.Content class="z-0">
+                <Select.Label>Filters</Select.Label>
+                {#each filters as filter}
+                    <Select.Item value={filter.value} label={filter.label}>
+                        {filter.label}
+                    </Select.Item>
+                {/each}
+            </Select.Content>
+        </Select.Root>
     </hgroup>
     <div class="grid grid-cols-1 gap-4 py-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-        {#each videos as video}
-            {#if video.type === 'stream'}
+        {#each videos as item}
+            {#if item.type === 'stream'}
                 <VideoCard
                     video={{
-                        id: video.url.slice(9),
-                        title: video.title,
-                        thumbnail: video.thumbnail,
+                        id: item.url.slice(9),
+                        title: item.title,
+                        thumbnail: item.thumbnail,
                         uploader: {
-                            name: video.uploaderName,
-                            id: video.uploaderUrl.slice(9),
-                            avatar: video.uploaderAvatar,
-                            verified: video.uploaderVerified
+                            name: item.uploaderName,
+                            id: item.uploaderUrl.slice(9),
+                            avatar: item.uploaderAvatar,
+                            verified: item.uploaderVerified
                         },
-                        duration: video.duration,
-                        uploadDate: video.uploaded,
-                        views: video.views
+                        duration: item.duration,
+                        uploadDate: item.uploaded,
+                        views: item.views
                     }}
                 />
+            {:else if item.type === 'channel'}
+                <ChannelCard channel={{ ...item, id: item.url.slice(9) }} />
             {/if}
         {/each}
         <InfiniteScroll

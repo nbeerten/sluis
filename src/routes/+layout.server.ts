@@ -1,18 +1,21 @@
-import { PipedApi } from '$lib/api/index.js';
+import { PipedApi, getInstances, defaultInstance } from '$lib/api';
 
 export async function load({ fetch, cookies }) {
     const authToken = cookies.get('authToken');
     const instance = cookies.get('instance');
 
-    if (!authToken) {
-        return {
-            subscriptions: false as const
-        };
-    }
-
-    const subscriptions = await PipedApi(fetch, instance).getSubscriptions({ authToken });
+    const instanceList = await getInstances();
+    const subscriptions = authToken
+        ? await PipedApi(fetch, instance).getSubscriptions({ authToken })
+        : (false as const);
 
     return {
-        subscriptions
+        subscriptions,
+        instance: {
+            url: instance,
+            name: defaultInstance
+        },
+        instanceList,
+        loggedIn: !!authToken
     };
 }

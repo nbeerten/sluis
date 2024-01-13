@@ -12,7 +12,7 @@
     export let closeSheet: boolean = false;
 </script>
 
-<h2 class="relative px-4 pt-4 text-lg font-semibold tracking-tight">Subscriptions</h2>
+<h2 class="relative px-4 text-lg font-semibold tracking-tight">Subscriptions</h2>
 <div class="space-y-1 py-1">
     {#if subscriptions.length > 0}
         {#each subscriptions as channel}

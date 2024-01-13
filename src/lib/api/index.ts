@@ -7,7 +7,9 @@ import type {
     feed
 } from './types';
 
-export function PipedApi(fetch = globalThis.fetch, baseUrl = 'https://pipedapi.smnz.de') {
+export const defaultInstance = 'https://pipedapi.smnz.de';
+
+export function PipedApi(fetch = globalThis.fetch, baseUrl = defaultInstance) {
     return {
         getStream: ({ videoId }: { videoId: string }) => {
             return fetch(`${baseUrl}/streams/${videoId}`, {}).then((r) =>
@@ -88,34 +90,58 @@ export function PipedApi(fetch = globalThis.fetch, baseUrl = 'https://pipedapi.s
                 headers: { Authorization: authToken },
                 cache: 'no-store'
             }).then((r) => r.json()) as Promise<subscriptions>;
+        },
+
+        getSubscribed: ({ authToken, channelId }: { authToken: string; channelId: string }) => {
+            return fetch(`${baseUrl}/subscribed?channelId=${encodeURIComponent(channelId)}`, {
+                headers: { Authorization: authToken }
+            }).then((r) => r.json()) as Promise<{ subscribed: boolean }>;
+        },
+
+        postSubscribe: ({ authToken, channelId }: { authToken: string; channelId: string }) => {
+            return fetch(`${baseUrl}/subscribe`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: authToken
+                },
+                body: JSON.stringify({ channelId })
+            });
+        },
+
+        postUnsubscribe: ({ authToken, channelId }: { authToken: string; channelId: string }) => {
+            return fetch(`${baseUrl}/unsubscribe`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: authToken
+                },
+                body: JSON.stringify({ channelId })
+            });
         }
-
-        // getSubscribed: ({ authToken, channelId }: { authToken: string; channelId: string }) => {
-        // 	return fetch(`${baseUrl}/subscribed?channelId=${encodeURIComponent(channelId)}`, {
-        // 		headers: { Authorization: authToken }
-        // 	}).then((r) => r.json()) as Promise<{ subscribed: boolean }>;
-        // },
-
-        // postUnsubscribe: ({ authToken, channelId }: { authToken: string; channelId: string }) => {
-        // 	return fetch(`${baseUrl}/unsubscribe`, {
-        // 		method: 'POST',
-        // 		headers: {
-        // 			'Content-Type': 'application/json',
-        // 			Authorization: authToken
-        // 		},
-        // 		body: JSON.stringify({ channelId })
-        // 	});
-        // },
-
-        // postSubscribe: ({ authToken, channelId }: { authToken: string; channelId: string }) => {
-        // 	return fetch(`${baseUrl}/subscribe`, {
-        // 		method: 'POST',
-        // 		headers: {
-        // 			'Content-Type': 'application/json',
-        // 			Authorization: authToken
-        // 		},
-        // 		body: JSON.stringify({ channelId })
-        // 	});
-        // }
     };
 }
+
+export async function getInstances() {
+    return fetch('https://piped-instances.kavin.rocks/').then((r) =>
+        r.json()
+    ) as Promise<Instances>;
+}
+
+export type Instances = Array<{
+    name: string;
+    api_url: string;
+    locations: string;
+    version: string;
+    up_to_date: boolean;
+    cdn: boolean;
+    registered: number;
+    last_checked: number;
+    cache: boolean;
+    s3_enabled: boolean;
+    image_proxy_url: string;
+    registration_disabled: boolean;
+    uptime_24h: number;
+    uptime_7d: number;
+    uptime_30d: number;
+}>;

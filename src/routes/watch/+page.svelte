@@ -11,11 +11,20 @@
     import Check from '~icons/lucide/check';
     import 'media-chrome';
     import 'hls-video-element';
+    import { enhance } from '$app/forms';
+    import { toast } from 'svelte-sonner';
 
     const { format: formatNumber } = Intl.NumberFormat('en', { notation: 'compact' });
 
     export let data;
     const video = data.video;
+    let { subscriptions, loggedIn } = data;
+    $: subscriptions = data.subscriptions;
+    $: loggedIn = data.loggedIn;
+
+    let subscribed: boolean;
+    $: subscribed =
+        subscriptions && subscriptions?.find((s) => s.url === video.uploaderUrl) !== undefined;
 </script>
 
 <div class="space-y-6">
@@ -110,7 +119,25 @@
                             </span>
                         </div>
                     </div>
-                    <Button variant="secondary">Subscribe</Button>
+                    {#if !subscribed && loggedIn}
+                        <form
+                            action="{video.uploaderUrl}?/subscribe"
+                            method="POST"
+                            use:enhance
+                            on:submit={() => toast.success(`Subscribed to ${video.uploader}`)}
+                        >
+                            <Button variant="default" type="submit">Subscribe</Button>
+                        </form>
+                    {:else if loggedIn}
+                        <form
+                            action="{video.uploaderUrl}?/unsubscribe"
+                            method="POST"
+                            use:enhance
+                            on:submit={() => toast.success(`Unsubscribed from ${video.uploader}`)}
+                        >
+                            <Button variant="secondary" type="submit">Unsubscribe</Button>
+                        </form>
+                    {/if}
                 </div>
             </div>
         </div>

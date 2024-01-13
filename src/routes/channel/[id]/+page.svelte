@@ -3,10 +3,18 @@
     import { PipedApi } from '$lib/api';
     import { Button } from '$lib/components/ui/button';
     import InfiniteScroll from '$lib/components/infinite-scroll.svelte';
-    export let data;
+    import { enhance } from '$app/forms';
+    import { toast } from 'svelte-sonner';
 
-    let { channel } = data;
+    export let data;
+    let {
+        channel,
+        isSubscribed: { subscribed },
+        loggedIn
+    } = data;
     $: channel = data.channel;
+    $: subscribed = data.isSubscribed.subscribed;
+    $: loggedIn = data.loggedIn;
 
     $: channel, resetVideos();
 
@@ -57,7 +65,25 @@
                 </div>
             </div>
             <div>
-                <Button variant="secondary">Subscribe</Button>
+                {#if !subscribed && loggedIn}
+                    <form
+                        action="?/subscribe"
+                        method="POST"
+                        use:enhance
+                        on:submit={() => toast.success(`Subscribed to ${channel.name}`)}
+                    >
+                        <Button variant="default" type="submit">Subscribe</Button>
+                    </form>
+                {:else if loggedIn}
+                    <form
+                        action="?/unsubscribe"
+                        method="POST"
+                        use:enhance
+                        on:submit={() => toast.success(`Unsubscribed from ${channel.name}`)}
+                    >
+                        <Button variant="secondary" type="submit">Unsubscribe</Button>
+                    </form>
+                {/if}
             </div>
         </div>
     </hgroup>

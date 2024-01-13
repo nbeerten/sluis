@@ -1,5 +1,6 @@
 <script lang="ts">
     import VideoCard from '$lib/components/video-card.svelte';
+
     export let data;
 </script>
 

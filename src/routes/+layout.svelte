@@ -2,22 +2,27 @@
     import '../app.pcss';
     import Waypoints from '~icons/lucide/waypoints';
     import Sidebar from '$lib/components/sidebar.svelte';
+    import SidebarLogin from '$lib/components/sidebar-login.svelte';
     import SidebarMenu from '$lib/components/sidebar-menu.svelte';
     import SidebarSubscriptions from '$lib/components/sidebar-subscriptions.svelte';
     import Menu from '~icons/lucide/menu';
     import { Button } from '$lib/components/ui/button';
     import * as Sheet from '$lib/components/ui/sheet';
     import { page } from '$app/stores';
-    import { Input } from '$lib/components/ui/input';
+    import Search from '$lib/components/search.svelte';
+    import { Toaster } from '$lib/components/ui/sonner';
 
     let currentPath = $page.url.pathname;
     $: currentPath = $page.url.pathname;
 
     export let data;
-    const { subscriptions } = data;
+    let { subscriptions, instanceList } = data;
+    $: instanceList = data.instanceList;
+    $: subscriptions = data.subscriptions;
 </script>
 
 <div class="mb-4 h-16">
+    <Toaster position="top-right" theme="dark" closeButton={true} />
     <nav
         class="fixed left-0 top-0 z-10 grid h-16 w-full grid-cols-[auto,1fr,auto] items-center border-b bg-background py-2 md:grid-cols-[16rem,1fr,16rem]"
     >
@@ -53,20 +58,13 @@
             </div>
         </div>
         <div class="flex justify-center pr-2 md:pr-0">
-            <form action="/search" class="flex w-full justify-center">
-                <Input
-                    type="search"
-                    name="q"
-                    placeholder="Search"
-                    autocomplete="off"
-                    class="w-full md:w-[40rem]"
-                    value={$page.url.searchParams.get('q')}
-                />
-            </form>
+            <Search />
         </div>
     </nav>
 </div>
-<Sidebar class="hidden md:block">
+<Sidebar class="hidden space-y-4 md:block">
+    <SidebarLogin {instanceList} />
+    <hr />
     <SidebarMenu />
     {#if subscriptions}
         <SidebarSubscriptions {subscriptions} />

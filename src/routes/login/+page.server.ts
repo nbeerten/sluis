@@ -8,12 +8,15 @@ const validator = v.object({
 });
 
 export const actions = {
-    default: async ({ request, cookies }) => {
+    default: async ({ request, cookies, fetch }) => {
+        const instance = cookies.get('instance');
         const data = await request.formData();
+
         const formData = {
             username: data.get('username') as string,
             password: data.get('password') as string
         };
+
         const parsed = await v.safeParseAsync(validator, formData);
 
         if (!parsed.success) {
@@ -21,9 +24,8 @@ export const actions = {
         }
 
         const { username, password } = parsed.output as { username: string; password: string };
-        console.log(username, password);
 
-        const api = PipedApi();
+        const api = PipedApi(fetch, instance);
         const { token } = await api.getAuthToken({ username, password });
 
         cookies.set('authToken', token, { path: '/', httpOnly: false });
