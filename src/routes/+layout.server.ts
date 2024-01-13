@@ -12,8 +12,7 @@ export async function load({ fetch, cookies }) {
     return {
         subscriptions,
         instance: {
-            url: instance,
-            name: defaultInstance
+            url: instance ?? defaultInstance
         },
         instanceList,
         loggedIn: !!authToken

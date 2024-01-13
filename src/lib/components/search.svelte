@@ -4,6 +4,7 @@
     import { slide } from 'svelte/transition';
     import SearchIcon from '~icons/lucide/search';
     import { defaultInstance } from '$lib/api';
+    import { clickoutside } from '@svelte-put/clickoutside';
 
     let value: string = $page.url.searchParams.get('q') || '';
     let open = false;
@@ -26,7 +27,7 @@
     };
 </script>
 
-<form action="/search" method="GET" class="flex w-full justify-center">
+<form action="/search" method="GET" class="flex w-full justify-center" use:clickoutside on:clickoutside={() => (open = false)}>
     <div class="relative w-full md:w-[40rem]">
         <Input
             type="search"
@@ -37,10 +38,6 @@
             bind:value
             on:keyup={() => debounce(value)}
             on:focusin={() => (open = true)}
-            on:focusout={() =>
-                setTimeout(() => {
-                    open = false;
-                }, 100)}
         />
         {#if value && value.length > 0 && open && suggestions.length > 0}
             <div
@@ -48,9 +45,10 @@
             >
                 <ul class="flex flex-col" transition:slide>
                     {#each suggestions as suggestion}
-                        <li transition:slide>
+                        <li in:slide>
                             <a
                                 href="/search?{new URLSearchParams({ q: suggestion }).toString()}"
+                                on:click={() => { open = false; value = suggestion }}
                                 class="flex items-center gap-2 px-4 py-1.5 text-sm text-muted-foreground hover:bg-secondary"
                                 ><SearchIcon /> {suggestion}</a
                             >

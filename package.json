@@ -38,6 +38,7 @@
     },
     "type": "module",
     "dependencies": {
+        "@svelte-put/clickoutside": "^3.0.1",
         "bits-ui": "^0.14.0",
         "clsx": "^2.1.0",
         "format-duration": "^3.0.2",

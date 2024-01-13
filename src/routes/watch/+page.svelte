@@ -13,6 +13,7 @@
     import 'hls-video-element';
     import { enhance } from '$app/forms';
     import { toast } from 'svelte-sonner';
+    import { onDestroy } from 'svelte';
 
     const { format: formatNumber } = Intl.NumberFormat('en', { notation: 'compact' });
 
@@ -25,6 +26,10 @@
     let subscribed: boolean;
     $: subscribed =
         subscriptions && subscriptions?.find((s) => s.url === video.uploaderUrl) !== undefined;
+
+    let videoElement: HTMLVideoElement;
+
+    onDestroy(() => {videoElement.pause(); videoElement.removeAttribute('src'); videoElement.load()});
 </script>
 
 <div class="space-y-6">
@@ -32,7 +37,7 @@
         class="flex aspect-video max-h-[75vh] w-full justify-center overflow-hidden rounded-xl bg-black"
     >
         <media-controller style="width: 100%;">
-            <hls-video src={video.hls} slot="media" crossorigin autoplay></hls-video>
+            <hls-video src={video.hls} slot="media" crossorigin autoplay bind:this={videoElement}></hls-video>
             <media-control-bar>
                 <media-play-button></media-play-button>
                 <media-seek-backward-button seekoffset="10"></media-seek-backward-button>

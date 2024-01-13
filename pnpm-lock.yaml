@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@svelte-put/clickoutside':
+    specifier: ^3.0.1
+    version: 3.0.1
   bits-ui:
     specifier: ^0.14.0
     version: 0.14.0(svelte@4.2.8)
@@ -648,6 +651,10 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@svelte-put/clickoutside@3.0.1:
+    resolution: {integrity: sha512-RhuRmD2RpXF63Mb48DxKkgqIPQ458TnL8M1m6HqtnPh5/g5p+PKIn/L2SPs1s9us2Kn02Y1/txHhOSYbVi6Z2Q==}
+    dev: false
 
   /@sveltejs/adapter-auto@3.1.0(@sveltejs/kit@2.3.2):
     resolution: {integrity: sha512-igS5hqCwdiXWb8NoWzThKCVQQj9tKgUkbTtzfxBPgSLOyFjkiGNDX0SgCoY2QIUWBqOkfGTOqGlrW5Ynw9oUvw==}
