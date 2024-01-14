@@ -28,6 +28,10 @@ export const actions = {
         const api = PipedApi(fetch, instance);
         const { token } = await api.getAuthToken({ username, password });
 
+        if(!token) {
+            return fail(400, { username, error: 'Invalid credentials' });
+        }
+
         cookies.set('authToken', token, { path: '/', httpOnly: false });
 
         redirect(302, '/');
