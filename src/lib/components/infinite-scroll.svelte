@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { browser } from '$app/environment';
-    import { onDestroy, createEventDispatcher, onMount } from 'svelte';
+    import { browser } from "$app/environment";
+    import { onDestroy, createEventDispatcher, onMount } from "svelte";
 
     export let hasMore = true;
 
@@ -9,8 +9,8 @@
     let component: HTMLDivElement;
 
     onMount(() => {
-        document.addEventListener('scroll', onScroll);
-        document.addEventListener('resize', onScroll);
+        document.addEventListener("scroll", onScroll);
+        document.addEventListener("resize", onScroll);
     });
 
     function isInViewport(element: HTMLElement) {
@@ -26,7 +26,7 @@
     const onScroll = () => {
         if (isInViewport(component)) {
             if (!isLoadMore && hasMore) {
-                dispatch('loadMore');
+                dispatch("loadMore");
             }
             isLoadMore = true;
         } else {
@@ -36,8 +36,8 @@
 
     onDestroy(() => {
         if (browser) {
-            document.removeEventListener('scroll', onScroll);
-            document.removeEventListener('resize', onScroll);
+            document.removeEventListener("scroll", onScroll);
+            document.removeEventListener("resize", onScroll);
         }
     });
 </script>

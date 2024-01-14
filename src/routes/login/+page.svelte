@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { Input } from '$lib/components/ui/input';
-    import { Button } from '$lib/components/ui/button';
-    import ArrowRight from '~icons/lucide/arrow-right';
-    import { enhance } from '$app/forms';
-    import SEO from '$lib/components/seo';
+    import { Input } from "$lib/components/ui/input";
+    import { Button } from "$lib/components/ui/button";
+    import ArrowRight from "~icons/lucide/arrow-right";
+    import { enhance } from "$app/forms";
+    import SEO from "$lib/components/seo";
 
     export let form;
 </script>

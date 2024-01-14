@@ -1,6 +1,6 @@
 <script lang="ts">
-    import VideoCard from '$lib/components/video-card.svelte';
-    import SEO from '$lib/components/seo';
+    import VideoCard from "$lib/components/video-card.svelte";
+    import SEO from "$lib/components/seo";
 
     export let data;
 </script>
@@ -22,13 +22,12 @@
                         name: video.uploaderName,
                         id: video.uploaderUrl.slice(9),
                         avatar: video.uploaderAvatar,
-                        verified: video.uploaderVerified
+                        verified: video.uploaderVerified,
                     },
                     duration: video.duration,
                     uploadDate: video.uploaded,
-                    views: video.views
-                }}
-            />
+                    views: video.views,
+                }} />
         {/each}
     </div>
 </main>

@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { Button } from '$lib/components/ui/button';
-    import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
-    import VideoCard from '$lib/components/video-card.svelte';
-    import SEO from '$lib/components/seo';
+    import { Button } from "$lib/components/ui/button";
+    import { Tabs, TabsContent, TabsList, TabsTrigger } from "$lib/components/ui/tabs";
+    import VideoCard from "$lib/components/video-card.svelte";
+    import SEO from "$lib/components/seo";
 
     export let data;
     let { videos, loggedIn } = data;
@@ -26,8 +26,7 @@
             </TabsList>
             <TabsContent value="videos" class="border-none p-0 outline-none">
                 <div
-                    class="grid grid-cols-1 gap-4 py-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
-                >
+                    class="grid grid-cols-1 gap-4 py-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                     {#if longVideos}
                         {#each longVideos as video}
                             <VideoCard
@@ -39,13 +38,12 @@
                                         name: video.uploaderName,
                                         avatar: video.uploaderAvatar,
                                         id: video.uploaderUrl.slice(9),
-                                        verified: video.uploaderVerified
+                                        verified: video.uploaderVerified,
                                     },
                                     duration: video.duration,
                                     uploadDate: video.uploaded,
-                                    views: video.views
-                                }}
-                            />
+                                    views: video.views,
+                                }} />
                         {/each}
                     {:else}
                         <div class="flex justify-center">
@@ -56,11 +54,9 @@
             </TabsContent>
             <TabsContent
                 value="shorts"
-                class="h-full flex-col border-none p-0 data-[state=active]:flex"
-            >
+                class="h-full flex-col border-none p-0 data-[state=active]:flex">
                 <div
-                    class="grid grid-cols-1 gap-4 py-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
-                >
+                    class="grid grid-cols-1 gap-4 py-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                     {#if shortVideos}
                         {#each shortVideos as video}
                             <VideoCard
@@ -72,13 +68,12 @@
                                         name: video.uploaderName,
                                         avatar: video.uploaderAvatar,
                                         id: video.uploaderUrl.slice(9),
-                                        verified: video.uploaderVerified
+                                        verified: video.uploaderVerified,
                                     },
                                     duration: video.duration,
                                     uploadDate: video.uploaded,
-                                    views: video.views
-                                }}
-                            />
+                                    views: video.views,
+                                }} />
                         {/each}
                     {/if}
                 </div>

@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { Avatar, AvatarFallback, AvatarImage } from '$lib/components/ui/avatar';
-    import { Button } from '$lib/components/ui/button';
-    import Check from '~icons/lucide/check';
-    import { page } from '$app/stores';
-    import { SheetClose } from '$lib/components/ui/sheet';
+    import { Avatar, AvatarFallback, AvatarImage } from "$lib/components/ui/avatar";
+    import { Button } from "$lib/components/ui/button";
+    import Check from "~icons/lucide/check";
+    import { page } from "$app/stores";
+    import { SheetClose } from "$lib/components/ui/sheet";
 
     export let subscriptions: { name: string; url: string; avatar: string; verified: boolean }[];
     export let closeSheet: boolean = false;
@@ -17,10 +17,9 @@
                 <SheetClose asChild let:builder>
                     <Button
                         href={channel.url}
-                        variant={$page.url.pathname === channel.url ? 'secondary' : 'ghost'}
+                        variant={$page.url.pathname === channel.url ? "secondary" : "ghost"}
                         class="w-full justify-start gap-2 truncate font-normal"
-                        builders={[builder]}
-                    >
+                        builders={[builder]}>
                         <Avatar class="h-8 w-8 text-xs">
                             <AvatarImage src={channel.avatar} />
                             <AvatarFallback>
@@ -38,9 +37,8 @@
             {:else}
                 <Button
                     href={channel.url}
-                    variant={$page.url.pathname === channel.url ? 'secondary' : 'ghost'}
-                    class="w-full justify-start gap-2 truncate font-normal"
-                >
+                    variant={$page.url.pathname === channel.url ? "secondary" : "ghost"}
+                    class="w-full justify-start gap-2 truncate font-normal">
                     <Avatar class="h-8 w-8 text-xs">
                         <AvatarImage src={channel.avatar} />
                         <AvatarFallback>

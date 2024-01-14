@@ -4,10 +4,12 @@ import type {
     channel_channelId,
     search,
     subscriptions,
-    feed
-} from './types';
+    feed,
+    channels_tabs,
+    user_playlists,
+} from "./types";
 
-export const defaultInstance = 'https://pipedapi.smnz.de';
+export const defaultInstance = "https://pipedapi.smnz.de";
 
 export function PipedApi(fetch = globalThis.fetch, baseUrl = defaultInstance) {
     return {
@@ -37,10 +39,18 @@ export function PipedApi(fetch = globalThis.fetch, baseUrl = defaultInstance) {
             return response;
         },
 
+        getChannelTab: ({ data, nextpage }: { data: string; nextpage?: string }) => {
+            let requestUrl = `${baseUrl}/channels/tabs?data=${encodeURIComponent(data)}`;
+            if (nextpage) {
+                requestUrl += `&nextpage=${encodeURIComponent(nextpage)}`;
+            }
+            return fetch(requestUrl).then((r) => r.json()) as Promise<channels_tabs>;
+        },
+
         getSearch: ({
             query,
-            filter = 'all',
-            nextpage
+            filter = "all",
+            nextpage,
         }: {
             query: string;
             filter?: string;
@@ -63,11 +73,11 @@ export function PipedApi(fetch = globalThis.fetch, baseUrl = defaultInstance) {
 
         getAuthToken: ({ username, password }: { username: string; password: string }) => {
             return fetch(`${baseUrl}/login`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ username, password }),
             }).then((r) => r.json()) as Promise<{ token: string }>;
         },
 
@@ -77,51 +87,50 @@ export function PipedApi(fetch = globalThis.fetch, baseUrl = defaultInstance) {
             ) as Promise<feed>;
         },
 
-        // getUserPlaylists: ({ authToken }: { authToken: string }) => {
-        // 	return fetch(`${baseUrl}/user/playlists`, {
-        // 		headers: { Authorization: authToken },
-        // 		cache: 'no-store'
-        // 	}).then((r) => r.json()) as Promise<UserPlaylists>;
-        // },
+        getUserPlaylists: ({ authToken }: { authToken: string }) => {
+            return fetch(`${baseUrl}/user/playlists`, {
+                headers: { Authorization: authToken },
+            }).then((r) => r.json()) as Promise<user_playlists>;
+        },
 
         getSubscriptions: ({ authToken }: { authToken: string }) => {
             return fetch(`${baseUrl}/subscriptions`, {
-                headers: { Authorization: authToken }
+                headers: { Authorization: authToken },
             }).then((r) => r.json()) as Promise<subscriptions>;
         },
 
         getSubscribed: ({ authToken, channelId }: { authToken: string; channelId: string }) => {
             return fetch(`${baseUrl}/subscribed?channelId=${encodeURIComponent(channelId)}`, {
-                headers: { Authorization: authToken }
+                headers: { Authorization: authToken },
             }).then((r) => r.json()) as Promise<{ subscribed: boolean }>;
         },
 
         postSubscribe: ({ authToken, channelId }: { authToken: string; channelId: string }) => {
             return fetch(`${baseUrl}/subscribe`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: authToken
+                    "Content-Type": "application/json",
+                    Authorization: authToken,
                 },
-                body: JSON.stringify({ channelId })
+                body: JSON.stringify({ channelId }),
             });
         },
 
         postUnsubscribe: ({ authToken, channelId }: { authToken: string; channelId: string }) => {
             return fetch(`${baseUrl}/unsubscribe`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: authToken
+                    "Content-Type": "application/json",
+                    Authorization: authToken,
                 },
-                body: JSON.stringify({ channelId })
+                body: JSON.stringify({ channelId }),
             });
-        }
+        },
     };
 }
 
 export async function getInstances() {
-    return fetch('https://piped-instances.kavin.rocks/').then((r) =>
+    return fetch("https://piped-instances.kavin.rocks/").then((r) =>
         r.json()
     ) as Promise<Instances>;
 }

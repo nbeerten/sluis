@@ -1,1 +1,1 @@
-export { default } from './seo.svelte';
+export { default } from "./seo.svelte";

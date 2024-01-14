@@ -1,26 +1,26 @@
-import * as v from 'valibot';
-import { PipedApi } from '$lib/api';
-import { fail, redirect } from '@sveltejs/kit';
+import * as v from "valibot";
+import { PipedApi } from "$lib/api";
+import { fail, redirect } from "@sveltejs/kit";
 
 const validator = v.object({
     username: v.string([v.toTrimmed()]),
-    password: v.string()
+    password: v.string(),
 });
 
 export const actions = {
     default: async ({ request, cookies, fetch }) => {
-        const instance = cookies.get('instance');
+        const instance = cookies.get("instance");
         const data = await request.formData();
 
         const formData = {
-            username: data.get('username') as string,
-            password: data.get('password') as string
+            username: data.get("username") as string,
+            password: data.get("password") as string,
         };
 
         const parsed = await v.safeParseAsync(validator, formData);
 
         if (!parsed.success) {
-            return fail(400, { username: formData.username, error: parsed.issues.join(', ') });
+            return fail(400, { username: formData.username, error: parsed.issues.join(", ") });
         }
 
         const { username, password } = parsed.output as { username: string; password: string };
@@ -28,12 +28,12 @@ export const actions = {
         const api = PipedApi(fetch, instance);
         const { token } = await api.getAuthToken({ username, password });
 
-        if(!token) {
-            return fail(400, { username, error: 'Invalid credentials' });
+        if (!token) {
+            return fail(400, { username, error: "Invalid credentials" });
         }
 
-        cookies.set('authToken', token, { path: '/', httpOnly: false });
+        cookies.set("authToken", token, { path: "/", httpOnly: false });
 
-        redirect(302, '/');
-    }
+        redirect(302, "/");
+    },
 };

@@ -1,8 +1,8 @@
-import { PipedApi, getInstances, defaultInstance } from '$lib/api';
+import { PipedApi, getInstances, defaultInstance } from "$lib/api";
 
 export async function load({ fetch, cookies }) {
-    const authToken = cookies.get('authToken');
-    const instance = cookies.get('instance');
+    const authToken = cookies.get("authToken");
+    const instance = cookies.get("instance");
 
     const instanceList = await getInstances();
     const subscriptions = authToken
@@ -12,9 +12,9 @@ export async function load({ fetch, cookies }) {
     return {
         subscriptions,
         instance: {
-            url: instance ?? defaultInstance
+            url: instance ?? defaultInstance,
         },
         instanceList,
-        loggedIn: !!authToken
+        loggedIn: !!authToken,
     };
 }

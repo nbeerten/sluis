@@ -1,11 +1,10 @@
 <script lang="ts">
-    import { Avatar, AvatarFallback, AvatarImage } from '$lib/components/ui/avatar';
-    import { Card, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
-    import Check from '~icons/lucide/check';
+    import { Card, CardDescription, CardHeader, CardTitle } from "$lib/components/ui/card";
+    import Check from "~icons/lucide/check";
 
     export let channel: {
         id: string;
-        type: 'channel';
+        type: "channel";
         name: string;
         thumbnail: string;
         description?: string | undefined;
@@ -14,26 +13,26 @@
         verified: boolean;
     };
 
-    const { format: formatNumber } = Intl.NumberFormat('en', { notation: 'compact' });
+    const { format: formatNumber } = Intl.NumberFormat("en", { notation: "compact" });
 </script>
 
 <Card class="flex">
     <a href="/channel/{channel.id}" data-sveltekit-preload-data="tap">
         <div class="relative flex justify-center px-6 py-6">
-            <Avatar class="h-24 w-24">
-                <AvatarImage loading="lazy" src={channel.thumbnail ?? undefined} />
-                <AvatarFallback>
-                    {channel.name.slice(0, 1)}
-                </AvatarFallback>
-            </Avatar>
+            <div class="h-24 w-24 overflow-hidden rounded-full">
+                <img
+                    src={channel.thumbnail ?? undefined}
+                    alt="Profile image of {channel.name}"
+                    referrerpolicy="no-referrer"
+                    crossorigin="anonymous"
+                    width="96"
+                    height="96" />
+            </div>
         </div>
     </a>
 
     <CardHeader>
         <div class="flex gap-2">
-            <div class="flex items-start justify-center py-1">
-                <a href="/channel/{channel.id}" data-sveltekit-preload-data="tap"> </a>
-            </div>
             <div>
                 <CardTitle class="line-clamp-2 text-base" title={channel.name}>
                     <a href="/channel/{channel.id}" data-sveltekit-preload-data="tap">

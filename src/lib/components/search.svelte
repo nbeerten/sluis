@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    import { Input } from '$lib/components/ui/input';
-    import { slide } from 'svelte/transition';
-    import SearchIcon from '~icons/lucide/search';
-    import { defaultInstance } from '$lib/api';
-    import { clickoutside } from '@svelte-put/clickoutside';
+    import { page } from "$app/stores";
+    import { Input } from "$lib/components/ui/input";
+    import { slide } from "svelte/transition";
+    import SearchIcon from "~icons/lucide/search";
+    import { defaultInstance } from "$lib/api";
+    import { clickoutside } from "@svelte-put/clickoutside";
 
-    let value: string = $page.url.searchParams.get('q') || '';
+    let value: string = $page.url.searchParams.get("q") || "";
     let open = false;
     let instance: string = $page.data.instance.url || defaultInstance;
 
@@ -32,8 +32,7 @@
     method="GET"
     class="flex w-full justify-center"
     use:clickoutside
-    on:clickoutside={() => (open = false)}
->
+    on:clickoutside={() => (open = false)}>
     <div class="relative w-full md:w-[40rem]">
         <Input
             type="search"
@@ -43,12 +42,10 @@
             class="w-full"
             bind:value
             on:keyup={() => debounce(value)}
-            on:focusin={() => (open = true)}
-        />
+            on:focusin={() => (open = true)} />
         {#if value && value.length > 0 && open && suggestions.length > 0}
             <div
-                class="absolute left-1/2 top-0 mt-1 w-full -translate-x-1/2 translate-y-[2.5rem] rounded-md border bg-background drop-shadow-lg"
-            >
+                class="absolute left-1/2 top-0 mt-1 w-full -translate-x-1/2 translate-y-[2.5rem] rounded-md border bg-background drop-shadow-lg">
                 <ul class="flex flex-col" transition:slide>
                     {#each suggestions as suggestion}
                         <li in:slide>
@@ -58,9 +55,10 @@
                                     open = false;
                                     value = suggestion;
                                 }}
-                                class="flex items-center gap-2 px-4 py-1.5 text-sm text-muted-foreground hover:bg-secondary"
-                                ><SearchIcon /> {suggestion}</a
-                            >
+                                class="flex items-center gap-2 px-4 py-1.5 text-sm text-muted-foreground hover:bg-secondary">
+                                <SearchIcon />
+                                {suggestion}
+                            </a>
                         </li>
                     {/each}
                 </ul>

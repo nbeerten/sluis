@@ -1,6 +1,6 @@
-import { Instances } from '$lib/api';
-import type { subscriptions } from '$lib/api/types';
-import 'unplugin-icons/types/svelte';
+import { Instances } from "$lib/api";
+import type { subscriptions } from "$lib/api/types";
+import "unplugin-icons/types/svelte";
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 declare global {
@@ -11,7 +11,7 @@ declare global {
             instanceList: Instances;
             subscriptions: false | subscriptions;
             loggedIn: boolean;
-            seo: import('./lib/components/seo').SeoProps;
+            seo: import("./lib/components/seo").SeoProps;
         }
         // interface PageState {}
         // interface Platform {}

@@ -1,12 +1,12 @@
 <script lang="ts">
-    import VideoCard from '$lib/components/video-card.svelte';
-    import { page } from '$app/stores';
-    import { PipedApi } from '$lib/api';
-    import InfiniteScroll from '$lib/components/infinite-scroll.svelte';
-    import * as Select from '$lib/components/ui/select';
-    import ChannelCard from '$lib/components/channel-card.svelte';
-    import { goto } from '$app/navigation';
-    import SEO from '$lib/components/seo';
+    import VideoCard from "$lib/components/video-card.svelte";
+    import { page } from "$app/stores";
+    import { PipedApi } from "$lib/api";
+    import InfiniteScroll from "$lib/components/infinite-scroll.svelte";
+    import * as Select from "$lib/components/ui/select";
+    import ChannelCard from "$lib/components/channel-card.svelte";
+    import { goto } from "$app/navigation";
+    import SEO from "$lib/components/seo";
 
     export let data;
     let { results } = data;
@@ -23,14 +23,14 @@
     let nextpageToken = results.nextpage;
     $: nextpageToken = results.nextpage;
 
-    let videos: Awaited<ReturnType<ReturnType<typeof PipedApi>['getSearch']>>['items'] = [];
+    let videos: Awaited<ReturnType<ReturnType<typeof PipedApi>["getSearch"]>>["items"] = [];
     let newBatch = results.items;
 
     async function fetchMoreResults() {
         const response = await PipedApi().getSearch({
-            query: $page.url.searchParams.get('q') ?? '',
-            filter: $page.url.searchParams.get('filter') ?? 'videos',
-            nextpage: nextpageToken
+            query: $page.url.searchParams.get("q") ?? "",
+            filter: $page.url.searchParams.get("filter") ?? "videos",
+            nextpage: nextpageToken,
         });
         newBatch = response.items;
         nextpageToken = response.nextpage;
@@ -39,9 +39,9 @@
     $: videos = [...videos, ...newBatch];
 
     const filters = [
-        { value: 'videos', label: 'Videos' } as const,
-        { value: 'channels', label: 'Channels' } as const,
-        { value: 'playlists', label: 'Playlists' } as const
+        { value: "videos", label: "Videos" } as const,
+        { value: "channels", label: "Channels" } as const,
+        { value: "playlists", label: "Playlists" } as const,
     ];
 </script>
 
@@ -49,21 +49,20 @@
 
 <main>
     <hgroup class="flex justify-between">
-        <h1 class="text-3xl font-bold">Search: {$page.url.searchParams.get('q')}</h1>
+        <h1 class="text-3xl font-bold">Search: {$page.url.searchParams.get("q")}</h1>
         <Select.Root
             items={filters}
             selected={filters.find(
-                (f) => f.value === ($page.url.searchParams.get('filter') || 'videos')
+                (f) => f.value === ($page.url.searchParams.get("filter") || "videos")
             )}
             preventScroll={false}
             onSelectedChange={(selected) =>
                 goto(
                     `/search?${new URLSearchParams({
-                        q: $page.url.searchParams.get('q') ?? '',
-                        filter: selected?.value ?? 'videos'
+                        q: $page.url.searchParams.get("q") ?? "",
+                        filter: selected?.value ?? "videos",
                     })}`
-                )}
-        >
+                )}>
             <Select.Trigger class="w-40">
                 <Select.Value placeholder="Filter" />
             </Select.Trigger>
@@ -79,7 +78,7 @@
     </hgroup>
     <div class="grid grid-cols-1 gap-4 py-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {#each videos as item}
-            {#if item.type === 'stream'}
+            {#if item.type === "stream"}
                 <VideoCard
                     video={{
                         id: item.url.slice(9),
@@ -89,14 +88,13 @@
                             name: item.uploaderName,
                             id: item.uploaderUrl.slice(9),
                             avatar: item.uploaderAvatar,
-                            verified: item.uploaderVerified
+                            verified: item.uploaderVerified,
                         },
                         duration: item.duration,
                         uploadDate: item.uploaded,
-                        views: item.views
-                    }}
-                />
-            {:else if item.type === 'channel'}
+                        views: item.views,
+                    }} />
+            {:else if item.type === "channel"}
                 <ChannelCard channel={{ ...item, id: item.url.slice(9) }} />
             {/if}
         {/each}
@@ -104,7 +102,6 @@
             hasMore={newBatch.length > 0}
             on:loadMore={() => {
                 fetchMoreResults();
-            }}
-        />
+            }} />
     </div>
 </main>

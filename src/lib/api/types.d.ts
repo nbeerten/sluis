@@ -156,6 +156,101 @@ export type channel_channelId = {
     }>;
 };
 
+export type channels_tabs = {
+    nextpage: string;
+    content: Array<
+        | {
+              url: string;
+              type: "stream";
+              title: string;
+              thumbnail: string;
+              uploaderName: string;
+              uploaderUrl: string;
+              uploaderAvatar: null;
+              uploadedDate: null;
+              shortDescription: null;
+              duration: number;
+              views: number;
+              uploaded: number;
+              uploaderVerified: boolean;
+              isShort: true;
+          }
+        | {
+              url: string;
+              type: "stream";
+              title: string;
+              thumbnail: string;
+              uploaderName: string;
+              uploaderUrl: string;
+              uploaderAvatar: null;
+              uploadedDate: string;
+              shortDescription: string;
+              duration: number;
+              views: number;
+              uploaded: number;
+              uploaderVerified: boolean;
+              isShort: false;
+          }
+        | {
+              url: string;
+              type: "playlist";
+              name: string;
+              thumbnail: string;
+              uploaderName: string;
+              uploaderUrl: string;
+              uploaderVerified: boolean;
+              playlistType: string;
+              videos: number;
+          }
+    >;
+};
+
+export type channels_tabs_items_shorts = {
+    url: string;
+    type: "stream";
+    title: string;
+    thumbnail: string;
+    uploaderName: string;
+    uploaderUrl: string;
+    uploaderAvatar: null;
+    uploadedDate: null;
+    shortDescription: null;
+    duration: number;
+    views: number;
+    uploaded: number;
+    uploaderVerified: boolean;
+    isShort: true;
+}[];
+
+export type channels_tabs_items_livestreams = {
+    url: string;
+    type: "stream";
+    title: string;
+    thumbnail: string;
+    uploaderName: string;
+    uploaderUrl: string;
+    uploaderAvatar: null;
+    uploadedDate: string;
+    shortDescription: string;
+    duration: number;
+    views: number;
+    uploaded: number;
+    uploaderVerified: boolean;
+    isShort: false;
+};
+
+export type channels_tabs_items_playlists = {
+    url: string;
+    type: "playlist";
+    name: string;
+    thumbnail: string;
+    uploaderName: string;
+    uploaderUrl: string;
+    uploaderVerified: boolean;
+    playlistType: string;
+    videos: number;
+};
+
 // /feed
 export type feed = Array<{
     url: string;
@@ -174,113 +269,113 @@ export type feed = Array<{
     isShort: boolean;
 }>;
 
-export interface AudioStream {
-    url: string;
-    format: string;
-    quality: string;
-    mimeType: string;
-    codec: string;
-    audioTrackId: unknown;
-    audioTrackName: unknown;
-    audioTrackType: unknown;
-    audioTrackLocale: unknown;
-    videoOnly: boolean;
-    itag: number;
-    bitrate: number;
-    initStart: number;
-    initEnd: number;
-    indexStart: number;
-    indexEnd: number;
-    width: number;
-    height: number;
-    fps: number;
-    contentLength: number;
-}
+// export interface AudioStream {
+//     url: string;
+//     format: string;
+//     quality: string;
+//     mimeType: string;
+//     codec: string;
+//     audioTrackId: unknown;
+//     audioTrackName: unknown;
+//     audioTrackType: unknown;
+//     audioTrackLocale: unknown;
+//     videoOnly: boolean;
+//     itag: number;
+//     bitrate: number;
+//     initStart: number;
+//     initEnd: number;
+//     indexStart: number;
+//     indexEnd: number;
+//     width: number;
+//     height: number;
+//     fps: number;
+//     contentLength: number;
+// }
 
-export interface VideoStream {
-    url: string;
-    format: string;
-    quality: string;
-    mimeType: string;
-    codec?: string;
-    audioTrackId: unknown;
-    audioTrackName: unknown;
-    audioTrackType: unknown;
-    audioTrackLocale: unknown;
-    videoOnly: boolean;
-    itag: number;
-    bitrate: number;
-    initStart: number;
-    initEnd: number;
-    indexStart: number;
-    indexEnd: number;
-    width: number;
-    height: number;
-    fps: number;
-    contentLength: number;
-}
+// export interface VideoStream {
+//     url: string;
+//     format: string;
+//     quality: string;
+//     mimeType: string;
+//     codec?: string;
+//     audioTrackId: unknown;
+//     audioTrackName: unknown;
+//     audioTrackType: unknown;
+//     audioTrackLocale: unknown;
+//     videoOnly: boolean;
+//     itag: number;
+//     bitrate: number;
+//     initStart: number;
+//     initEnd: number;
+//     indexStart: number;
+//     indexEnd: number;
+//     width: number;
+//     height: number;
+//     fps: number;
+//     contentLength: number;
+// }
 
-export interface RelatedStream {
-    url: string;
-    type: string;
-    title?: string;
-    thumbnail: string;
-    uploaderName: string;
-    uploaderUrl?: string;
-    uploaderAvatar?: string;
-    uploadedDate?: string;
-    shortDescription: string;
-    duration?: number;
-    views?: number;
-    uploaded?: number;
-    uploaderVerified: boolean;
-    isShort?: boolean;
-    name?: string;
-    playlistType?: string;
-    videos?: number;
-}
+// export interface RelatedStream {
+//     url: string;
+//     type: string;
+//     title?: string;
+//     thumbnail: string;
+//     uploaderName: string;
+//     uploaderUrl?: string;
+//     uploaderAvatar?: string;
+//     uploadedDate?: string;
+//     shortDescription: string;
+//     duration?: number;
+//     views?: number;
+//     uploaded?: number;
+//     uploaderVerified: boolean;
+//     isShort?: boolean;
+//     name?: string;
+//     playlistType?: string;
+//     videos?: number;
+// }
 
-export interface Subtitle {
-    url: string;
-    mimeType: string;
-    name: string;
-    code: string;
-    autoGenerated: boolean;
-}
+// export interface Subtitle {
+//     url: string;
+//     mimeType: string;
+//     name: string;
+//     code: string;
+//     autoGenerated: boolean;
+// }
 
-export interface PreviewFrame {
-    urls: string[];
-    frameWidth: number;
-    frameHeight: number;
-    totalCount: number;
-    durationPerFrame: number;
-    framesPerPageX: number;
-    framesPerPageY: number;
-}
+// export interface PreviewFrame {
+//     urls: string[];
+//     frameWidth: number;
+//     frameHeight: number;
+//     totalCount: number;
+//     durationPerFrame: number;
+//     framesPerPageX: number;
+//     framesPerPageY: number;
+// }
 
-export type ChannelVideo = {
-    url: string;
-    type: string;
-    title: string;
-    thumbnail: string;
-    uploaderName: string;
-    uploaderUrl: string;
-    uploaderAvatar: null;
-    uploadedDate: string;
-    shortDescription: string;
-    duration: number;
-    views: number;
-    uploaded: number;
-    uploaderVerified: boolean;
-    isShort: boolean;
-};
+// export type ChannelVideo = {
+//     url: string;
+//     type: string;
+//     title: string;
+//     thumbnail: string;
+//     uploaderName: string;
+//     uploaderUrl: string;
+//     uploaderAvatar: null;
+//     uploadedDate: string;
+//     shortDescription: string;
+//     duration: number;
+//     views: number;
+//     uploaded: number;
+//     uploaderVerified: boolean;
+//     isShort: boolean;
+// };
 
 // /search
 export type search = {
     items: (
         | {
               url: string;
-              type: 'stream';
+              type: "stream";
               title: string;
               thumbnail: string;
               uploaderName: string;
@@ -296,7 +391,7 @@ export type search = {
           }
         | {
               url: string;
-              type: 'channel';
+              type: "channel";
               name: string;
               thumbnail: string;
               description?: string;
@@ -306,7 +401,7 @@ export type search = {
           }
         | {
               url: string;
-              type: 'playlist';
+              type: "playlist";
               name: string;
               thumbnail: string;
               uploaderName: string;
@@ -321,56 +416,57 @@ export type search = {
     corrected: boolean;
 };
 
-export type SearchChannel = {
-    url: string;
-    type: string;
-    name: string;
-    thumbnail: string;
-    description: string;
-    subscribers: number;
-    videos: number;
-    verified: boolean;
-};
+// export type SearchChannel = {
+//     url: string;
+//     type: string;
+//     name: string;
+//     thumbnail: string;
+//     description: string;
+//     subscribers: number;
+//     videos: number;
+//     verified: boolean;
+// };
 
-export type SearchVideo = {
-    url: string;
-    type: string;
-    title: string;
-    thumbnail: string;
-    uploaderName: string;
-    uploaderUrl: string;
-    uploaderAvatar: string;
-    uploadedDate: string;
-    shortDescription: string;
-    duration: number;
-    views: number;
-    uploaded: number;
-    uploaderVerified: boolean;
-    isShort: boolean;
-};
+// export type SearchVideo = {
+//     url: string;
+//     type: string;
+//     title: string;
+//     thumbnail: string;
+//     uploaderName: string;
+//     uploaderUrl: string;
+//     uploaderAvatar: string;
+//     uploadedDate: string;
+//     shortDescription: string;
+//     duration: number;
+//     views: number;
+//     uploaded: number;
+//     uploaderVerified: boolean;
+//     isShort: boolean;
+// };
 
-export type Video =
-    | SearchVideo
-    | {
-          /* From Channel */
-          url: string;
-          type: string;
-          title: string;
-          thumbnail: string;
-          uploaderName: string;
-          uploaderUrl: string;
-          uploaderAvatar: null;
-          uploadedDate: string;
-          shortDescription: string;
-          duration: number;
-          views: number;
-          uploaded: number;
-          uploaderVerified: boolean;
-          isShort: boolean;
-      }
-    | TrendingVideo;
+// export type Video =
+//     | SearchVideo
+//     | {
+//           /* From Channel */
+//           url: string;
+//           type: string;
+//           title: string;
+//           thumbnail: string;
+//           uploaderName: string;
+//           uploaderUrl: string;
+//           uploaderAvatar: null;
+//           uploadedDate: string;
+//           shortDescription: string;
+//           duration: number;
+//           views: number;
+//           uploaded: number;
+//           uploaderVerified: boolean;
+//           isShort: boolean;
+//       }
+//     | TrendingVideo;
 
-export type UserPlaylists = Array<{
+// /user
+export type user_playlists = Array<{
     id: string;
     name: string;
     shortDescription: string;

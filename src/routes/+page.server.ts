@@ -1,34 +1,34 @@
-import { PipedApi } from '$lib/api';
+import { PipedApi } from "$lib/api";
 
 export const actions = {
     switchInstance: async ({ cookies, request }) => {
         const data = await request.formData();
-        const cookiesInstance = cookies.get('instance');
-        const instance = data.get('instance')?.toString();
+        const cookiesInstance = cookies.get("instance");
+        const instance = data.get("instance")?.toString();
         if (!instance) {
             return {
-                success: false
+                success: false,
             };
         }
         if (cookiesInstance === instance) {
             return {
-                success: true
+                success: true,
             };
         }
 
-        cookies.set('instance', instance, { path: '/', httpOnly: false });
-        cookies.set('authToken', '', { expires: new Date(0), path: '/' });
+        cookies.set("instance", instance, { path: "/", httpOnly: false });
+        cookies.set("authToken", "", { expires: new Date(0), path: "/" });
 
         return {
-            success: true
+            success: true,
         };
-    }
+    },
 };
 
 export const load = async ({ fetch, cookies, request }) => {
-    const instance = cookies.get('instance');
+    const instance = cookies.get("instance");
 
-    let country = request.headers.get('CF-IPCountry') as string | "XX" | "T1" | null ; // ISO-3166-1 alpha-2 or XX is unknown or T1 if Tor.
+    let country = request.headers.get("CF-IPCountry") as string | "XX" | "T1" | null; // ISO-3166-1 alpha-2 or XX is unknown or T1 if Tor.
     if (country === "XX" || country === "T1") {
         country = "US";
     } else if (!country) {
@@ -36,6 +36,6 @@ export const load = async ({ fetch, cookies, request }) => {
     }
 
     return {
-        videos: await PipedApi(fetch, instance).getTrending({ region: country })
+        videos: await PipedApi(fetch, instance).getTrending({ region: country }),
     };
 };

@@ -1,27 +1,32 @@
 <script lang="ts">
-    import { formatTimeAgo } from '$lib/format-time-ago';
+    import { formatTimeAgo } from "$lib/format-time-ago";
     import {
         Accordion,
         AccordionContent,
         AccordionItem,
-        AccordionTrigger
-    } from '$lib/components/ui/accordion';
-    import { Avatar, AvatarFallback, AvatarImage } from '$lib/components/ui/avatar';
-    import { Button } from '$lib/components/ui/button';
-    import Check from '~icons/lucide/check';
-    import 'media-chrome';
-    import 'hls-video-element';
-    import { enhance } from '$app/forms';
-    import { toast } from 'svelte-sonner';
-    import { onDestroy } from 'svelte';
-    import SEO from '$lib/components/seo';
+        AccordionTrigger,
+    } from "$lib/components/ui/accordion";
+    import { Avatar, AvatarFallback, AvatarImage } from "$lib/components/ui/avatar";
+    import { Button } from "$lib/components/ui/button";
+    import Check from "~icons/lucide/check";
+    import "media-chrome";
+    import "hls-video-element";
+    import { enhance } from "$app/forms";
+    import { toast } from "svelte-sonner";
+    import { onDestroy } from "svelte";
+    import SEO from "$lib/components/seo";
+    import { browser } from "$app/environment";
+    import Share from "~icons/lucide/share-2";
+    import Plus from "~icons/lucide/plus";
+    import * as Dialog from "$lib/components/ui/dialog";
 
-    const { format: formatNumber } = Intl.NumberFormat('en', { notation: 'compact' });
+    const { format: formatNumber } = Intl.NumberFormat("en", { notation: "compact" });
 
     export let data;
     const video = data.video;
-    let { subscriptions, loggedIn } = data;
+    let { subscriptions, loggedIn, playlists } = data;
     $: subscriptions = data.subscriptions;
+    $: playlists = data.playlists;
     $: loggedIn = data.loggedIn;
 
     let subscribed: boolean;
@@ -31,21 +36,31 @@
     let videoElement: HTMLVideoElement;
 
     onDestroy(() => {
-        videoElement.pause();
-        videoElement.removeAttribute('src');
-        videoElement.load();
+        if (videoElement && browser) {
+            videoElement.pause();
+            videoElement.removeAttribute("src");
+            videoElement.load();
+        }
     });
+
+    function share() {
+        if (navigator) {
+            navigator.share({
+                text: `'${video.title}' by ${video.uploader} - Sluis`,
+                url: window.location.href,
+            });
+        }
+    }
 </script>
 
 <SEO title={video.title} />
 
 <div class="space-y-6">
     <div
-        class="flex aspect-video max-h-[75vh] w-full justify-center overflow-hidden rounded-xl bg-black"
-    >
+        class="flex aspect-video max-h-[75vh] w-full justify-center overflow-hidden rounded-xl bg-black">
         <media-controller style="width: 100%;">
-            <hls-video src={video.hls} slot="media" crossorigin autoplay bind:this={videoElement}
-            ></hls-video>
+            <hls-video src={video.hls} slot="media" crossorigin autoplay bind:this={videoElement}>
+            </hls-video>
             <media-control-bar>
                 <media-play-button></media-play-button>
                 <media-seek-backward-button seekoffset="10"></media-seek-backward-button>
@@ -84,19 +99,19 @@
                                 <table class="table">
                                     <tbody>
                                         <tr>
-                                            <td class="pr-4 font-semibold"> License </td>
+                                            <td class="pr-4 font-semibold">License</td>
                                             <td>{video.license}</td>
                                         </tr>
                                         <tr>
-                                            <td class="pr-4 font-semibold"> Category </td>
+                                            <td class="pr-4 font-semibold">Category</td>
                                             <td>{video.category}</td>
                                         </tr>
                                         <tr>
-                                            <td class="pr-4 font-semibold"> Visibility </td>
+                                            <td class="pr-4 font-semibold">Visibility</td>
                                             <td>{video.visibility}</td>
                                         </tr>
                                         <tr>
-                                            <td class="pr-4 font-semibold"> Upload Date </td>
+                                            <td class="pr-4 font-semibold">Upload Date</td>
                                             <td>
                                                 {new Date(video.uploadDate).toLocaleString()}
                                             </td>
@@ -117,7 +132,7 @@
                                 </Avatar>
                             </a>
                         </div>
-                        <div class="flex flex-col justify-center">
+                        <div class="flex flex-col justify-center pr-2">
                             <a href={video.uploaderUrl}>
                                 <span class="inline-flex items-center gap-1 text-sm font-semibold">
                                     {video.uploader}
@@ -131,26 +146,62 @@
                                 subscribers
                             </span>
                         </div>
+                        {#if !subscribed && loggedIn}
+                            <form
+                                action="{video.uploaderUrl}?/subscribe"
+                                method="POST"
+                                use:enhance
+                                on:submit={() => toast.success(`Subscribed to ${video.uploader}`)}>
+                                <Button variant="default" type="submit">Subscribe</Button>
+                            </form>
+                        {:else if loggedIn}
+                            <form
+                                action="{video.uploaderUrl}?/unsubscribe"
+                                method="POST"
+                                use:enhance
+                                on:submit={() =>
+                                    toast.success(`Unsubscribed from ${video.uploader}`)}>
+                                <Button variant="secondary" type="submit">Unsubscribe</Button>
+                            </form>
+                        {/if}
                     </div>
-                    {#if !subscribed && loggedIn}
-                        <form
-                            action="{video.uploaderUrl}?/subscribe"
-                            method="POST"
-                            use:enhance
-                            on:submit={() => toast.success(`Subscribed to ${video.uploader}`)}
-                        >
-                            <Button variant="default" type="submit">Subscribe</Button>
-                        </form>
-                    {:else if loggedIn}
-                        <form
-                            action="{video.uploaderUrl}?/unsubscribe"
-                            method="POST"
-                            use:enhance
-                            on:submit={() => toast.success(`Unsubscribed from ${video.uploader}`)}
-                        >
-                            <Button variant="secondary" type="submit">Unsubscribe</Button>
-                        </form>
-                    {/if}
+                    <div>
+                        <Button variant="secondary" on:click={share} class="gap-2">
+                            <Share class="h-4 w-4" /> Share
+                        </Button>
+                        <Dialog.Root preventScroll={false}>
+                            <Dialog.Trigger asChild let:builder>
+                                <Button builders={[builder]} variant="secondary" class="gap-2">
+                                    <Plus class="h-4 w-4" /> Add to playlist
+                                </Button>
+                            </Dialog.Trigger>
+                            <Dialog.Content>
+                                <Dialog.Header>
+                                    <Dialog.Title>Add to playlist</Dialog.Title>
+                                </Dialog.Header>
+                                {#if playlists.length > 0}
+                                    <ul class="divide-y">
+                                        {#each playlists as playlist}
+                                            <li class="flex items-center justify-between py-2">
+                                                <p class="text-muted-foreground">{playlist.name}</p>
+                                                <Button size="xs" variant="secondary">
+                                                    <Plus class="h-4 w-4" />
+                                                </Button>
+                                            </li>
+                                        {/each}
+                                    </ul>
+                                {:else if loggedIn}
+                                    <p class="text-sm text-muted-foreground">
+                                        You don't have any playlists
+                                    </p>
+                                {:else}
+                                    <p class="text-sm text-muted-foreground">
+                                        You must be logged in to add playlists
+                                    </p>
+                                {/if}
+                            </Dialog.Content>
+                        </Dialog.Root>
+                    </div>
                 </div>
             </div>
         </div>

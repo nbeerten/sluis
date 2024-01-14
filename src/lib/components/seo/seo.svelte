@@ -23,6 +23,6 @@
     {/if}
 
     {#if robots && robots.length > 0}
-        <meta name="robots" content={robots.join(', ')} />
+        <meta name="robots" content={robots.join(", ")} />
     {/if}
 </svelte:head>
