@@ -25,9 +25,17 @@ export const actions = {
     }
 };
 
-export const load = async ({ fetch, cookies }) => {
+export const load = async ({ fetch, cookies, request }) => {
     const instance = cookies.get('instance');
+
+    let country = request.headers.get('CF-IPCountry') as string | "XX" | "T1" | null ; // ISO-3166-1 alpha-2 or XX is unknown or T1 if Tor.
+    if (country === "XX" || country === "T1") {
+        country = "US";
+    } else if (!country) {
+        country = "US";
+    }
+
     return {
-        videos: await PipedApi(fetch, instance).getTrending({ region: 'NL' })
+        videos: await PipedApi(fetch, instance).getTrending({ region: country })
     };
 };
