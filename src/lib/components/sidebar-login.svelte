@@ -6,8 +6,10 @@
     import ArrowLeftRight from '~icons/lucide/arrow-left-right';
     import { enhance } from '$app/forms';
     import { toast } from 'svelte-sonner';
+    import { SheetClose } from '$lib/components/ui/sheet';
 
     export let instanceList: Instances;
+    export let closeSheet: boolean = false;
 
     let instanceItems: {
         value: string;
@@ -28,11 +30,35 @@
 
 <div class="flex flex-col gap-2">
     {#if $page.data.loggedIn}
-        <Button href="/logout?to=${encodeURIComponent('/')}" variant="secondary" class="w-full"
-            >Logout</Button
-        >
+        {#if closeSheet}
+            <SheetClose asChild let:builder>
+                <Button
+                    builders={[builder]}
+                    href="/logout?to=${encodeURIComponent('/')}"
+                    variant="secondary"
+                    class="w-full"
+                >
+                    Logout
+                </Button>
+            </SheetClose>
+        {:else}
+            <Button href="/logout?to=${encodeURIComponent('/')}" variant="secondary" class="w-full">
+                Logout
+            </Button>
+        {/if}
+    {:else if closeSheet}
+        <SheetClose asChild let:builder>
+            <Button
+                href="/login"
+                variant="secondary"
+                class="w-full justify-start"
+                builders={[builder]}
+            >
+                Login
+            </Button>
+        </SheetClose>
     {:else}
-        <Button variant="default" href="/login" class="w-full">Login</Button>
+        <Button href="/login" variant="secondary" class="w-full justify-start">Login</Button>
     {/if}
 
     <form

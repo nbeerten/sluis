@@ -5,9 +5,6 @@
     import { page } from '$app/stores';
     import { SheetClose } from '$lib/components/ui/sheet';
 
-    let currentPath = $page.url.pathname;
-    $: currentPath = $page.url.pathname;
-
     export let subscriptions: { name: string; url: string; avatar: string; verified: boolean }[];
     export let closeSheet: boolean = false;
 </script>

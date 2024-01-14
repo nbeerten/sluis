@@ -27,7 +27,13 @@
     };
 </script>
 
-<form action="/search" method="GET" class="flex w-full justify-center" use:clickoutside on:clickoutside={() => (open = false)}>
+<form
+    action="/search"
+    method="GET"
+    class="flex w-full justify-center"
+    use:clickoutside
+    on:clickoutside={() => (open = false)}
+>
     <div class="relative w-full md:w-[40rem]">
         <Input
             type="search"
@@ -48,7 +54,10 @@
                         <li in:slide>
                             <a
                                 href="/search?{new URLSearchParams({ q: suggestion }).toString()}"
-                                on:click={() => { open = false; value = suggestion }}
+                                on:click={() => {
+                                    open = false;
+                                    value = suggestion;
+                                }}
                                 class="flex items-center gap-2 px-4 py-1.5 text-sm text-muted-foreground hover:bg-secondary"
                                 ><SearchIcon /> {suggestion}</a
                             >

@@ -9,7 +9,9 @@ export const load = async ({ fetch, url, cookies }) => {
         error(404, 'Video not found');
     }
 
+    const video = await PipedApi(fetch, instance).getStream({ videoId });
+
     return {
-        video: await PipedApi(fetch, instance).getStream({ videoId })
+        video: video
     };
 };

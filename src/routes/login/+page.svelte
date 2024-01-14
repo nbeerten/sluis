@@ -3,9 +3,12 @@
     import { Button } from '$lib/components/ui/button';
     import ArrowRight from '~icons/lucide/arrow-right';
     import { enhance } from '$app/forms';
+    import SEO from '$lib/components/seo';
 
     export let form;
 </script>
+
+<SEO title="Login" />
 
 <form method="POST" class="space-y-3" use:enhance>
     <Input type="text" name="username" placeholder="Username" autocomplete="username" autofocus />

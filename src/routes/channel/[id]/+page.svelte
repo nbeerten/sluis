@@ -5,6 +5,7 @@
     import InfiniteScroll from '$lib/components/infinite-scroll.svelte';
     import { enhance } from '$app/forms';
     import { toast } from 'svelte-sonner';
+    import SEO from '$lib/components/seo';
 
     export let data;
     let {
@@ -46,6 +47,8 @@
 
     $: videos = [...videos, ...newBatch];
 </script>
+
+<SEO title={channel.name} />
 
 <main>
     <hgroup class="space-y-4">

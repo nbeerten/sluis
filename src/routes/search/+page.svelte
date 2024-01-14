@@ -6,6 +6,7 @@
     import * as Select from '$lib/components/ui/select';
     import ChannelCard from '$lib/components/channel-card.svelte';
     import { goto } from '$app/navigation';
+    import SEO from '$lib/components/seo';
 
     export let data;
     let { results } = data;
@@ -43,6 +44,8 @@
         { value: 'playlists', label: 'Playlists' } as const
     ];
 </script>
+
+<SEO title="Search: {$page.url.searchParams.get('q')}" />
 
 <main>
     <hgroup class="flex justify-between">

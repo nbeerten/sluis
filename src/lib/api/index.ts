@@ -67,7 +67,7 @@ export function PipedApi(fetch = globalThis.fetch, baseUrl = defaultInstance) {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ username, password })
             }).then((r) => r.json()) as Promise<{ token: string }>;
         },
 

@@ -14,6 +14,7 @@
     import { enhance } from '$app/forms';
     import { toast } from 'svelte-sonner';
     import { onDestroy } from 'svelte';
+    import SEO from '$lib/components/seo';
 
     const { format: formatNumber } = Intl.NumberFormat('en', { notation: 'compact' });
 
@@ -29,15 +30,22 @@
 
     let videoElement: HTMLVideoElement;
 
-    onDestroy(() => {videoElement.pause(); videoElement.removeAttribute('src'); videoElement.load()});
+    onDestroy(() => {
+        videoElement.pause();
+        videoElement.removeAttribute('src');
+        videoElement.load();
+    });
 </script>
+
+<SEO title={video.title} />
 
 <div class="space-y-6">
     <div
         class="flex aspect-video max-h-[75vh] w-full justify-center overflow-hidden rounded-xl bg-black"
     >
         <media-controller style="width: 100%;">
-            <hls-video src={video.hls} slot="media" crossorigin autoplay bind:this={videoElement}></hls-video>
+            <hls-video src={video.hls} slot="media" crossorigin autoplay bind:this={videoElement}
+            ></hls-video>
             <media-control-bar>
                 <media-play-button></media-play-button>
                 <media-seek-backward-button seekoffset="10"></media-seek-backward-button>

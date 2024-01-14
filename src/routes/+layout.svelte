@@ -1,6 +1,5 @@
 <script>
     import '../app.pcss';
-    import Waypoints from '~icons/lucide/waypoints';
     import Sidebar from '$lib/components/sidebar.svelte';
     import SidebarLogin from '$lib/components/sidebar-login.svelte';
     import SidebarMenu from '$lib/components/sidebar-menu.svelte';
@@ -8,18 +7,17 @@
     import Menu from '~icons/lucide/menu';
     import { Button } from '$lib/components/ui/button';
     import * as Sheet from '$lib/components/ui/sheet';
-    import { page } from '$app/stores';
     import Search from '$lib/components/search.svelte';
     import { Toaster } from '$lib/components/ui/sonner';
-
-    let currentPath = $page.url.pathname;
-    $: currentPath = $page.url.pathname;
+    import SEO from '$lib/components/seo';
 
     export let data;
     let { subscriptions, instanceList } = data;
     $: instanceList = data.instanceList;
     $: subscriptions = data.subscriptions;
 </script>
+
+<SEO title="Home" />
 
 <div class="mb-4 h-16">
     <Toaster position="top-right" theme="dark" closeButton={true} />
@@ -28,9 +26,8 @@
     >
         <div class="flex px-3 md:w-64 md:pt-2">
             <h2
-                class="mb-2 hidden items-center gap-3 px-4 text-lg font-semibold tracking-tight md:flex"
+                class="mb-2 hidden items-center gap-3 px-4 text-2xl font-extrabold text-[#ffe7b3] md:flex"
             >
-                <Waypoints class="mb-0.5 h-6 w-6" />
                 Sluis
             </h2>
             <div class="relative flex md:hidden">
@@ -42,12 +39,15 @@
                     >
                     <Sheet.Content side="left" class="space-y-4">
                         <Sheet.Header>
-                            <Sheet.Title class="flex items-center gap-2">
-                                <Waypoints class="mb-0.5 h-6 w-6" />
+                            <Sheet.Title
+                                class="flex items-center gap-2 text-2xl font-extrabold text-[#ffe7b3]"
+                            >
                                 Sluis
                             </Sheet.Title>
                         </Sheet.Header>
                         <div class="flex flex-col gap-1">
+                            <SidebarLogin {instanceList} closeSheet />
+                            <hr class="my-2" />
                             <SidebarMenu closeSheet />
                             {#if subscriptions}
                                 <SidebarSubscriptions {subscriptions} closeSheet />

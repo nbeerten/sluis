@@ -1,8 +1,11 @@
 <script lang="ts">
     import VideoCard from '$lib/components/video-card.svelte';
+    import SEO from '$lib/components/seo';
 
     export let data;
 </script>
+
+<SEO title="Trending" />
 
 <main>
     <hgroup>

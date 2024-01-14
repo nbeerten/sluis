@@ -2,6 +2,7 @@
     import { Button } from '$lib/components/ui/button';
     import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
     import VideoCard from '$lib/components/video-card.svelte';
+    import SEO from '$lib/components/seo';
 
     export let data;
     let { videos, loggedIn } = data;
@@ -10,6 +11,8 @@
     $: longVideos = data.videos?.filter((v) => !v.isShort);
     $: shortVideos = data.videos?.filter((v) => v.isShort);
 </script>
+
+<SEO title="Feed" />
 
 <main>
     <hgroup>

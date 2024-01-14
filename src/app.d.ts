@@ -11,6 +11,7 @@ declare global {
             instanceList: Instances;
             subscriptions: false | subscriptions;
             loggedIn: boolean;
+            seo: import('./lib/components/seo').SeoProps;
         }
         // interface PageState {}
         // interface Platform {}
