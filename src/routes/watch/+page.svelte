@@ -123,12 +123,11 @@
                 slot="poster"
                 src={video.thumbnailUrl}>
             </media-poster-image>
-            <media-control-bar>
+            <media-control-bar class="media-control-bar">
                 <media-play-button></media-play-button>
                 <media-seek-backward-button seekoffset="{config.seekAmount}" class="hidden md:block"></media-seek-backward-button>
                 <media-seek-forward-button seekoffset="{config.seekAmount}" class="hidden md:block"></media-seek-forward-button>
                 <media-mute-button></media-mute-button>
-                <media-volume-range class="hidden md:block"></media-volume-range>
                 <media-time-display showduration></media-time-display>
                 <media-time-range></media-time-range>
                 <media-pip-button></media-pip-button>
@@ -269,3 +268,23 @@
         </div>
     </div>
 </div>
+
+<style lang="postcss">
+    .media-control-bar {
+        --media-primary-color: theme(colors.foreground);
+        --media-text-color: theme(colors.foreground);
+
+        --media-control-background: theme(colors.primary.foreground);
+        --media-control-hover-background: theme(colors.secondary.DEFAULT);
+        --media-font-family: theme(fontFamily.sans);
+    }
+
+    .media-control-bar > :first-child {
+        padding-left: 0.75rem;
+    }
+
+    .media-control-bar > :last-child {
+        padding-right: 0.75rem;
+    }
+
+</style>

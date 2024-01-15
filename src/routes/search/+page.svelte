@@ -76,7 +76,7 @@
             </Select.Content>
         </Select.Root>
     </hgroup>
-    <div class="grid grid-cols-1 gap-4 py-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+    <div class="grid grid-cols-1 gap-4 pt-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {#each videos as item}
             {#if item.type === "stream"}
                 <VideoCard
@@ -98,10 +98,10 @@
                 <ChannelCard channel={{ ...item, id: item.url.slice(9) }} />
             {/if}
         {/each}
-        <InfiniteScroll
-            hasMore={newBatch.length > 0}
-            on:loadMore={() => {
-                fetchMoreResults();
-            }} />
     </div>
+    <InfiniteScroll
+        hasMore={newBatch.length > 0}
+        on:loadMore={() => {
+            fetchMoreResults();
+        }} />
 </main>

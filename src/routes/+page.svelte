@@ -9,7 +9,7 @@
 
 <main>
     <hgroup>
-        <h1 class="text-3xl font-bold">Trending</h1>
+        <h1 class="text-3xl font-bold">Trending in {data.country}</h1>
     </hgroup>
     <div class="grid grid-cols-1 gap-4 py-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {#each data.videos as video}
