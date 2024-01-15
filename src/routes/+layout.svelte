@@ -22,7 +22,7 @@
 <div class="mb-4 h-16">
     <Toaster position="bottom-right" theme="dark" closeButton={true} />
     <nav
-        class="fixed left-0 top-0 z-10 grid h-16 w-full grid-cols-[auto,1fr,auto] items-center border-b bg-background py-2 md:grid-cols-[16rem,1fr,16rem]">
+        class="fixed left-0 top-0 z-10 grid h-16 w-screen grid-cols-[auto,1fr,auto] items-center border-b bg-background py-2 md:grid-cols-[16rem,1fr,16rem]">
         <div class="flex px-3 md:w-64 md:pt-2">
             <h2
                 class="mb-2 hidden items-center gap-3 px-4 text-2xl font-extrabold text-[#ffe7b3] md:flex">
