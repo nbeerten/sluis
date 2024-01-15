@@ -5,6 +5,8 @@
     import SEO from "$lib/components/seo";
     import { Avatar, AvatarFallback, AvatarImage } from "$lib/components/ui/avatar";
     import { page } from "$app/stores";
+    import ChevronRight from "~icons/lucide/chevron-right";
+    import * as Dialog from "$lib/components/ui/dialog";
 
     export let data;
     let {
@@ -35,6 +37,8 @@
                 return "videos";
         }
     }
+
+    let aboutDialogOpen = false;
 </script>
 
 <SEO title={channel.name} />
@@ -59,6 +63,36 @@
                     <p class="text-sm text-muted-foreground">
                         {format(channel.subscriberCount)} subscribers
                     </p>
+                    <Dialog.Root
+                        preventScroll={true}
+                        open={aboutDialogOpen}
+                        onOpenChange={(open) => {
+                            aboutDialogOpen = open;
+                        }}
+                        onOutsideClick={(e) => {
+                            e.preventDefault();
+                            setTimeout(() => (aboutDialogOpen = false), 1);
+                        }}>
+                        <Dialog.Trigger>
+                            <div
+                                class="flex items-center justify-start text-sm text-muted-foreground md:max-w-[500px] xl:max-w-[600px]">
+                                <p class="prose-sm line-clamp-1 h-[1lh] text-left">
+                                    {channel.description}
+                                </p>
+                                <div>
+                                    <ChevronRight class="h-4 w-4" />
+                                </div>
+                            </div>
+                        </Dialog.Trigger>
+                        <Dialog.Content class="overscroll-contain">
+                            <Dialog.Header>
+                                <Dialog.Title>About</Dialog.Title>
+                            </Dialog.Header>
+                            <p class="prose prose-invert">
+                                {@html channel.description}
+                            </p>
+                        </Dialog.Content>
+                    </Dialog.Root>
                 </div>
             </div>
             <div class="mt-4 w-full md:m-0 md:w-auto">
