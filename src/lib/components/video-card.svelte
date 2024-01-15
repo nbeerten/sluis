@@ -23,21 +23,26 @@
 
     export let isShort = false;
     export let showChannel = true;
+    export let bareCard = false;
+
+    let className = "";
+    export { className as class };
 
     const { format: formatNumber } = Intl.NumberFormat("en", { notation: "compact" });
 </script>
 
-<Card>
+<Card class={cn(className, bareCard ? "border-none" : "")}>
     <a href="/watch?v={video.id}" data-sveltekit-preload-data="tap">
         <div
             class={cn(
-                "relative flex justify-center px-6 pt-6",
-                isShort ? "aspect-square" : "aspect-video"
+                "relative flex justify-center",
+                bareCard ? "" : "px-6 pt-6",
+                isShort ? "aspect-[9/16]" : "aspect-video"
             )}>
             <img
                 src={video.thumbnail}
                 alt="Card"
-                class="w-full overflow-hidden rounded-lg object-contain"
+                class="w-full rounded-lg object-cover"
                 loading="lazy" />
             {#if !isShort}
                 <div
@@ -48,7 +53,7 @@
         </div>
     </a>
 
-    <CardHeader>
+    <CardHeader class={cn(bareCard ? "p-0 pt-3" : "")}>
         <div class="flex gap-2">
             {#if showChannel}
                 <div class="flex items-start justify-center py-1">

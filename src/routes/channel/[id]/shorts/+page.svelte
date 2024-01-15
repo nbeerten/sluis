@@ -25,6 +25,7 @@
     let newBatch = shorts.content as channels_tabs_items_shorts;
 
     async function fetchMoreVideos() {
+        if (!nextpageToken) return;
         const response = await PipedApi().getChannelTab({
             data: channel.tabs.find((t) => t.name === "shorts")?.data as string,
             nextpage: nextpageToken,
@@ -39,7 +40,7 @@
 <SEO title={channel.name} />
 
 <div
-    class="mb-5 grid grid-cols-1 gap-4 py-5 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
+    class="mb-5 grid grid-cols-2 gap-4 py-5 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
     {#each videos as video}
         <VideoCard
             video={{
@@ -57,6 +58,7 @@
                 views: video.views,
             }}
             isShort
+            bareCard
             showChannel={false} />
     {/each}
     <InfiniteScroll

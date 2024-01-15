@@ -106,6 +106,18 @@ export type streams_videoId = {
     }>;
 };
 
+export type sponsors_videoId = {
+    hash: string;
+    segments: Array<{
+        UUID: string;
+        actionType: string;
+        category: string;
+        segment: Array<number>;
+        videoDuration: number;
+    }>;
+    videoID: string;
+};
+
 // /trending
 export type trending = Array<{
     url: string;
@@ -237,7 +249,7 @@ export type channels_tabs_items_livestreams = {
     uploaded: number;
     uploaderVerified: boolean;
     isShort: false;
-};
+}[];
 
 export type channels_tabs_items_playlists = {
     url: string;
@@ -249,7 +261,7 @@ export type channels_tabs_items_playlists = {
     uploaderVerified: boolean;
     playlistType: string;
     videos: number;
-};
+}[];
 
 // /feed
 export type feed = Array<{

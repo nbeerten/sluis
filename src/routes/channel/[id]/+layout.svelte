@@ -4,6 +4,7 @@
     import { toast } from "svelte-sonner";
     import SEO from "$lib/components/seo";
     import { Avatar, AvatarFallback, AvatarImage } from "$lib/components/ui/avatar";
+    import { page } from "$app/stores";
 
     export let data;
     let {
@@ -18,16 +19,32 @@
     const { format } = Intl.NumberFormat("en", {
         notation: "compact",
     });
+
+    let currentTab = "videos";
+    $: currentTab = getTabFromPath($page.url.pathname);
+
+    function getTabFromPath(path: string) {
+        switch (true) {
+            case path.endsWith(`/shorts`):
+                return "shorts";
+            case path.endsWith(`/livestreams`):
+                return "livestreams";
+            case path.endsWith(`/playlists`):
+                return "playlists";
+            default:
+                return "videos";
+        }
+    }
 </script>
 
 <SEO title={channel.name} />
 
 <main>
     <hgroup class="space-y-4">
-        <div class="overflow-hidden rounded-2xl bg-primary-foreground [aspect-ratio:6/1]">
+        <div class="overflow-hidden rounded-xl bg-primary-foreground [aspect-ratio:6/1]">
             <img src={channel.bannerUrl} alt="Banner" class="h-full w-full object-contain" />
         </div>
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col justify-between md:flex-row md:items-center">
             <div class="flex items-center gap-4">
                 <Avatar class="h-20 w-20 text-6xl">
                     <AvatarImage src={channel.avatarUrl} />
@@ -44,14 +61,16 @@
                     </p>
                 </div>
             </div>
-            <div>
+            <div class="mt-4 w-full md:m-0 md:w-auto">
                 {#if !subscribed && loggedIn}
                     <form
                         action="?/subscribe"
                         method="POST"
                         use:enhance
                         on:submit={() => toast.success(`Subscribed to ${channel.name}`)}>
-                        <Button variant="default" type="submit">Subscribe</Button>
+                        <Button variant="default" type="submit" class="h-9 w-full md:h-10">
+                            Subscribe
+                        </Button>
                     </form>
                 {:else if loggedIn}
                     <form
@@ -59,12 +78,38 @@
                         method="POST"
                         use:enhance
                         on:submit={() => toast.success(`Unsubscribed from ${channel.name}`)}>
-                        <Button variant="secondary" type="submit">Unsubscribe</Button>
+                        <Button variant="secondary" type="submit" class="h-9 w-full md:h-10">
+                            Unsubscribe
+                        </Button>
                     </form>
                 {/if}
             </div>
         </div>
     </hgroup>
+    <div class="mt-4">
+        <ul
+            class="inline-flex h-10 w-full items-center justify-stretch rounded-md bg-muted p-1 text-muted-foreground md:w-auto md:justify-center">
+            <li class="w-full">
+                <a
+                    href="/channel/{channel.id}"
+                    data-state={currentTab === "videos" ? "active" : "inactive"}
+                    class="inline-flex w-full items-center justify-center rounded-sm px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">
+                    Videos
+                </a>
+            </li>
+
+            {#each channel.tabs as { name }}
+                <li class="w-full">
+                    <a
+                        href="/channel/{channel.id}/{name}"
+                        data-state={currentTab === name ? "active" : "inactive"}
+                        class="inline-flex w-full items-center justify-center rounded-sm px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">
+                        {name.slice(0, 1).toUpperCase() + name.slice(1)}
+                    </a>
+                </li>
+            {/each}
+        </ul>
+    </div>
 
     <slot />
 </main>

@@ -7,6 +7,7 @@ import type {
     feed,
     channels_tabs,
     user_playlists,
+    sponsors_videoId,
 } from "./types";
 
 export const defaultInstance = "https://pipedapi.smnz.de";
@@ -17,6 +18,15 @@ export function PipedApi(fetch = globalThis.fetch, baseUrl = defaultInstance) {
             return fetch(`${baseUrl}/streams/${videoId}`, {}).then((r) =>
                 r.json()
             ) as Promise<streams_videoId>;
+        },
+
+        getSponsors: ({ videoId, categories }: { videoId: string; categories: string[] }) => {
+            return fetch(
+                `${baseUrl}/sponsors/${videoId}?categories=[${encodeURIComponent(
+                    categories.join(",")
+                )}]`,
+                {}
+            ).then((r) => r.json()) as Promise<sponsors_videoId>;
         },
 
         getTrending: ({ region }: { region: string }) => {
