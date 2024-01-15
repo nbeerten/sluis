@@ -13,12 +13,16 @@
     import "hls-video-element";
     import { enhance } from "$app/forms";
     import { toast } from "svelte-sonner";
-    import { onDestroy } from "svelte";
+    import { onDestroy, onMount } from "svelte";
     import SEO from "$lib/components/seo";
     import { browser } from "$app/environment";
     import Share from "~icons/lucide/share-2";
     import Plus from "~icons/lucide/plus";
     import * as Dialog from "$lib/components/ui/dialog";
+
+    const config = {
+        seekAmount: 10,
+    }
 
     const { format: formatNumber } = Intl.NumberFormat("en", { notation: "compact" });
 
@@ -51,6 +55,60 @@
             });
         }
     }
+
+    $: { 
+        if (browser && videoElement) {
+            navigator.mediaSession.playbackState = videoElement.paused ? "paused" : "playing";
+        }
+    }
+
+    let currentTime = 0;
+
+    // $: if(browser && videoElement) {
+    //     if(currentTime >= 5 && currentTime <= 10) {
+    //         videoElement.currentTime = currentTime + 5;
+    //     }
+    // }
+
+    onMount(() => {
+        if (!browser) return;
+
+        navigator.mediaSession.metadata = new window.MediaMetadata({
+            title: video.title,
+            artist: video.uploader,
+            artwork: [
+                {
+                    src: video.thumbnailUrl
+                }
+            ],
+        });
+
+        if(videoElement) {
+            videoElement.addEventListener("timeupdate", () => {
+                currentTime = videoElement.currentTime || 0;
+            });
+
+            navigator.mediaSession.setActionHandler("play", () => {
+                videoElement.play();
+            });
+            navigator.mediaSession.setActionHandler("pause", () => {
+                videoElement.pause();
+            });
+            navigator.mediaSession.setActionHandler("seekbackward", (event) => {
+                const seekAmount = event.seekOffset || config.seekAmount;
+                videoElement.currentTime = Math.max(0, videoElement.currentTime - seekAmount);
+            });
+            navigator.mediaSession.setActionHandler("seekforward", (event) => {
+                const seekAmount = event.seekOffset || config.seekAmount;
+                videoElement.currentTime = Math.min(videoElement.duration, videoElement.currentTime + seekAmount);
+            });
+            navigator.mediaSession.setActionHandler("seekto", (event) => {
+                if(event.seekTime) {
+                    videoElement.currentTime = event.seekTime;
+                }
+            });
+        }
+    });
 </script>
 
 <SEO title={video.title} />
@@ -61,12 +119,16 @@
         <media-controller style="width: 100%;">
             <hls-video src={video.hls} slot="media" crossorigin autoplay bind:this={videoElement}>
             </hls-video>
+            <media-poster-image
+                slot="poster"
+                src={video.thumbnailUrl}>
+            </media-poster-image>
             <media-control-bar>
                 <media-play-button></media-play-button>
-                <media-seek-backward-button seekoffset="10"></media-seek-backward-button>
-                <media-seek-forward-button seekoffset="10"></media-seek-forward-button>
+                <media-seek-backward-button seekoffset="{config.seekAmount}" class="hidden md:block"></media-seek-backward-button>
+                <media-seek-forward-button seekoffset="{config.seekAmount}" class="hidden md:block"></media-seek-forward-button>
                 <media-mute-button></media-mute-button>
-                <media-volume-range></media-volume-range>
+                <media-volume-range class="hidden md:block"></media-volume-range>
                 <media-time-display showduration></media-time-display>
                 <media-time-range></media-time-range>
                 <media-pip-button></media-pip-button>
@@ -122,7 +184,7 @@
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
-                <div class="flex items-center justify-between gap-3">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
                         <div>
                             <a href={video.uploaderUrl}>
@@ -132,7 +194,7 @@
                                 </Avatar>
                             </a>
                         </div>
-                        <div class="flex flex-col justify-center pr-2">
+                        <div class="flex flex-col justify-center pr-2 mr-auto md:mr-0">
                             <a href={video.uploaderUrl}>
                                 <span class="inline-flex items-center gap-1 text-sm font-semibold">
                                     {video.uploader}
@@ -165,13 +227,13 @@
                             </form>
                         {/if}
                     </div>
-                    <div>
-                        <Button variant="secondary" on:click={share} class="gap-2">
+                    <div class="flex gap-2 items-center justify-stretch">
+                        <Button variant="secondary" on:click={share} class="gap-2 w-full md:md-auto">
                             <Share class="h-4 w-4" /> Share
                         </Button>
                         <Dialog.Root preventScroll={false}>
                             <Dialog.Trigger asChild let:builder>
-                                <Button builders={[builder]} variant="secondary" class="gap-2">
+                                <Button builders={[builder]} variant="secondary" class="gap-2 w-full md:md-auto">
                                     <Plus class="h-4 w-4" /> Add to playlist
                                 </Button>
                             </Dialog.Trigger>
