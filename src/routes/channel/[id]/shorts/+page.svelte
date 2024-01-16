@@ -63,7 +63,7 @@
     {/each}
 </div>
 <InfiniteScroll
-hasMore={newBatch.length > 0}
-on:loadMore={() => {
-    fetchMoreVideos();
-}} />
+    hasMore={newBatch.length > 0}
+    onLoadMore={() => {
+        fetchMoreVideos();
+    }} />

@@ -19,7 +19,7 @@
 
 <SEO title="Home" />
 
-<div class="relative flex flex-col min-h-screen">
+<div class="relative flex min-h-screen flex-col">
     <Toaster position="bottom-right" theme="dark" closeButton={true} />
     <div class="mb-4 h-16">
         <nav

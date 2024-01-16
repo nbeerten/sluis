@@ -24,6 +24,7 @@
     export let isShort = false;
     export let showChannel = true;
     export let bareCard = false;
+    export let horizontalCard = false;
 
     let className = "";
     export { className as class };
@@ -31,12 +32,18 @@
     const { format: formatNumber } = Intl.NumberFormat("en", { notation: "compact" });
 </script>
 
-<Card class={cn(className, bareCard ? "border-none" : "")}>
+<Card
+    class={cn(
+        className,
+        bareCard && "border-none",
+        horizontalCard && "grid w-[28rem] max-w-full grid-cols-[11rem,1fr]"
+    )}>
     <a href="/watch?v={video.id}" data-sveltekit-preload-data="tap">
         <div
             class={cn(
                 "relative flex justify-center",
                 bareCard ? "" : "px-6 pt-6",
+                horizontalCard ? "pr-3" : "",
                 isShort ? "aspect-[9/16]" : "aspect-video"
             )}>
             <img
@@ -46,16 +53,21 @@
                 loading="lazy" />
             {#if !isShort}
                 <div
-                    class="absolute bottom-0.5 left-[calc(100%-1.65rem)] -translate-x-full rounded-lg bg-background px-1 text-sm">
+                    class="absolute bottom-0.5 left-[calc(100%-7%)] -translate-x-full rounded-lg bg-background px-1 text-sm">
                     {durationFormatter(video.duration * 1000)}
                 </div>
             {/if}
         </div>
     </a>
 
-    <CardHeader class={cn(bareCard ? "p-0 pt-3" : "")}>
+    <CardHeader
+        class={cn(
+            bareCard && "p-0 pt-3",
+            horizontalCard && "pl-0 text-sm",
+            horizontalCard && bareCard && "py-0"
+        )}>
         <div class="flex gap-2">
-            {#if showChannel}
+            {#if showChannel && !horizontalCard}
                 <div class="flex items-start justify-center py-1">
                     <a href="/channel/{video.uploader.id}" data-sveltekit-preload-data="tap">
                         <Avatar>
@@ -68,7 +80,9 @@
                 </div>
             {/if}
             <div>
-                <CardTitle class="line-clamp-2 text-base" title={video.title}>
+                <CardTitle
+                    class={cn("line-clamp-2 text-base", horizontalCard && "text-sm font-semibold")}
+                    title={video.title}>
                     <a href="/watch?v={video.id}" data-sveltekit-preload-data="tap">
                         {video.title}
                     </a>

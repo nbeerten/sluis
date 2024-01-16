@@ -101,7 +101,7 @@
     </div>
     <InfiniteScroll
         hasMore={newBatch.length > 0}
-        on:loadMore={() => {
+        onLoadMore={() => {
             fetchMoreResults();
         }} />
 </main>

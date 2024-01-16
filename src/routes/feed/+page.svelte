@@ -56,7 +56,7 @@
                 value="shorts"
                 class="h-full flex-col border-none p-0 data-[state=active]:flex">
                 <div
-                    class="grid grid-cols-1 gap-4 py-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                    class="grid grid-cols-1 gap-4 py-5 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
                     {#if shortVideos}
                         {#each shortVideos as video}
                             <VideoCard
@@ -73,7 +73,9 @@
                                     duration: video.duration,
                                     uploadDate: video.uploaded,
                                     views: video.views,
-                                }} />
+                                }}
+                                isShort
+                                bareCard />
                         {/each}
                     {/if}
                 </div>

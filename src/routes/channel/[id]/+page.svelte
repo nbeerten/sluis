@@ -60,6 +60,6 @@
 </div>
 <InfiniteScroll
     hasMore={newBatch.length > 0}
-    on:loadMore={() => {
+    onLoadMore={() => {
         fetchMoreVideos();
     }} />

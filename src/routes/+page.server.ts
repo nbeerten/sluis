@@ -37,6 +37,6 @@ export const load = async ({ fetch, cookies, request }) => {
 
     return {
         videos: await PipedApi(fetch, instance).getTrending({ region: country }),
-        country
+        country,
     };
 };

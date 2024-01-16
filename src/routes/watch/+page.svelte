@@ -19,25 +19,35 @@
     import Share from "~icons/lucide/share-2";
     import Plus from "~icons/lucide/plus";
     import * as Dialog from "$lib/components/ui/dialog";
+    import * as Select from "$lib/components/ui/select";
+    import VideoCard from "$lib/components/video-card.svelte";
+    import { goto } from "$app/navigation";
 
     const config = {
         seekAmount: 10,
-    }
+    };
 
     const { format: formatNumber } = Intl.NumberFormat("en", { notation: "compact" });
 
     export let data;
-    const video = data.video;
-    let { subscriptions, loggedIn, playlists } = data;
+    let { video, subscriptions, loggedIn, playlists } = data;
+    $: video = data.video;
     $: subscriptions = data.subscriptions;
     $: playlists = data.playlists;
     $: loggedIn = data.loggedIn;
+
+    $: video, resetState();
+
+    function resetState() {
+        currentTime = 0;
+        hasEnded = false;
+    }
 
     let subscribed: boolean;
     $: subscribed =
         subscriptions && subscriptions?.find((s) => s.url === video.uploaderUrl) !== undefined;
 
-    let videoElement: HTMLVideoElement;
+    let videoElement: HTMLVideoElement | null = null;
 
     onDestroy(() => {
         if (videoElement && browser) {
@@ -56,7 +66,7 @@
         }
     }
 
-    $: { 
+    $: {
         if (browser && videoElement) {
             navigator.mediaSession.playbackState = videoElement.paused ? "paused" : "playing";
         }
@@ -70,6 +80,18 @@
     //     }
     // }
 
+    let hasEnded: boolean = false;
+
+    $: {
+        if (hasEnded) {
+            setTimeout(() => {
+                if (hasEnded) {
+                    goto(video.relatedStreams[0].url);
+                }
+            }, 1000);
+        }
+    }
+
     onMount(() => {
         if (!browser) return;
 
@@ -78,32 +100,47 @@
             artist: video.uploader,
             artwork: [
                 {
-                    src: video.thumbnailUrl
-                }
+                    src: video.thumbnailUrl,
+                },
             ],
         });
 
-        if(videoElement) {
+        if (videoElement) {
+            videoElement.addEventListener("ended", () => {
+                hasEnded = true;
+            });
+
+            videoElement.addEventListener("seeked", () => {
+                hasEnded = false;
+            });
+
             videoElement.addEventListener("timeupdate", () => {
-                currentTime = videoElement.currentTime || 0;
+                if (videoElement !== null && "currentTime" in videoElement)
+                    currentTime = videoElement.currentTime || 0;
+                else currentTime = 0;
             });
 
             navigator.mediaSession.setActionHandler("play", () => {
-                videoElement.play();
+                if (videoElement !== null) videoElement.play();
             });
             navigator.mediaSession.setActionHandler("pause", () => {
-                videoElement.pause();
+                if (videoElement !== null) videoElement.pause();
             });
             navigator.mediaSession.setActionHandler("seekbackward", (event) => {
                 const seekAmount = event.seekOffset || config.seekAmount;
-                videoElement.currentTime = Math.max(0, videoElement.currentTime - seekAmount);
+                if (videoElement !== null)
+                    videoElement.currentTime = Math.max(0, videoElement.currentTime - seekAmount);
             });
             navigator.mediaSession.setActionHandler("seekforward", (event) => {
                 const seekAmount = event.seekOffset || config.seekAmount;
-                videoElement.currentTime = Math.min(videoElement.duration, videoElement.currentTime + seekAmount);
+                if (videoElement !== null)
+                    videoElement.currentTime = Math.min(
+                        videoElement.duration,
+                        videoElement.currentTime + seekAmount
+                    );
             });
             navigator.mediaSession.setActionHandler("seekto", (event) => {
-                if(event.seekTime) {
+                if (event.seekTime && videoElement !== null) {
                     videoElement.currentTime = event.seekTime;
                 }
             });
@@ -119,14 +156,13 @@
         <media-controller style="width: 100%;">
             <hls-video src={video.hls} slot="media" crossorigin autoplay bind:this={videoElement}>
             </hls-video>
-            <media-poster-image
-                slot="poster"
-                src={video.thumbnailUrl}>
-            </media-poster-image>
+            <media-poster-image slot="poster" src={video.thumbnailUrl}></media-poster-image>
             <media-control-bar class="media-control-bar">
                 <media-play-button></media-play-button>
-                <media-seek-backward-button seekoffset="{config.seekAmount}" class="hidden md:block"></media-seek-backward-button>
-                <media-seek-forward-button seekoffset="{config.seekAmount}" class="hidden md:block"></media-seek-forward-button>
+                <media-seek-backward-button seekoffset={config.seekAmount} class="hidden md:block">
+                </media-seek-backward-button>
+                <media-seek-forward-button seekoffset={config.seekAmount} class="hidden md:block">
+                </media-seek-forward-button>
                 <media-mute-button></media-mute-button>
                 <media-time-display showduration></media-time-display>
                 <media-time-range></media-time-range>
@@ -136,13 +172,14 @@
         </media-controller>
     </div>
     <div class="flex gap-2">
-        <div class="w-full">
+        <div class="grid w-full grid-cols-1 gap-8 md:grid-cols-[1fr,28rem]">
             <div class="space-y-2">
                 <Accordion>
                     <AccordionItem value="item-1">
-                        <AccordionTrigger class="w-full pb-2 pt-0 text-start">
+                        <AccordionTrigger
+                            class="grid w-full grid-cols-[1fr,1rem] pb-2 pt-0 text-start">
                             <div class="flex flex-col gap-0">
-                                <h1 class="block text-2xl font-bold">
+                                <h1 class="text-2xl font-bold">
                                     {video.title}
                                 </h1>
                                 <p class="block text-sm text-muted-foreground">
@@ -183,7 +220,7 @@
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div class="flex flex-col justify-between gap-3 md:flex-row md:items-center">
                     <div class="flex items-center gap-3">
                         <div>
                             <a href={video.uploaderUrl}>
@@ -193,7 +230,7 @@
                                 </Avatar>
                             </a>
                         </div>
-                        <div class="flex flex-col justify-center pr-2 mr-auto md:mr-0">
+                        <div class="mr-auto flex flex-col justify-center pr-2 md:mr-0">
                             <a href={video.uploaderUrl}>
                                 <span class="inline-flex items-center gap-1 text-sm font-semibold">
                                     {video.uploader}
@@ -226,13 +263,19 @@
                             </form>
                         {/if}
                     </div>
-                    <div class="flex gap-2 items-center justify-stretch">
-                        <Button variant="secondary" on:click={share} class="gap-2 w-full md:md-auto">
+                    <div class="flex items-center justify-stretch gap-2">
+                        <Button
+                            variant="secondary"
+                            on:click={share}
+                            class="md:md-auto w-full gap-2">
                             <Share class="h-4 w-4" /> Share
                         </Button>
                         <Dialog.Root preventScroll={false}>
                             <Dialog.Trigger asChild let:builder>
-                                <Button builders={[builder]} variant="secondary" class="gap-2 w-full md:md-auto">
+                                <Button
+                                    builders={[builder]}
+                                    variant="secondary"
+                                    class="md:md-auto w-full gap-2">
                                     <Plus class="h-4 w-4" /> Add to playlist
                                 </Button>
                             </Dialog.Trigger>
@@ -265,12 +308,33 @@
                     </div>
                 </div>
             </div>
+            <div class="flex flex-col gap-2">
+                {#each video.relatedStreams as relatedStream}
+                    {#if relatedStream && relatedStream.title && relatedStream.uploaderUrl && relatedStream.url}
+                        <VideoCard
+                            video={{
+                                ...relatedStream,
+                                id: relatedStream.url.slice(9),
+                                uploader: {
+                                    name: relatedStream.uploaderName,
+                                    id: relatedStream.uploaderUrl.slice(9),
+                                    avatar: relatedStream.uploaderAvatar,
+                                    verified: relatedStream.uploaderVerified,
+                                },
+                                uploadDate: relatedStream.uploaded,
+                            }}
+                            bareCard
+                            horizontalCard />
+                    {/if}
+                {/each}
+            </div>
         </div>
     </div>
 </div>
 
 <style lang="postcss">
     .media-control-bar {
+        --media-secondary-color: theme(colors.primary.foreground);
         --media-primary-color: theme(colors.foreground);
         --media-text-color: theme(colors.foreground);
 
@@ -286,5 +350,4 @@
     .media-control-bar > :last-child {
         padding-right: 0.75rem;
     }
-
 </style>
