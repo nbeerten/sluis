@@ -49,6 +49,14 @@ export function PipedApi(fetch = globalThis.fetch, baseUrl = defaultInstance) {
             return response;
         },
 
+        getChannelFromHandle: ({ handle }: { handle: string }) => {
+            const response = fetch(`${baseUrl}/@/${handle}`, {}).then((r) =>
+                r.json()
+            ) as Promise<channel_channelId>;
+
+            return response;
+        },
+
         getChannelTab: ({ data, nextpage }: { data: string; nextpage?: string }) => {
             let requestUrl = `${baseUrl}/channels/tabs?data=${encodeURIComponent(data)}`;
             if (nextpage) {

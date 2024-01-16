@@ -15,6 +15,10 @@ export const load = async ({ fetch, url, cookies }) => {
         ? await PipedApi(fetch, instance).getUserPlaylists({ authToken })
         : [];
 
+    if ("message" in video) {
+        error(404, video.message);
+    }
+
     return {
         video: video,
         playlists,
