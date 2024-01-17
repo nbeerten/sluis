@@ -87,7 +87,7 @@
                         {video.title}
                     </a>
                 </CardTitle>
-                <CardDescription>
+                <CardDescription class={cn(horizontalCard && "mt-0.5 text-xs leading-normal")}>
                     {#if showChannel}
                         <a href="/channel/{video.uploader.id}" data-sveltekit-preload-data="tap">
                             <span title={video.uploader.name} class="flex items-center gap-1">

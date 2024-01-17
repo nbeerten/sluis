@@ -8,6 +8,7 @@ import type {
     channels_tabs,
     user_playlists,
     sponsors_videoId,
+    comments_videoId,
 } from "./types";
 
 export const defaultInstance = "https://pipedapi.smnz.de";
@@ -22,11 +23,24 @@ export function PipedApi(fetch = globalThis.fetch, baseUrl = defaultInstance) {
 
         getSponsors: ({ videoId, categories }: { videoId: string; categories: string[] }) => {
             return fetch(
-                `${baseUrl}/sponsors/${videoId}?categories=[${encodeURIComponent(
+                `${baseUrl}/sponsors/${videoId}?category=[${encodeURIComponent(
                     categories.join(",")
-                )}]`,
-                {}
+                )}]`
             ).then((r) => r.json()) as Promise<sponsors_videoId>;
+        },
+
+        getComments: ({ videoId, nextpage }: { videoId: string; nextpage?: string }) => {
+            const response = nextpage
+                ? (fetch(
+                      `${baseUrl}/nextpage/comments/${videoId}?nextpage=${encodeURIComponent(
+                          nextpage
+                      )}`
+                  ).then((r) => r.json()) as Promise<comments_videoId>)
+                : (fetch(`${baseUrl}/comments/${videoId}`, {}).then((r) =>
+                      r.json()
+                  ) as Promise<comments_videoId>);
+
+            return response;
         },
 
         getTrending: ({ region }: { region: string }) => {

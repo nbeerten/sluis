@@ -19,9 +19,14 @@
     import Share from "~icons/lucide/share-2";
     import Plus from "~icons/lucide/plus";
     import * as Dialog from "$lib/components/ui/dialog";
-    import * as Select from "$lib/components/ui/select";
+    import { Switch } from "$lib/components/ui/switch";
     import VideoCard from "$lib/components/video-card.svelte";
     import { goto } from "$app/navigation";
+    import { autoplay } from "$lib/stores";
+    import { Label } from "$lib/components/ui/label";
+    import { preloadData } from "$app/navigation";
+    import { page } from "$app/stores";
+    import Comment from "$lib/components/comment.svelte";
 
     const config = {
         seekAmount: 10,
@@ -30,17 +35,15 @@
     const { format: formatNumber } = Intl.NumberFormat("en", { notation: "compact" });
 
     export let data;
-    let { video, subscriptions, loggedIn, playlists } = data;
+    let { video, subscriptions, loggedIn } = data;
     $: video = data.video;
     $: subscriptions = data.subscriptions;
-    $: playlists = data.playlists;
     $: loggedIn = data.loggedIn;
 
     $: video, resetState();
 
     function resetState() {
         currentTime = 0;
-        hasEnded = false;
     }
 
     let subscribed: boolean;
@@ -80,15 +83,11 @@
     //     }
     // }
 
-    let hasEnded: boolean = false;
-
     $: {
-        if (hasEnded) {
-            setTimeout(() => {
-                if (hasEnded) {
-                    goto(video.relatedStreams[0].url);
-                }
-            }, 1000);
+        const startAt = $page.url.searchParams.get("t");
+        if (startAt && videoElement) {
+            videoElement.currentTime = Number(startAt) || 0;
+            videoElement.play();
         }
     }
 
@@ -106,12 +105,17 @@
         });
 
         if (videoElement) {
-            videoElement.addEventListener("ended", () => {
-                hasEnded = true;
+            videoElement.addEventListener("loadedmetadata", () => {
+                const startAt = $page.url.searchParams.get("t");
+
+                if (startAt && videoElement) videoElement.currentTime = Number(startAt);
             });
 
-            videoElement.addEventListener("seeked", () => {
-                hasEnded = false;
+            videoElement.addEventListener("ended", async () => {
+                if ($autoplay) {
+                    await preloadData(video.relatedStreams[0].url);
+                    goto(video.relatedStreams[0].url);
+                }
             });
 
             videoElement.addEventListener("timeupdate", () => {
@@ -172,7 +176,7 @@
         </media-controller>
     </div>
     <div class="flex gap-2">
-        <div class="grid w-full grid-cols-1 gap-8 md:grid-cols-[1fr,28rem]">
+        <div class="grid w-full grid-cols-1 gap-8 xl:grid-cols-[1fr,24rem]">
             <div class="space-y-2">
                 <Accordion>
                     <AccordionItem value="item-1">
@@ -220,29 +224,32 @@
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
-                <div class="flex flex-col justify-between gap-3 md:flex-row md:items-center">
-                    <div class="flex items-center gap-3">
-                        <div>
-                            <a href={video.uploaderUrl}>
-                                <Avatar>
-                                    <AvatarImage src={video.uploaderAvatar} />
-                                    <AvatarFallback>AV</AvatarFallback>
-                                </Avatar>
-                            </a>
-                        </div>
-                        <div class="mr-auto flex flex-col justify-center pr-2 md:mr-0">
-                            <a href={video.uploaderUrl}>
-                                <span class="inline-flex items-center gap-1 text-sm font-semibold">
-                                    {video.uploader}
-                                    {#if video.uploaderVerified}
-                                        <Check class="mt-0.5 h-4 w-4" />
-                                    {/if}
+                <div class="flex flex-col justify-between gap-3 xl:flex-row xl:items-center">
+                    <div class="flex items-center justify-between gap-3 xl:justify-normal">
+                        <div class="flex items-center gap-3">
+                            <div>
+                                <a href={video.uploaderUrl}>
+                                    <Avatar>
+                                        <AvatarImage src={video.uploaderAvatar} />
+                                        <AvatarFallback>AV</AvatarFallback>
+                                    </Avatar>
+                                </a>
+                            </div>
+                            <div class="mr-auto flex flex-col justify-center pr-2 md:mr-0">
+                                <a href={video.uploaderUrl}>
+                                    <span
+                                        class="inline-flex items-center gap-1 text-sm font-semibold">
+                                        {video.uploader}
+                                        {#if video.uploaderVerified}
+                                            <Check class="mt-0.5 h-4 w-4" />
+                                        {/if}
+                                    </span>
+                                </a>
+                                <span class="text-sm text-muted-foreground">
+                                    {formatNumber(video.uploaderSubscriberCount)}
+                                    subscribers
                                 </span>
-                            </a>
-                            <span class="text-sm text-muted-foreground">
-                                {formatNumber(video.uploaderSubscriberCount)}
-                                subscribers
-                            </span>
+                            </div>
                         </div>
                         {#if !subscribed && loggedIn}
                             <form
@@ -283,32 +290,54 @@
                                 <Dialog.Header>
                                     <Dialog.Title>Add to playlist</Dialog.Title>
                                 </Dialog.Header>
-                                {#if playlists.length > 0}
-                                    <ul class="divide-y">
-                                        {#each playlists as playlist}
-                                            <li class="flex items-center justify-between py-2">
-                                                <p class="text-muted-foreground">{playlist.name}</p>
-                                                <Button size="xs" variant="secondary">
-                                                    <Plus class="h-4 w-4" />
-                                                </Button>
-                                            </li>
-                                        {/each}
-                                    </ul>
-                                {:else if loggedIn}
-                                    <p class="text-sm text-muted-foreground">
-                                        You don't have any playlists
-                                    </p>
-                                {:else}
-                                    <p class="text-sm text-muted-foreground">
-                                        You must be logged in to add playlists
-                                    </p>
-                                {/if}
+                                {#await data.streamed.playlists}
+                                    <p>Loading...</p>
+                                {:then playlists}
+                                    {#if Array.isArray(playlists) && playlists.length > 0}
+                                        <ul class="divide-y">
+                                            {#each playlists as playlist}
+                                                <li class="flex items-center justify-between py-2">
+                                                    <p class="text-muted-foreground">
+                                                        {playlist.name}
+                                                    </p>
+                                                    <Button size="xs" variant="secondary">
+                                                        <Plus class="h-4 w-4" />
+                                                    </Button>
+                                                </li>
+                                            {/each}
+                                        </ul>
+                                    {:else if loggedIn}
+                                        <p class="text-sm text-muted-foreground">
+                                            You don't have any playlists
+                                        </p>
+                                    {:else}
+                                        <p class="text-sm text-muted-foreground">
+                                            You must be logged in to add playlists
+                                        </p>
+                                    {/if}
+                                {/await}
                             </Dialog.Content>
                         </Dialog.Root>
                     </div>
                 </div>
+                <div class="flex flex-col gap-3 pt-2">
+                    <h2 class="text-xl font-semibold">Comments</h2>
+                    <div class="flex flex-col gap-4">
+                        {#await data.streamed.comments}
+                            <p>Loading...</p>
+                        {:then comments}
+                            {#each comments.comments as comment}
+                                <Comment {comment} channelName={video.uploader} />
+                            {/each}
+                        {/await}
+                    </div>
+                </div>
             </div>
             <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2 font-semibold">
+                    <Switch bind:checked={$autoplay} id="autoplay" />
+                    <Label for="autoplay">Autoplay</Label>
+                </div>
                 {#each video.relatedStreams as relatedStream}
                     {#if relatedStream && relatedStream.title && relatedStream.uploaderUrl && relatedStream.url}
                         <VideoCard
