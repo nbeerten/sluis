@@ -12,7 +12,7 @@
 
     function extractTimestamps(commentText: string) {
         const timeStampRegex =
-            /(<a href="https:\/\/www.youtube.com\/watch\?v=[a-zA-Z0-9_-]{11}&amp;t=([0-9]+)">([0-9:]+)<\/a>)/gi;
+            /(<a href="https:\/\/www.youtube.com\/watch\?v=[a-zA-Z0-9_-]{11}(?:&amp;t=([0-9]+))?">([0-9:]+)<\/a>)/gi;
         const newComment = commentText.replaceAll(
             timeStampRegex,
             `<a href="/watch?v=${$page.url.searchParams.get("v")}&t=$2">$3</a>`

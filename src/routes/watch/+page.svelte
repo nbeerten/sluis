@@ -86,8 +86,12 @@
 
     $: {
         const startAt = $page.url.searchParams.get("t");
-        if (startAt && videoElement) {
-            videoElement.currentTime = Number(startAt) || 0;
+        if (startAt !== null && videoElement) {
+            if(startAt === "") {
+                videoElement.currentTime = 0;
+            } else {
+                videoElement.currentTime = Number(startAt);
+            }
             videoElement.play();
         }
     }
@@ -319,32 +323,45 @@
                                 {/await}
                             </Dialog.Content>
                         </Dialog.Root>
-                        <Sheet>
-                            <SheetTrigger>
-                                <Button variant="secondary">Open comments</Button>
-                            </SheetTrigger>
-                            <SheetContent side="right" class="max-w-full sm:max-w-md overflow-y-scroll">
-                                <SheetHeader>
-                                    <SheetTitle>Comments</SheetTitle>
-                                </SheetHeader>
-                                <div class="flex flex-col gap-4 mt-4 overflow-y-scroll">
-                                    {#await data.streamed.comments}
-                                        <p>Loading...</p>
-                                    {:then comments}
-                                        {#each comments.comments as comment}
-                                            <Comment {comment} channelName={video.uploader} />
-                                        {/each}
-                                    {/await}
-                                </div>
-                            </SheetContent>
-                        </Sheet>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-3 pt-2">
+                    <h2 class="text-xl font-semibold">Comments</h2>
+                    <div class="flex flex-col gap-4">
+                        {#await data.streamed.comments}
+                            <p>Loading...</p>
+                        {:then comments}
+                            {#each comments.comments as comment}
+                                <Comment {comment} channelName={video.uploader} />
+                            {/each}
+                        {/await}
                     </div>
                 </div>
             </div>
             <div class="flex flex-col gap-2">
-                <div class="flex items-center gap-2 font-semibold">
-                    <Switch bind:checked={$autoplay} id="autoplay" />
-                    <Label for="autoplay">Autoplay</Label>
+                
+                <div class="flex flex-col gap-2">
+                    <div class="flex gap-2 justify-between items-center">
+                        <p class="text-lg font-semibold">Next video</p>
+                        <div class="flex items-center gap-2 font-semibold">
+                            <Label for="autoplay" class="text-sm text-muted-foreground">Autoplay</Label>
+                            <Switch bind:checked={$autoplay} id="autoplay" class="scale-90" />
+                        </div>
+                    </div>
+                    <VideoCard
+                        video={{
+                            ...video.relatedStreams[0],
+                            id: video.relatedStreams[0].url.slice(9),
+                            uploader: {
+                                name: video.relatedStreams[0].uploaderName,
+                                id: video.relatedStreams[0].uploaderUrl.slice(9),
+                                avatar: video.relatedStreams[0].uploaderAvatar,
+                                verified: video.relatedStreams[0].uploaderVerified,
+                            },
+                            uploadDate: video.relatedStreams[0].uploaded,
+                        }}
+                        bareCard
+                        horizontalCard />
                 </div>
                 <Accordion>
                     <AccordionItem value="item-1">
@@ -353,7 +370,7 @@
                         </AccordionTrigger>
                         <AccordionContent>
                             <div class="flex flex-col gap-2">
-                                {#each video.relatedStreams as relatedStream}
+                                {#each video.relatedStreams.slice(1) as relatedStream}
                                     {#if relatedStream && relatedStream.title && relatedStream.uploaderUrl && relatedStream.url}
                                         <VideoCard
                                             video={{
