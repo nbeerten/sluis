@@ -27,7 +27,8 @@
     import { preloadData } from "$app/navigation";
     import { page } from "$app/stores";
     import Comment from "$lib/components/comment.svelte";
-
+    import { Sheet, SheetTrigger, SheetTitle, SheetContent, SheetPortal, SheetOverlay, SheetClose, SheetHeader } from "$lib/components/ui/sheet"
+    
     const config = {
         seekAmount: 10,
     };
@@ -275,7 +276,7 @@
                             variant="secondary"
                             on:click={share}
                             class="md:md-auto w-full gap-2">
-                            <Share class="h-4 w-4" /> Share
+                            <Share class="h-4 w-4" /><span class="hidden md:inline">Share</span>
                         </Button>
                         <Dialog.Root preventScroll={false}>
                             <Dialog.Trigger asChild let:builder>
@@ -318,18 +319,25 @@
                                 {/await}
                             </Dialog.Content>
                         </Dialog.Root>
-                    </div>
-                </div>
-                <div class="flex flex-col gap-3 pt-2">
-                    <h2 class="text-xl font-semibold">Comments</h2>
-                    <div class="flex flex-col gap-4">
-                        {#await data.streamed.comments}
-                            <p>Loading...</p>
-                        {:then comments}
-                            {#each comments.comments as comment}
-                                <Comment {comment} channelName={video.uploader} />
-                            {/each}
-                        {/await}
+                        <Sheet>
+                            <SheetTrigger>
+                                <Button variant="secondary">Open comments</Button>
+                            </SheetTrigger>
+                            <SheetContent side="right" class="max-w-full sm:max-w-md overflow-y-scroll">
+                                <SheetHeader>
+                                    <SheetTitle>Comments</SheetTitle>
+                                </SheetHeader>
+                                <div class="flex flex-col gap-4 mt-4 overflow-y-scroll">
+                                    {#await data.streamed.comments}
+                                        <p>Loading...</p>
+                                    {:then comments}
+                                        {#each comments.comments as comment}
+                                            <Comment {comment} channelName={video.uploader} />
+                                        {/each}
+                                    {/await}
+                                </div>
+                            </SheetContent>
+                        </Sheet>
                     </div>
                 </div>
             </div>
@@ -338,24 +346,35 @@
                     <Switch bind:checked={$autoplay} id="autoplay" />
                     <Label for="autoplay">Autoplay</Label>
                 </div>
-                {#each video.relatedStreams as relatedStream}
-                    {#if relatedStream && relatedStream.title && relatedStream.uploaderUrl && relatedStream.url}
-                        <VideoCard
-                            video={{
-                                ...relatedStream,
-                                id: relatedStream.url.slice(9),
-                                uploader: {
-                                    name: relatedStream.uploaderName,
-                                    id: relatedStream.uploaderUrl.slice(9),
-                                    avatar: relatedStream.uploaderAvatar,
-                                    verified: relatedStream.uploaderVerified,
-                                },
-                                uploadDate: relatedStream.uploaded,
-                            }}
-                            bareCard
-                            horizontalCard />
-                    {/if}
-                {/each}
+                <Accordion>
+                    <AccordionItem value="item-1">
+                        <AccordionTrigger>
+                            Related videos
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <div class="flex flex-col gap-2">
+                                {#each video.relatedStreams as relatedStream}
+                                    {#if relatedStream && relatedStream.title && relatedStream.uploaderUrl && relatedStream.url}
+                                        <VideoCard
+                                            video={{
+                                                ...relatedStream,
+                                                id: relatedStream.url.slice(9),
+                                                uploader: {
+                                                    name: relatedStream.uploaderName,
+                                                    id: relatedStream.uploaderUrl.slice(9),
+                                                    avatar: relatedStream.uploaderAvatar,
+                                                    verified: relatedStream.uploaderVerified,
+                                                },
+                                                uploadDate: relatedStream.uploaded,
+                                            }}
+                                            bareCard
+                                            horizontalCard />
+                                    {/if}
+                                {/each}
+                            </div>
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
             </div>
         </div>
     </div>
