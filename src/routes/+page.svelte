@@ -5,7 +5,7 @@
     export let data;
 </script>
 
-<SEO title="Trending" />
+<SEO title="Trending" robots={["nofollow"]} />
 
 <main>
     <hgroup>

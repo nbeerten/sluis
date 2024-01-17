@@ -41,7 +41,7 @@
     let aboutDialogOpen = false;
 </script>
 
-<SEO title={channel.name} />
+<SEO title={channel.name} robots={["noindex", "nofollow"]} />
 
 <main>
     <hgroup class="space-y-4">

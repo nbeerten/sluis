@@ -45,7 +45,7 @@
     ];
 </script>
 
-<SEO title="Search: {$page.url.searchParams.get('q')}" />
+<SEO title="Search: {$page.url.searchParams.get('q')}" robots={["noindex", "nofollow"]} />
 
 <main>
     <hgroup class="flex justify-between">

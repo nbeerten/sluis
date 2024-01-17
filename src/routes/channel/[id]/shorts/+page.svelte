@@ -37,7 +37,7 @@
     $: videos = [...videos, ...newBatch];
 </script>
 
-<SEO title={channel.name} />
+<SEO title={channel.name} robots={["noindex", "nofollow"]} />
 
 <div
     class="mb-5 grid grid-cols-2 gap-4 pt-5 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">

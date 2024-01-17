@@ -12,7 +12,7 @@
     $: shortVideos = data.videos?.filter((v) => v.isShort);
 </script>
 
-<SEO title="Feed" />
+<SEO title="Feed" robots={["noindex", "nofollow"]} />
 
 <main>
     <hgroup>

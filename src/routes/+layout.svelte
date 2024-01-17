@@ -17,7 +17,7 @@
     $: subscriptions = data.subscriptions;
 </script>
 
-<SEO title="Home" />
+<SEO title="Home" robots={["nofollow"]} />
 
 <div class="relative flex min-h-screen flex-col">
     <Toaster position="bottom-right" theme="dark" closeButton={true} />

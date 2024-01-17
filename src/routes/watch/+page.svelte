@@ -27,8 +27,17 @@
     import { preloadData } from "$app/navigation";
     import { page } from "$app/stores";
     import Comment from "$lib/components/comment.svelte";
-    import { Sheet, SheetTrigger, SheetTitle, SheetContent, SheetPortal, SheetOverlay, SheetClose, SheetHeader } from "$lib/components/ui/sheet"
-    
+    import {
+        Sheet,
+        SheetTrigger,
+        SheetTitle,
+        SheetContent,
+        SheetPortal,
+        SheetOverlay,
+        SheetClose,
+        SheetHeader,
+    } from "$lib/components/ui/sheet";
+
     const config = {
         seekAmount: 10,
     };
@@ -87,7 +96,7 @@
     $: {
         const startAt = $page.url.searchParams.get("t");
         if (startAt !== null && videoElement) {
-            if(startAt === "") {
+            if (startAt === "") {
                 videoElement.currentTime = 0;
             } else {
                 videoElement.currentTime = Number(startAt);
@@ -157,7 +166,7 @@
     });
 </script>
 
-<SEO title={video.title} />
+<SEO title={video.title} robots={["noindex", "nofollow"]} />
 
 <div class="space-y-6">
     <div
@@ -280,7 +289,8 @@
                             variant="secondary"
                             on:click={share}
                             class="md:md-auto w-full gap-2">
-                            <Share class="h-4 w-4" /><span class="hidden md:inline">Share</span>
+                            <Share class="h-4 w-4" />
+                            <span class="hidden md:inline">Share</span>
                         </Button>
                         <Dialog.Root preventScroll={false}>
                             <Dialog.Trigger asChild let:builder>
@@ -339,12 +349,13 @@
                 </div>
             </div>
             <div class="flex flex-col gap-2">
-                
                 <div class="flex flex-col gap-2">
-                    <div class="flex gap-2 justify-between items-center">
+                    <div class="flex items-center justify-between gap-2">
                         <p class="text-lg font-semibold">Next video</p>
                         <div class="flex items-center gap-2 font-semibold">
-                            <Label for="autoplay" class="text-sm text-muted-foreground">Autoplay</Label>
+                            <Label for="autoplay" class="text-sm text-muted-foreground">
+                                Autoplay
+                            </Label>
                             <Switch bind:checked={$autoplay} id="autoplay" class="scale-90" />
                         </div>
                     </div>
@@ -365,9 +376,7 @@
                 </div>
                 <Accordion>
                     <AccordionItem value="item-1">
-                        <AccordionTrigger>
-                            Related videos
-                        </AccordionTrigger>
+                        <AccordionTrigger>Related videos</AccordionTrigger>
                         <AccordionContent>
                             <div class="flex flex-col gap-2">
                                 {#each video.relatedStreams.slice(1) as relatedStream}

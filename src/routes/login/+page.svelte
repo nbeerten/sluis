@@ -8,7 +8,7 @@
     export let form;
 </script>
 
-<SEO title="Login" />
+<SEO title="Login" robots={["noindex", "nofollow"]} />
 
 <form method="POST" class="space-y-3" use:enhance>
     <Input type="text" name="username" placeholder="Username" autocomplete="username" autofocus />
