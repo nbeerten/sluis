@@ -204,7 +204,6 @@
             <hls-video
                 src={video.hls}
                 slot="media"
-                muted
                 crossorigin
                 autoplay
                 bind:this={videoElement}>
