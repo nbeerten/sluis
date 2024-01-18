@@ -41,7 +41,7 @@
 
 <div
     class="mb-5 grid grid-cols-2 gap-4 pt-5 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
-    {#each videos as video}
+    {#each videos as video, i}
         <VideoCard
             video={{
                 id: video.url.slice(9),
@@ -57,6 +57,7 @@
                 uploadDate: video.uploaded,
                 views: video.views,
             }}
+            lazyImage={i >= 8}
             isShort
             bareCard
             showChannel={false} />

@@ -12,7 +12,7 @@
         <h1 class="text-3xl font-bold">Trending in {data.country}</h1>
     </hgroup>
     <div class="grid grid-cols-1 gap-4 py-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-        {#each data.videos as video}
+        {#each data.videos as video, i}
             <VideoCard
                 video={{
                     id: video.url.slice(9),
@@ -27,7 +27,7 @@
                     duration: video.duration,
                     uploadDate: video.uploaded,
                     views: video.views,
-                }} />
+                }} lazyImage={i >= 8} />
         {/each}
     </div>
 </main>

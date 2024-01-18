@@ -28,7 +28,7 @@
                 <div
                     class="grid grid-cols-1 gap-4 py-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                     {#if longVideos}
-                        {#each longVideos as video}
+                        {#each longVideos as video, i}
                             <VideoCard
                                 video={{
                                     id: video.url.slice(9),
@@ -43,7 +43,7 @@
                                     duration: video.duration,
                                     uploadDate: video.uploaded,
                                     views: video.views,
-                                }} />
+                                }} lazyImage={i >= 8} />
                         {/each}
                     {:else}
                         <div class="flex justify-center">
@@ -58,7 +58,7 @@
                 <div
                     class="grid grid-cols-1 gap-4 py-5 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
                     {#if shortVideos}
-                        {#each shortVideos as video}
+                        {#each shortVideos as video, i}
                             <VideoCard
                                 video={{
                                     id: video.url.slice(9),
@@ -74,6 +74,7 @@
                                     uploadDate: video.uploaded,
                                     views: video.views,
                                 }}
+                                lazyImage={i >= 6}
                                 isShort
                                 bareCard />
                         {/each}

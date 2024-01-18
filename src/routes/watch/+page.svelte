@@ -409,6 +409,7 @@
                             },
                             uploadDate: video.relatedStreams[0].uploaded,
                         }}
+                        lazyImage={false}
                         bareCard
                         horizontalCard />
                 </div>

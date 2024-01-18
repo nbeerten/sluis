@@ -39,7 +39,7 @@
 <SEO title={channel.name} robots={["noindex", "nofollow"]} />
 
 <div class="mb-5 grid grid-cols-1 gap-4 pt-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-    {#each videos as video}
+    {#each videos as video, i}
         <VideoCard
             video={{
                 id: video.url.slice(9),
@@ -55,6 +55,7 @@
                 uploadDate: video.uploaded,
                 views: video.views,
             }}
+            lazyImage={i >= 8}
             showChannel={false} />
     {/each}
 </div>
