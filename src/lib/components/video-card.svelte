@@ -25,6 +25,7 @@
     export let showChannel = true;
     export let bareCard = false;
     export let horizontalCard = false;
+    export let lazyImage = true;
 
     let className = "";
     export { className as class };
@@ -48,9 +49,11 @@
             )}>
             <img
                 src={video.thumbnail}
-                alt="Card"
+                alt="Thumbnail of {video.title}"
+                referrerpolicy="no-referrer"
+                crossorigin="anonymous"
                 class="w-full rounded-lg object-cover"
-                loading="lazy" />
+                loading={lazyImage ? "lazy" : "eager"} />
             {#if !isShort}
                 <div
                     class="absolute bottom-0.5 left-[calc(100%-7%)] -translate-x-full rounded-lg bg-background px-1 text-sm">
@@ -71,7 +74,10 @@
                 <div class="flex items-start justify-center py-1">
                     <a href="/channel/{video.uploader.id}" data-sveltekit-preload-data="tap">
                         <Avatar>
-                            <AvatarImage loading="lazy" src={video.uploader.avatar ?? undefined} />
+                            <AvatarImage
+                                loading="lazy"
+                                alt="Avatar of {video.uploader.name}"
+                                src={video.uploader.avatar ?? undefined} />
                             <AvatarFallback>
                                 {video.uploader.name.slice(0, 1)}
                             </AvatarFallback>

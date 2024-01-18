@@ -19,7 +19,17 @@ export const load = async ({ fetch, url, cookies }) => {
 
     const playlists = authToken ? api.getUserPlaylists({ authToken }) : Promise.resolve([]);
 
-    const sponsors = api.getSponsors({ videoId, categories: ["sponsor"] });
+    const asyncSponsors = async () => {
+        const sponsorsettings = cookies.get("sponsorsettings");
+        if (!sponsorsettings) {
+            return false as const;
+        }
+
+        const categories = sponsorsettings.split(",").map((c) => c.slice("sponsor_".length));
+
+        return api.getSponsors({ videoId, categories: categories });
+    };
+
     const comments = api.getComments({ videoId });
 
     return {
@@ -28,6 +38,6 @@ export const load = async ({ fetch, url, cookies }) => {
             playlists,
         },
         video: video,
-        sponsors: await sponsors,
+        sponsors: await asyncSponsors(),
     };
 };

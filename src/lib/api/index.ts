@@ -24,7 +24,7 @@ export function PipedApi(fetch = globalThis.fetch, baseUrl = defaultInstance) {
         getSponsors: ({ videoId, categories }: { videoId: string; categories: string[] }) => {
             return fetch(
                 `${baseUrl}/sponsors/${videoId}?category=[${encodeURIComponent(
-                    categories.join(",")
+                    categories.map((c) => `"${c}"`).join(",")
                 )}]`
             ).then((r) => r.json()) as Promise<sponsors_videoId>;
         },

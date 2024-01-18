@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Select as SelectPrimitive } from "bits-ui";
-    import { ChevronDown } from "lucide-svelte";
+    import ChevronDown from "~icons/lucide/chevron-down";
     import { cn } from "$lib/utils";
 
     type $$Props = SelectPrimitive.TriggerProps;

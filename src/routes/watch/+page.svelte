@@ -27,16 +27,6 @@
     import { preloadData } from "$app/navigation";
     import { page } from "$app/stores";
     import Comment from "$lib/components/comment.svelte";
-    import {
-        Sheet,
-        SheetTrigger,
-        SheetTitle,
-        SheetContent,
-        SheetPortal,
-        SheetOverlay,
-        SheetClose,
-        SheetHeader,
-    } from "$lib/components/ui/sheet";
 
     const config = {
         seekAmount: 10,
@@ -87,11 +77,12 @@
 
     let currentTime = 0;
 
-    // $: if(browser && videoElement) {
-    //     if(currentTime >= 5 && currentTime <= 10) {
-    //         videoElement.currentTime = currentTime + 5;
-    //     }
-    // }
+    $: if (browser && videoElement) {
+        const inSegment = isInSponsorSegment(currentTime);
+        if (inSegment !== false) {
+            videoElement.currentTime = inSegment;
+        }
+    }
 
     $: {
         const startAt = $page.url.searchParams.get("t");
@@ -103,6 +94,44 @@
             }
             videoElement.play();
         }
+    }
+
+    function isInSponsorSegment(currentTime: number): number | false {
+        if (!data.sponsors) return false;
+        if (!data.sponsors.segments || !data.sponsors.segments.length) return false;
+
+        for (const segment of data.sponsors.segments) {
+            const [start, end] = segment.segment;
+            if (currentTime >= start && currentTime <= end) {
+                return end;
+            }
+        }
+        return false;
+    }
+
+    function generateLinearGradient(sponsors: (typeof data)["sponsors"]) {
+        if (!sponsors) return false;
+        if (!sponsors.segments || !sponsors.segments.length) return false;
+
+        const segmentArray = sponsors.segments.map((segment) => {
+            const [start, end] = segment.segment;
+            return { start, end };
+        });
+
+        const duration = sponsors.segments[0].videoDuration;
+
+        let gradient = "#ffffff33 0%";
+
+        for (const segment of segmentArray) {
+            const { start, end } = segment;
+            const startPercentage = ((start / duration) * 100).toFixed(2);
+            gradient += `, #ffffff33 ${startPercentage}%, yellow ${startPercentage}%`;
+            const endPercentage = ((end / duration) * 100).toFixed(2);
+            gradient += `, yellow ${endPercentage}%, #ffffff33 ${endPercentage}%`;
+        }
+        gradient += `, #ffffff33 100%`;
+
+        return `linear-gradient(to right, ${gradient})`;
     }
 
     onMount(() => {
@@ -172,7 +201,13 @@
     <div
         class="flex aspect-video max-h-[75vh] w-full justify-center overflow-hidden rounded-xl bg-black">
         <media-controller style="width: 100%;">
-            <hls-video src={video.hls} slot="media" crossorigin autoplay bind:this={videoElement}>
+            <hls-video
+                src={video.hls}
+                slot="media"
+                muted
+                crossorigin
+                autoplay
+                bind:this={videoElement}>
             </hls-video>
             <media-poster-image slot="poster" src={video.thumbnailUrl}></media-poster-image>
             <media-control-bar class="media-control-bar">
@@ -183,7 +218,10 @@
                 </media-seek-forward-button>
                 <media-mute-button></media-mute-button>
                 <media-time-display showduration></media-time-display>
-                <media-time-range></media-time-range>
+                <media-time-range
+                    style="--media-range-track-background: {generateLinearGradient(data.sponsors) ||
+                        'initial'}">
+                </media-time-range>
                 <media-pip-button></media-pip-button>
                 <media-fullscreen-button></media-fullscreen-button>
             </media-control-bar>
