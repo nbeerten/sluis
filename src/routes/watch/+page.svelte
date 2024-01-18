@@ -74,6 +74,13 @@
      * Media Session
      */
 
+    async function nextVideo() {
+        if (videoElement) {
+            await preloadData(video.relatedStreams[0].url);
+            goto(video.relatedStreams[0].url);
+        }
+    }
+
     onMount(() => {
         if (!browser) return;
 
@@ -94,43 +101,21 @@
                 if (startAt && videoElement) videoElement.currentTime = Number(startAt);
             });
 
-            videoElement.addEventListener("ended", async () => {
+            videoElement.addEventListener("ended", async (e) => {
                 if ($autoplay) {
-                    await preloadData(video.relatedStreams[0].url);
-                    goto(video.relatedStreams[0].url);
+                    await nextVideo();
                 }
             });
 
-            videoElement.addEventListener("timeupdate", () => {
+            videoElement.addEventListener("timeupdate", (e) => {
                 if (videoElement !== null && "currentTime" in videoElement)
                     currentTime = videoElement.currentTime || 0;
                 else currentTime = 0;
             });
 
-            navigator.mediaSession.setActionHandler("play", () => {
-                if (videoElement !== null) videoElement.play();
-            });
-            navigator.mediaSession.setActionHandler("pause", () => {
-                if (videoElement !== null) videoElement.pause();
-            });
-            navigator.mediaSession.setActionHandler("seekbackward", (event) => {
-                const seekAmount = event.seekOffset || config.seekAmount;
-                if (videoElement !== null)
-                    videoElement.currentTime = Math.max(0, videoElement.currentTime - seekAmount);
-            });
-            navigator.mediaSession.setActionHandler("seekforward", (event) => {
-                const seekAmount = event.seekOffset || config.seekAmount;
-                if (videoElement !== null)
-                    videoElement.currentTime = Math.min(
-                        videoElement.duration,
-                        videoElement.currentTime + seekAmount
-                    );
-            });
-            navigator.mediaSession.setActionHandler("seekto", (event) => {
-                if (event.seekTime && videoElement !== null) {
-                    videoElement.currentTime = event.seekTime;
-                }
-            });
+            for(const [action, handler] of Object.entries(playerActions)) {
+                navigator.mediaSession.setActionHandler(action as MediaSessionAction, handler);
+            }
         }
 
         return () => {
@@ -141,6 +126,38 @@
             }
         };
     });
+
+    const playerActions: { [key in MediaSessionAction]?: MediaSessionActionHandler } = {
+        play: () => {
+            if (videoElement !== null) videoElement.play();
+        },
+        pause: () => {
+            if (videoElement !== null) videoElement.pause();
+        },
+        seekbackward: (event) => {
+            const seekAmount = event.seekOffset || config.seekAmount;
+            if (videoElement !== null)
+                videoElement.currentTime = Math.max(0, videoElement.currentTime - seekAmount);
+        },
+        seekforward: (event) => {
+            const seekAmount = event.seekOffset || config.seekAmount;
+            if (videoElement !== null)
+                videoElement.currentTime = Math.min(
+                    videoElement.duration,
+                    videoElement.currentTime + seekAmount
+                );
+        },
+        seekto: (event) => {
+            if (event.seekTime && videoElement !== null) {
+                videoElement.currentTime = event.seekTime;
+            }
+        },
+        nexttrack: (e) => {
+            if (videoElement !== null) {
+                nextVideo();
+            }
+        }
+    };
 
     /**
      * Sponsors
@@ -219,7 +236,8 @@
     <div
         class="flex aspect-video max-h-[75vh] w-full justify-center overflow-hidden rounded-xl bg-black">
         <media-controller style="width: 100%;">
-            <hls-video src={video.hls} slot="media" crossorigin autoplay bind:this={videoElement}>
+            <hls-video src={video.hls} slot="media" crossorigin autoplay bind:this={videoElement}
+            >
             </hls-video>
             <media-poster-image slot="poster" src={video.thumbnailUrl}></media-poster-image>
             <media-control-bar class="media-control-bar">

@@ -2,7 +2,7 @@ import type { Cookies } from "@sveltejs/kit";
 import { PipedApi, defaultInstance } from "$lib/api";
 
 export function cookiesExtract(cookies: Cookies) {
-    const allCookies = cookies.getAll();
+    const allCookies = Object.freeze(cookies.getAll());
     const authToken = () => allCookies.find((c) => c.name === "authToken")?.value || false;
     const instance = () => allCookies.find((c) => c.name === "instance")?.value || defaultInstance;
     const sponsorsettings = () => allCookies.find((c) => c.name === "sponsorsettings")?.value || "";
