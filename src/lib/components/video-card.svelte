@@ -52,7 +52,10 @@
                 alt="Thumbnail of {video.title}"
                 referrerpolicy="no-referrer"
                 crossorigin="anonymous"
+                height={isShort ? 480 : 188}
+                width={isShort ? 270 : 336}
                 class="w-full rounded-lg object-cover"
+
                 loading={lazyImage ? "lazy" : "eager"} />
             {#if !isShort}
                 <div
