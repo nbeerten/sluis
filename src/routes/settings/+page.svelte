@@ -1,20 +1,13 @@
 <script lang="ts">
     import * as Form from "$lib/components/ui/form";
     import { formSchema } from "./schema";
+    import { outputObject } from "./schema";
 
     export let data;
 
-    const validCategories = [
-        "sponsor",
-        "intro",
-        "outro",
-        "preview",
-        "interaction",
-        "selfpromo",
-        "music_offtopic",
-        "poi_highlight",
-        "filler",
-    ] as const;
+    const validCategories = Object.entries(outputObject).map(([key, _]) =>
+        key.slice("sponsor_".length)
+    ) as (keyof typeof outputObject extends `sponsor_${infer T}` ? T : never)[];
 </script>
 
 <main>
@@ -23,10 +16,21 @@
     </hgroup>
 
     <Form.Root method="POST" form={data.form} schema={formSchema} let:config class="max-w-lg">
-        <p class="text-lg font-semibold">Instance settings</p>
-        <p class="prose prose-invert">See sidebar for instance selector and login option.</p>
+        <div class="mb-2 flex flex-col gap-0">
+            <p class="text-xl font-semibold">Instance settings</p>
+            <p class="text-sm text-muted-foreground">
+                See sidebar for instance selector and login option.
+            </p>
+        </div>
         <div class="flex flex-col gap-1 py-4">
-            <p class="text-lg font-semibold">Sponsorblock categories</p>
+            <div class="mb-2 flex flex-col gap-0">
+                <p class="text-xl font-semibold">Sponsorblock Categories</p>
+                <p class="text-sm text-muted-foreground">
+                    Using <a href="https://sponsor.ajay.app/" target="_blank" class="underline">
+                        SponsorBlock
+                    </a>
+                </p>
+            </div>
             {#each validCategories as category}
                 <Form.Field {config} name="sponsor_{category}">
                     <Form.Item class="border-b border-border">

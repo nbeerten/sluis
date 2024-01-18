@@ -116,7 +116,15 @@ export type sponsors_videoId = {
     segments: Array<{
         UUID: string;
         actionType: string;
-        category: string;
+        category:
+            | "sponsor"
+            | "intro"
+            | "outro"
+            | "preview"
+            | "interaction"
+            | "selfpromo"
+            | "music_offtopic"
+            | "filler";
         segment: Array<number>;
         videoDuration: number;
     }>;

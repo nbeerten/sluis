@@ -1,10 +1,10 @@
-import * as v from "valibot";
+import * as z from "zod";
 import { fail, redirect } from "@sveltejs/kit";
 import { cookiesExtract } from "$lib/cookiesExtract";
 
-const validator = v.object({
-    username: v.string([v.toTrimmed()]),
-    password: v.string(),
+const loginSchema = z.object({
+    username: z.string().trim().min(1),
+    password: z.string(),
 });
 
 export const actions = {
@@ -17,13 +17,16 @@ export const actions = {
             password: data.get("password") as string,
         };
 
-        const parsed = await v.safeParseAsync(validator, formData);
+        const parsed = loginSchema.safeParse(formData);
 
         if (!parsed.success) {
-            return fail(400, { username: formData.username, error: parsed.issues.join(", ") });
+            return fail(400, {
+                username: formData.username,
+                error: parsed.error.errors.join(", "),
+            });
         }
 
-        const { username, password } = parsed.output as { username: string; password: string };
+        const { username, password } = parsed.data;
 
         const api = createPipedApi(fetch);
         const { token } = await api.getAuthToken({ username, password });

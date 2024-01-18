@@ -62,17 +62,29 @@
         }
     }
 
+    let currentTime = 0;
+
+    $: {
+        const startAt = $page.url.searchParams.get("t");
+        if (startAt !== null && videoElement) {
+            if (startAt === "") {
+                videoElement.currentTime = 0;
+            } else {
+                videoElement.currentTime = Number(startAt);
+            }
+            videoElement.play();
+        }
+    }
+
+    /**
+     * Media Session
+     */
+
     $: {
         if (browser && videoElement) {
             navigator.mediaSession.playbackState = videoElement.paused ? "paused" : "playing";
         }
     }
-
-    let currentTime = 0;
-
-    /**
-     * Media Session
-     */
 
     async function nextVideo() {
         if (videoElement) {
@@ -101,19 +113,19 @@
                 if (startAt && videoElement) videoElement.currentTime = Number(startAt);
             });
 
-            videoElement.addEventListener("ended", async (e) => {
+            videoElement.addEventListener("ended", async () => {
                 if ($autoplay) {
                     await nextVideo();
                 }
             });
 
-            videoElement.addEventListener("timeupdate", (e) => {
+            videoElement.addEventListener("timeupdate", () => {
                 if (videoElement !== null && "currentTime" in videoElement)
                     currentTime = videoElement.currentTime || 0;
                 else currentTime = 0;
             });
 
-            for(const [action, handler] of Object.entries(playerActions)) {
+            for (const [action, handler] of Object.entries(playerActions)) {
                 navigator.mediaSession.setActionHandler(action as MediaSessionAction, handler);
             }
         }
@@ -152,11 +164,11 @@
                 videoElement.currentTime = event.seekTime;
             }
         },
-        nexttrack: (e) => {
+        nexttrack: () => {
             if (videoElement !== null) {
                 nextVideo();
             }
-        }
+        },
     };
 
     /**
@@ -176,18 +188,6 @@
         }
     }
 
-    $: {
-        const startAt = $page.url.searchParams.get("t");
-        if (startAt !== null && videoElement) {
-            if (startAt === "") {
-                videoElement.currentTime = 0;
-            } else {
-                videoElement.currentTime = Number(startAt);
-            }
-            videoElement.play();
-        }
-    }
-
     function isInSponsorSegment(
         sponsors: sponsors_videoId | false,
         currentTime: number
@@ -204,27 +204,41 @@
         return false;
     }
 
+    const segmentColors = {
+        sponsor: "#00D400",
+        intro: "#00FFFF",
+        outro: "#0202ED",
+        preview: "#008FD6",
+        interaction: "#CC00FF",
+        selfpromo: "#FFFF00",
+        music_offtopic: "#FF9900",
+        filler: "#7300FF",
+    };
+
     function generateLinearGradient(sponsors: sponsors_videoId | false) {
         if (!sponsors) return false;
         if (!sponsors.segments || !sponsors.segments.length) return false;
 
         const segmentArray = sponsors.segments.map((segment) => {
             const [start, end] = segment.segment;
-            return { start, end };
+            return { start, end, category: segment.category };
         });
 
         const duration = sponsors.segments[0].videoDuration;
 
-        let gradient = "#ffffff33 0%";
+        const defaultBg = "#ffffff33";
+
+        let gradient = `${defaultBg} 0%`;
 
         for (const segment of segmentArray) {
+            const segmentColor = segmentColors[segment.category];
             const { start, end } = segment;
             const startPercentage = ((start / duration) * 100).toFixed(2);
-            gradient += `, #ffffff33 ${startPercentage}%, yellow ${startPercentage}%`;
+            gradient += `, ${defaultBg} ${startPercentage}%, ${segmentColor} ${startPercentage}%`;
             const endPercentage = ((end / duration) * 100).toFixed(2);
-            gradient += `, yellow ${endPercentage}%, #ffffff33 ${endPercentage}%`;
+            gradient += `, ${segmentColor} ${endPercentage}%, ${defaultBg} ${endPercentage}%`;
         }
-        gradient += `, #ffffff33 100%`;
+        gradient += `, ${defaultBg} 100%`;
 
         return `linear-gradient(to right, ${gradient})`;
     }
@@ -236,8 +250,7 @@
     <div
         class="flex aspect-video max-h-[75vh] w-full justify-center overflow-hidden rounded-xl bg-black">
         <media-controller style="width: 100%;">
-            <hls-video src={video.hls} slot="media" crossorigin autoplay bind:this={videoElement}
-            >
+            <hls-video src={video.hls} slot="media" crossorigin autoplay bind:this={videoElement}>
             </hls-video>
             <media-poster-image slot="poster" src={video.thumbnailUrl}></media-poster-image>
             <media-control-bar class="media-control-bar">

@@ -84,7 +84,10 @@
                 <Select.Label>Instances</Select.Label>
                 <div class="max-h-[30rem] overflow-y-scroll overscroll-contain">
                     {#each instanceItems as { value, label, sublabel }}
-                        <Select.Item {value} {label} class="flex-col items-start justify-center text-left">
+                        <Select.Item
+                            {value}
+                            {label}
+                            class="flex-col items-start justify-center text-left">
                             <span>{label}</span>
                             <span class="text-xs text-muted-foreground">{sublabel}</span>
                         </Select.Item>

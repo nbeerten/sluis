@@ -1,5 +1,16 @@
 import { z } from "zod";
 
+export const outputObject = {
+    sponsor_sponsor: false,
+    sponsor_intro: false,
+    sponsor_outro: false,
+    sponsor_preview: false,
+    sponsor_interaction: false,
+    sponsor_selfpromo: false,
+    sponsor_music_offtopic: false,
+    sponsor_filler: false,
+};
+
 export const formSchema = z.object({
     sponsor_sponsor: z.boolean(),
     sponsor_intro: z.boolean(),
