@@ -139,7 +139,7 @@
                 videoElement.removeAttribute("src");
                 videoElement.load();
             }
-        }
+        };
     });
 
     /**
@@ -171,7 +171,10 @@
         }
     }
 
-    function isInSponsorSegment(sponsors: sponsors_videoId | false, currentTime: number): number | false {
+    function isInSponsorSegment(
+        sponsors: sponsors_videoId | false,
+        currentTime: number
+    ): number | false {
         if (!sponsors) return false;
         if (!sponsors.segments || !sponsors.segments.length) return false;
 
@@ -216,12 +219,7 @@
     <div
         class="flex aspect-video max-h-[75vh] w-full justify-center overflow-hidden rounded-xl bg-black">
         <media-controller style="width: 100%;">
-            <hls-video
-                src={video.hls}
-                slot="media"
-                crossorigin
-                autoplay
-                bind:this={videoElement}>
+            <hls-video src={video.hls} slot="media" crossorigin autoplay bind:this={videoElement}>
             </hls-video>
             <media-poster-image slot="poster" src={video.thumbnailUrl}></media-poster-image>
             <media-control-bar class="media-control-bar">
@@ -234,10 +232,11 @@
                 <media-time-display showduration></media-time-display>
                 {#await data.streamed.sponsors}
                     <media-time-range></media-time-range>
-                {:then awaitedSponsors} 
+                {:then awaitedSponsors}
                     <media-time-range
-                        style="--media-range-track-background: {generateLinearGradient(awaitedSponsors) ||
-                            'initial'}">
+                        style="--media-range-track-background: {generateLinearGradient(
+                            awaitedSponsors
+                        ) || 'initial'}">
                     </media-time-range>
                 {/await}
                 <media-pip-button></media-pip-button>

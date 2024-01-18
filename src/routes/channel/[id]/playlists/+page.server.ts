@@ -1,8 +1,8 @@
-import { PipedApi } from "$lib/api";
+import { cookiesExtract } from "$lib/cookiesExtract";
 
 export async function load({ fetch, parent, cookies }) {
-    const instance = cookies.get("instance");
     const { channel } = await parent();
+    const { createPipedApi } = cookiesExtract(cookies);
 
     const playlistsTab = channel.tabs.find((tab) => tab.name === "playlists");
 
@@ -16,7 +16,7 @@ export async function load({ fetch, parent, cookies }) {
         };
     }
 
-    const playlists = await PipedApi(fetch, instance).getChannelTab({
+    const playlists = await createPipedApi(fetch).getChannelTab({
         data: playlistsTab.data,
     });
 

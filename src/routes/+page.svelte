@@ -27,7 +27,8 @@
                     duration: video.duration,
                     uploadDate: video.uploaded,
                     views: video.views,
-                }} lazyImage={i >= 8} />
+                }}
+                lazyImage={i >= 8} />
         {/each}
     </div>
 </main>

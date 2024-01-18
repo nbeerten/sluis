@@ -1,6 +1,7 @@
 import { fail } from "@sveltejs/kit";
 import { superValidate } from "sveltekit-superforms/server";
 import { formSchema } from "./schema";
+import { cookiesExtract } from "$lib/cookiesExtract";
 
 const outputObject = {
     sponsor_sponsor: false,
@@ -15,7 +16,7 @@ const outputObject = {
 } as Record<string, boolean>;
 
 export const load = async ({ cookies }) => {
-    let sponsorsettings = cookies.get("sponsorsettings");
+    let { sponsorsettings } = cookiesExtract(cookies);
     if (!sponsorsettings) sponsorsettings = "";
     const sponsorCategories = structuredClone(outputObject);
 

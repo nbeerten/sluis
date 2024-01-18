@@ -14,10 +14,12 @@
     let instanceItems: {
         value: string;
         label: string;
+        sublabel: string;
     }[];
     $: instanceItems = instanceList.map((i) => ({
         value: i.api_url,
-        label: `${i.name} (${i.locations})`,
+        label: `${i.name} (${i.uptime_30d.toFixed(1)}%)`,
+        sublabel: `${i.locations} ${i.cdn ? " | CDN" : ""}`,
     }));
 
     const extractInstanceFromEvent = (e: SubmitEvent) => {
@@ -80,11 +82,14 @@
             </Select.Trigger>
             <Select.Content class="z-0">
                 <Select.Label>Instances</Select.Label>
-                {#each instanceItems as { value, label }}
-                    <Select.Item {value} {label}>
-                        {label}
-                    </Select.Item>
-                {/each}
+                <div class="max-h-[30rem] overflow-y-scroll overscroll-contain">
+                    {#each instanceItems as { value, label, sublabel }}
+                        <Select.Item {value} {label} class="flex-col items-start justify-center">
+                            <span>{label}</span>
+                            <span class="text-xs text-muted-foreground">{sublabel}</span>
+                        </Select.Item>
+                    {/each}
+                </div>
             </Select.Content>
             <Select.Input name="instance" />
         </Select.Root>

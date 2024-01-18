@@ -1,9 +1,9 @@
-import { PipedApi } from "$lib/api";
+import { cookiesExtract } from "$lib/cookiesExtract";
 
 export const actions = {
     switchInstance: async ({ cookies, request }) => {
         const data = await request.formData();
-        const cookiesInstance = cookies.get("instance");
+        const { instance: cookiesInstance } = cookiesExtract(cookies);
         const instance = data.get("instance")?.toString();
         if (!instance) {
             return {
@@ -26,7 +26,7 @@ export const actions = {
 };
 
 export const load = async ({ fetch, cookies, request }) => {
-    const instance = cookies.get("instance");
+    const { createPipedApi } = cookiesExtract(cookies);
 
     let country = request.headers.get("CF-IPCountry") as string | "XX" | "T1" | null; // ISO-3166-1 alpha-2 or XX is unknown or T1 if Tor.
     if (country === "XX" || country === "T1") {
@@ -36,7 +36,7 @@ export const load = async ({ fetch, cookies, request }) => {
     }
 
     return {
-        videos: await PipedApi(fetch, instance).getTrending({ region: country }),
+        videos: await createPipedApi(fetch).getTrending({ region: country }),
         country,
     };
 };

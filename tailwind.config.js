@@ -1,4 +1,4 @@
-import { fontFamily } from "tailwindcss/defaultTheme";
+import defaultTheme from "tailwindcss/defaultTheme";
 
 /** @type {import('tailwindcss').Config} */
 const config = {
@@ -56,7 +56,7 @@ const config = {
                 sm: "calc(var(--radius) - 4px)",
             },
             fontFamily: {
-                sans: [...fontFamily.sans],
+                sans: ["var(--font-sans)", ...defaultTheme.fontFamily.sans],
             },
         },
     },

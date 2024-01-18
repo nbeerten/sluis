@@ -23,7 +23,6 @@
                 <img
                     src={channel.thumbnail ?? undefined}
                     alt="Profile image of {channel.name}"
-                    referrerpolicy="no-referrer"
                     crossorigin="anonymous"
                     width="96"
                     height="96" />

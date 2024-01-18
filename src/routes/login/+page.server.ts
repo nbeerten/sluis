@@ -1,6 +1,6 @@
 import * as v from "valibot";
-import { PipedApi } from "$lib/api";
 import { fail, redirect } from "@sveltejs/kit";
+import { cookiesExtract } from "$lib/cookiesExtract";
 
 const validator = v.object({
     username: v.string([v.toTrimmed()]),
@@ -9,7 +9,7 @@ const validator = v.object({
 
 export const actions = {
     default: async ({ request, cookies, fetch }) => {
-        const instance = cookies.get("instance");
+        const { createPipedApi } = cookiesExtract(cookies);
         const data = await request.formData();
 
         const formData = {
@@ -25,7 +25,7 @@ export const actions = {
 
         const { username, password } = parsed.output as { username: string; password: string };
 
-        const api = PipedApi(fetch, instance);
+        const api = createPipedApi(fetch);
         const { token } = await api.getAuthToken({ username, password });
 
         if (!token) {

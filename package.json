@@ -44,6 +44,7 @@
         "format-duration": "^3.0.2",
         "formsnap": "^0.4.2",
         "hls-video-element": "^1.1.1",
+        "inter-ui": "^4.0.1",
         "media-chrome": "^2.0.1",
         "mode-watcher": "^0.1.2",
         "svelte-persisted-store": "^0.9.0",

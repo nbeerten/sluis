@@ -1,9 +1,8 @@
-import { PipedApi } from "$lib/api";
+import { cookiesExtract } from "$lib/cookiesExtract";
 
 export const load = async ({ fetch, params, cookies }) => {
-    const authToken = cookies.get("authToken");
-    const instance = cookies.get("instance");
-    const api = PipedApi(fetch, instance);
+    const { createPipedApi, authToken } = cookiesExtract(cookies);
+    const api = createPipedApi(fetch);
     const channel = await api.getChannel({ channelId: params.id });
     return {
         channel,

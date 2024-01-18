@@ -1,15 +1,17 @@
-import { PipedApi } from "$lib/api";
+import { cookiesExtract } from "$lib/cookiesExtract";
 
 export const load = async ({ fetch, cookies, parent }) => {
-    const instance = cookies.get("instance");
     const { loggedIn } = await parent();
     if (!loggedIn) {
         return { loggedIn };
     }
 
-    const authToken = cookies.get("authToken") as string;
+    const { createPipedApi, authToken } = cookiesExtract(cookies);
+    if (!authToken) {
+        return { loggedIn };
+    }
 
     return {
-        videos: await PipedApi(fetch, instance).getFeed({ authToken }),
+        videos: await createPipedApi(fetch).getFeed({ authToken }),
     };
 };

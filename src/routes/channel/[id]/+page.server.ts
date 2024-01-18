@@ -1,16 +1,15 @@
-import { PipedApi } from "$lib/api";
+import { cookiesExtract } from "$lib/cookiesExtract";
 
 export const actions = {
     subscribe: async ({ fetch, params, cookies }) => {
-        const authToken = cookies.get("authToken");
-        const instance = cookies.get("instance");
+        const { createPipedApi, authToken } = cookiesExtract(cookies);
 
         if (!authToken) {
             return {
                 success: false,
             };
         }
-        const api = PipedApi(fetch, instance);
+        const api = createPipedApi(fetch);
         await api.postSubscribe({ authToken, channelId: params.id });
 
         return {
@@ -19,14 +18,13 @@ export const actions = {
     },
 
     unsubscribe: async ({ fetch, params, cookies }) => {
-        const authToken = cookies.get("authToken");
-        const instance = cookies.get("instance");
+        const { createPipedApi, authToken } = cookiesExtract(cookies);
         if (!authToken) {
             return {
                 success: false,
             };
         }
-        const api = PipedApi(fetch, instance);
+        const api = createPipedApi(fetch);
         await api.postUnsubscribe({ authToken, channelId: params.id });
 
         return {

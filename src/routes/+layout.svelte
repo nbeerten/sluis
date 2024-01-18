@@ -1,5 +1,6 @@
 <script>
     import "../app.pcss";
+    import "inter-ui/inter-variable.css";
     import Sidebar from "$lib/components/sidebar.svelte";
     import SidebarLogin from "$lib/components/sidebar-login.svelte";
     import SidebarMenu from "$lib/components/sidebar-menu.svelte";
@@ -75,14 +76,14 @@
 
 <style lang="postcss">
     :root {
-        font-family: Inter, sans-serif;
+        --font-sans: Inter, sans-serif;
         font-feature-settings:
             "liga" 1,
             "calt" 1; /* fix for Chrome */
     }
     @supports (font-variation-settings: normal) {
         :root {
-            font-family: InterVariable, sans-serif;
+            --font-sans: InterVariable, sans-serif;
         }
     }
 </style>

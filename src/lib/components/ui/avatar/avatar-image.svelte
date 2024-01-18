@@ -14,4 +14,5 @@
     {src}
     {alt}
     class={cn("aspect-square h-full w-full", className)}
+    referrerpolicy="same-origin"
     {...$$restProps} />
