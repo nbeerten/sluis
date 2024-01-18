@@ -5,6 +5,7 @@ export const load = async ({ fetch, url, cookies }) => {
     const videoId = url.searchParams.get("v");
     const instance = cookies.get("instance");
     const authToken = cookies.get("authToken");
+    const sponsorsettings = cookies.get("sponsorsettings");
 
     if (!videoId) {
         error(404, "Video not found");
@@ -19,16 +20,9 @@ export const load = async ({ fetch, url, cookies }) => {
 
     const playlists = authToken ? api.getUserPlaylists({ authToken }) : Promise.resolve([]);
 
-    const asyncSponsors = async () => {
-        const sponsorsettings = cookies.get("sponsorsettings");
-        if (!sponsorsettings) {
-            return false as const;
-        }
+    const categories = sponsorsettings ? sponsorsettings.split(",").map((c) => c.slice("sponsor_".length)) : [];
 
-        const categories = sponsorsettings.split(",").map((c) => c.slice("sponsor_".length));
-
-        return api.getSponsors({ videoId, categories: categories });
-    };
+    const sponsors = api.getSponsors({ videoId, categories });
 
     const comments = api.getComments({ videoId });
 
@@ -36,8 +30,8 @@ export const load = async ({ fetch, url, cookies }) => {
         streamed: {
             comments,
             playlists,
+            sponsors
         },
         video: video,
-        sponsors: await asyncSponsors(),
     };
 };

@@ -12,6 +12,7 @@ declare global {
             subscriptions: false | subscriptions;
             loggedIn: boolean;
             seo: import("./lib/components/seo").SeoProps;
+            instance: { url: string };
         }
         // interface PageState {}
         // interface Platform {}

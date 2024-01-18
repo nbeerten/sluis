@@ -13,7 +13,7 @@
     import "hls-video-element";
     import { enhance } from "$app/forms";
     import { toast } from "svelte-sonner";
-    import { onDestroy, onMount } from "svelte";
+    import { onMount } from "svelte";
     import SEO from "$lib/components/seo";
     import { browser } from "$app/environment";
     import Share from "~icons/lucide/share-2";
@@ -27,6 +27,7 @@
     import { preloadData } from "$app/navigation";
     import { page } from "$app/stores";
     import Comment from "$lib/components/comment.svelte";
+    import type { sponsors_videoId } from "$lib/api/types.js";
 
     const config = {
         seekAmount: 10,
@@ -52,14 +53,6 @@
 
     let videoElement: HTMLVideoElement | null = null;
 
-    onDestroy(() => {
-        if (videoElement && browser) {
-            videoElement.pause();
-            videoElement.removeAttribute("src");
-            videoElement.load();
-        }
-    });
-
     function share() {
         if (navigator) {
             navigator.share({
@@ -77,62 +70,9 @@
 
     let currentTime = 0;
 
-    $: if (browser && videoElement) {
-        const inSegment = isInSponsorSegment(currentTime);
-        if (inSegment !== false) {
-            videoElement.currentTime = inSegment;
-        }
-    }
-
-    $: {
-        const startAt = $page.url.searchParams.get("t");
-        if (startAt !== null && videoElement) {
-            if (startAt === "") {
-                videoElement.currentTime = 0;
-            } else {
-                videoElement.currentTime = Number(startAt);
-            }
-            videoElement.play();
-        }
-    }
-
-    function isInSponsorSegment(currentTime: number): number | false {
-        if (!data.sponsors) return false;
-        if (!data.sponsors.segments || !data.sponsors.segments.length) return false;
-
-        for (const segment of data.sponsors.segments) {
-            const [start, end] = segment.segment;
-            if (currentTime >= start && currentTime <= end) {
-                return end;
-            }
-        }
-        return false;
-    }
-
-    function generateLinearGradient(sponsors: (typeof data)["sponsors"]) {
-        if (!sponsors) return false;
-        if (!sponsors.segments || !sponsors.segments.length) return false;
-
-        const segmentArray = sponsors.segments.map((segment) => {
-            const [start, end] = segment.segment;
-            return { start, end };
-        });
-
-        const duration = sponsors.segments[0].videoDuration;
-
-        let gradient = "#ffffff33 0%";
-
-        for (const segment of segmentArray) {
-            const { start, end } = segment;
-            const startPercentage = ((start / duration) * 100).toFixed(2);
-            gradient += `, #ffffff33 ${startPercentage}%, yellow ${startPercentage}%`;
-            const endPercentage = ((end / duration) * 100).toFixed(2);
-            gradient += `, yellow ${endPercentage}%, #ffffff33 ${endPercentage}%`;
-        }
-        gradient += `, #ffffff33 100%`;
-
-        return `linear-gradient(to right, ${gradient})`;
-    }
+    /**
+     * Media Session
+     */
 
     onMount(() => {
         if (!browser) return;
@@ -192,7 +132,82 @@
                 }
             });
         }
+
+        return () => {
+            if (videoElement) {
+                videoElement.pause();
+                videoElement.removeAttribute("src");
+                videoElement.load();
+            }
+        }
     });
+
+    /**
+     * Sponsors
+     */
+
+    let sponsorsData: sponsors_videoId | false = false;
+
+    data.streamed.sponsors.then((data) => {
+        sponsorsData = data;
+    });
+
+    $: if (browser && videoElement) {
+        const inSegment = isInSponsorSegment(sponsorsData, currentTime);
+        if (inSegment !== false) {
+            videoElement.currentTime = inSegment;
+        }
+    }
+
+    $: {
+        const startAt = $page.url.searchParams.get("t");
+        if (startAt !== null && videoElement) {
+            if (startAt === "") {
+                videoElement.currentTime = 0;
+            } else {
+                videoElement.currentTime = Number(startAt);
+            }
+            videoElement.play();
+        }
+    }
+
+    function isInSponsorSegment(sponsors: sponsors_videoId | false, currentTime: number): number | false {
+        if (!sponsors) return false;
+        if (!sponsors.segments || !sponsors.segments.length) return false;
+
+        for (const segment of sponsors.segments) {
+            const [start, end] = segment.segment;
+            if (currentTime >= start && currentTime <= end) {
+                return end;
+            }
+        }
+        return false;
+    }
+
+    function generateLinearGradient(sponsors: sponsors_videoId | false) {
+        if (!sponsors) return false;
+        if (!sponsors.segments || !sponsors.segments.length) return false;
+
+        const segmentArray = sponsors.segments.map((segment) => {
+            const [start, end] = segment.segment;
+            return { start, end };
+        });
+
+        const duration = sponsors.segments[0].videoDuration;
+
+        let gradient = "#ffffff33 0%";
+
+        for (const segment of segmentArray) {
+            const { start, end } = segment;
+            const startPercentage = ((start / duration) * 100).toFixed(2);
+            gradient += `, #ffffff33 ${startPercentage}%, yellow ${startPercentage}%`;
+            const endPercentage = ((end / duration) * 100).toFixed(2);
+            gradient += `, yellow ${endPercentage}%, #ffffff33 ${endPercentage}%`;
+        }
+        gradient += `, #ffffff33 100%`;
+
+        return `linear-gradient(to right, ${gradient})`;
+    }
 </script>
 
 <SEO title={video.title} robots={["noindex", "nofollow"]} />
@@ -217,10 +232,14 @@
                 </media-seek-forward-button>
                 <media-mute-button></media-mute-button>
                 <media-time-display showduration></media-time-display>
-                <media-time-range
-                    style="--media-range-track-background: {generateLinearGradient(data.sponsors) ||
-                        'initial'}">
-                </media-time-range>
+                {#await data.streamed.sponsors}
+                    <media-time-range></media-time-range>
+                {:then awaitedSponsors} 
+                    <media-time-range
+                        style="--media-range-track-background: {generateLinearGradient(awaitedSponsors) ||
+                            'initial'}">
+                    </media-time-range>
+                {/await}
                 <media-pip-button></media-pip-button>
                 <media-fullscreen-button></media-fullscreen-button>
             </media-control-bar>
