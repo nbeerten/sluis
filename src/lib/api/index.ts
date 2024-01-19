@@ -17,16 +17,12 @@ export const defaultInstance = "https://pipedapi.smnz.de";
 export function PipedApi(fetchFunc = globalThis.fetch, baseUrl = defaultInstance, timeout = 1000) {
     const UserAgent = browser ? navigator.userAgent : "Sluis/(https://github.com/nbeerten/sluis)";
 
-    const fetch = async (url: RequestInfo | URL, init?: RequestInit) => {
-        const controller = new AbortController();
-        const id = setTimeout(() => controller.abort(), timeout);
-
-        return fetchFunc(url, {
+    const fetch = async (url: RequestInfo | URL, init?: RequestInit) =>
+        fetchFunc(url, {
             ...init,
             headers: { ...init?.headers, "User-Agent": UserAgent },
-            signal: controller.signal,
-        }).finally(() => clearTimeout(id));
-    };
+            signal: AbortSignal.timeout(timeout),
+        });
 
     return {
         getStream: ({ videoId }: { videoId: string }) => {
