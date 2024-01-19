@@ -22,7 +22,7 @@
     import { Switch } from "$lib/components/ui/switch";
     import VideoCard from "$lib/components/video-card.svelte";
     import { goto } from "$app/navigation";
-    import { autoplay } from "$lib/stores";
+    import { autoplay, seekAmount, startMuted } from "$lib/stores";
     import { Label } from "$lib/components/ui/label";
     import { preloadData } from "$app/navigation";
     import { page } from "$app/stores";
@@ -31,7 +31,7 @@
     import formatDuration from "format-duration";
 
     const config = {
-        seekAmount: 10,
+        seekAmount: $seekAmount,
     };
 
     const { format: formatNumber } = Intl.NumberFormat("en", { notation: "compact" });
@@ -150,16 +150,16 @@
             if (videoElement !== null) videoElement.pause();
         },
         seekbackward: (event) => {
-            const seekAmount = event.seekOffset || config.seekAmount;
+            const seekBy = event.seekOffset || $seekAmount;
             if (videoElement !== null)
-                videoElement.currentTime = Math.max(0, videoElement.currentTime - seekAmount);
+                videoElement.currentTime = Math.max(0, videoElement.currentTime - seekBy);
         },
         seekforward: (event) => {
-            const seekAmount = event.seekOffset || config.seekAmount;
+            const seekBy = event.seekOffset || $seekAmount;
             if (videoElement !== null)
                 videoElement.currentTime = Math.min(
                     videoElement.duration,
-                    videoElement.currentTime + seekAmount
+                    videoElement.currentTime + seekBy
                 );
         },
         seekto: (event) => {
@@ -252,39 +252,75 @@
 <div class="space-y-6">
     <div
         class="flex aspect-video max-h-[75vh] w-full justify-center overflow-hidden rounded-xl bg-black">
-        <media-controller style="width: 100%;">
-            <hls-video src={video.hls} slot="media" crossorigin autoplay bind:this={videoElement}>
-            </hls-video>
-            <media-poster-image slot="poster" src={video.thumbnailUrl}></media-poster-image>
+        {#if video.hls}
+            <media-controller style="width: 100%;">
+                <hls-video
+                    src={video.hls}
+                    slot="media"
+                    muted={$startMuted}
+                    crossorigin
+                    autoplay
+                    bind:this={videoElement}>
+                </hls-video>
+                <media-poster-image slot="poster" src={video.thumbnailUrl}></media-poster-image>
 
-            <media-control-bar class="media-control-bar p-0">
-                {#await data.streamed.sponsors}
-                    <media-time-range></media-time-range>
-                {:then awaitedSponsors}
-                    <media-time-range
-                        class="h-1.5 pb-2 pt-0.5"
-                        style="--media-range-track-background: {generateLinearGradient(
-                            awaitedSponsors
-                        ) || 'initial'}">
-                    </media-time-range>
-                {/await}
-            </media-control-bar>
+                <media-control-bar class="media-control-bar p-0">
+                    {#await data.streamed.sponsors}
+                        <media-time-range class="h-1.5 pb-2 pt-0.5"></media-time-range>
+                    {:then awaitedSponsors}
+                        <media-time-range
+                            class="h-1.5 pb-2 pt-0.5"
+                            style="--media-range-track-background: {generateLinearGradient(
+                                awaitedSponsors
+                            ) || 'initial'}">
+                        </media-time-range>
+                    {/await}
+                </media-control-bar>
 
-            <media-control-bar class="media-control-bar">
-                <media-play-button></media-play-button>
-                <media-seek-backward-button seekoffset={config.seekAmount} class="hidden md:block">
-                </media-seek-backward-button>
-                <media-seek-forward-button seekoffset={config.seekAmount} class="hidden md:block">
-                </media-seek-forward-button>
-                <media-mute-button></media-mute-button>
-                <media-time-display showduration class="tabular-nums"></media-time-display>
-                <span
-                    class="flex flex-grow flex-col justify-center bg-[var(--media-control-background)] text-center">
-                </span>
-                <media-pip-button></media-pip-button>
-                <media-fullscreen-button></media-fullscreen-button>
-            </media-control-bar>
-        </media-controller>
+                <media-control-bar class="media-control-bar">
+                    <media-play-button></media-play-button>
+                    <media-seek-backward-button seekoffset={$seekAmount} class="hidden md:block">
+                    </media-seek-backward-button>
+                    <media-seek-forward-button seekoffset={$seekAmount} class="hidden md:block">
+                    </media-seek-forward-button>
+                    <media-mute-button></media-mute-button>
+                    <media-time-display showduration class="tabular-nums"></media-time-display>
+                    <span
+                        class="flex flex-grow flex-col justify-center bg-[var(--media-control-background)] text-center">
+                    </span>
+                    <media-pip-button></media-pip-button>
+                    <media-fullscreen-button></media-fullscreen-button>
+                </media-control-bar>
+            </media-controller>
+        {:else}
+            <div class="grid place-content-center">
+                <div class="flex max-w-lg flex-col rounded-lg bg-background px-6 py-4">
+                    <p class="text-lg font-semibold">
+                        Sorry, but our player cannot play this video yet.
+                    </p>
+                    <p class="min-w-0 text-muted-foreground">
+                        This video is most likely a livestream or a premiere, which means that there
+                        isn't a HLS source available.
+                    </p>
+                    <div class="flex gap-2 pt-3">
+                        <Button
+                            class="w-full"
+                            target="_blank"
+                            variant="secondary"
+                            href="https://piped.video/watch?v={$page.url.searchParams.get('v')}">
+                            Watch on piped.video
+                        </Button>
+                        <Button
+                            class="w-full"
+                            target="_blank"
+                            variant="outline"
+                            href="https://youtube.com/watch?v={$page.url.searchParams.get('v')}">
+                            Watch on YouTube
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        {/if}
     </div>
     <div class="flex gap-2">
         <div class="grid w-full grid-cols-1 gap-8 xl:grid-cols-[1fr,24rem]">

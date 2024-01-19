@@ -1,15 +1,14 @@
 import { fail } from "@sveltejs/kit";
 import { superValidate } from "sveltekit-superforms/server";
-import { formSchema } from "./schema";
+import { instanceSchema, sponsorSchema } from "./schema";
 import { extract } from "$lib/cookies";
 import { outputObject } from "./schema";
 
 export const load = async ({ cookies, parent }) => {
     const {
         instance: { url: instance },
-        instances,
     } = await parent();
-    let { sponsorsettings } = extract(cookies, instances);
+    let { sponsorsettings } = extract(cookies);
     if (!sponsorsettings) sponsorsettings = "";
     const sponsorCategories = structuredClone(outputObject as Record<string, boolean>);
 
@@ -20,27 +19,41 @@ export const load = async ({ cookies, parent }) => {
     });
 
     return {
-        form: await superValidate({ ...sponsorCategories, instance }, formSchema),
+        instanceForm: await superValidate({ instance: instance }, instanceSchema),
+        sponsorForm: await superValidate(sponsorCategories, sponsorSchema),
     };
 };
 
 export const actions = {
-    default: async (event) => {
-        const form = await superValidate(event, formSchema);
-        if (!form.valid) {
+    instance: async (event) => {
+        const instanceForm = await superValidate(event, instanceSchema);
+        if (!instanceForm.valid) {
             return fail(400, {
-                form,
+                instanceForm,
             });
         }
 
-        event.cookies.set("instance", form.data.instance, {
+        event.cookies.set("instance", instanceForm.data.instance, {
             path: "/",
             httpOnly: false,
             secure: false,
         });
         event.cookies.set("authToken", "", { expires: new Date(0), path: "/" });
 
-        const sponsorsettings = Object.entries(form.data)
+        return {
+            instanceForm,
+        };
+    },
+
+    sponsor: async (event) => {
+        const sponsorForm = await superValidate(event, sponsorSchema);
+        if (!sponsorForm.valid) {
+            return fail(400, {
+                sponsorForm,
+            });
+        }
+
+        const sponsorsettings = Object.entries(sponsorForm.data)
             .filter((i) => i[0].startsWith("sponsor"))
             .map((i) => (i[1] ? i[0] : null))
             .filter((i) => i !== null) as string[];
@@ -52,7 +65,7 @@ export const actions = {
         });
 
         return {
-            form,
+            sponsorForm,
         };
     },
 };

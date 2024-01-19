@@ -25,9 +25,8 @@ export const actions = {
     },
 };
 
-export const load = async ({ fetch, cookies, request, parent }) => {
-    const { instances } = await parent();
-    const { createPipedApi } = extract(cookies, instances);
+export const load = async ({ fetch, cookies, request }) => {
+    const { createPipedApi } = extract(cookies);
 
     let country = request.headers.get("CF-IPCountry") as string | "XX" | "T1" | null; // ISO-3166-1 alpha-2 or XX is unknown or T1 if Tor.
     if (country === "XX" || country === "T1") {

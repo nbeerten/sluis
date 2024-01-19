@@ -11,7 +11,7 @@ export const outputObject = {
     sponsor_filler: false,
 };
 
-export const formSchema = z.object({
+export const sponsorSchema = z.object({
     sponsor_sponsor: z.boolean(),
     sponsor_intro: z.boolean(),
     sponsor_outro: z.boolean(),
@@ -21,8 +21,11 @@ export const formSchema = z.object({
     sponsor_music_offtopic: z.boolean(),
     sponsor_poi_highlight: z.boolean(),
     sponsor_filler: z.boolean(),
+});
 
+export const instanceSchema = z.object({
     instance: z.string().url(),
 });
 
-export type FormSchema = typeof formSchema;
+export type SponsorSchema = typeof sponsorSchema;
+export type InstanceSchema = typeof instanceSchema;

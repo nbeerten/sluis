@@ -1,12 +1,12 @@
 import { extract } from "$lib/cookies";
 
 export const load = async ({ fetch, cookies, parent }) => {
-    const { loggedIn, instances } = await parent();
+    const { loggedIn } = await parent();
     if (!loggedIn) {
         return { loggedIn };
     }
 
-    const { createPipedApi, authToken } = extract(cookies, instances);
+    const { createPipedApi, authToken } = extract(cookies);
     if (!authToken) {
         return { loggedIn };
     }

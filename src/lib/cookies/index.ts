@@ -1,7 +1,8 @@
 import type { Cookies } from "@sveltejs/kit";
 import { PipedApi, defaultInstance, type Instances } from "$lib/api";
+import { cachedInstances } from "$lib/api/instances";
 
-export function extract(cookies: Cookies, instances?: Instances) {
+export function extract(cookies: Cookies) {
     const allCookies = Object.freeze(cookies.getAll());
 
     const authToken = () => allCookies.find((c) => c.name === "authToken")?.value || false;
@@ -9,6 +10,9 @@ export function extract(cookies: Cookies, instances?: Instances) {
     const instance = () => {
         const cookieInstance =
             allCookies.find((c) => c.name === "instance")?.value || defaultInstance;
+
+        let instances: Instances | undefined;
+        cachedInstances().then((i) => (instances = i));
 
         if (!instances) {
             return cookieInstance;

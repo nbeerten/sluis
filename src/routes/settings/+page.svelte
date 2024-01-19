@@ -1,16 +1,16 @@
 <script lang="ts">
     import * as Form from "$lib/components/ui/form";
-    import { formSchema } from "./schema";
+    import { sponsorSchema, instanceSchema } from "./schema";
     import { outputObject } from "./schema";
     import SEO from "$lib/components/seo";
-    import {
-        Card,
-        CardTitle,
-        CardContent,
-        CardDescription,
-        CardHeader,
-    } from "$lib/components/ui/card";
+    import { Card, CardTitle, CardContent, CardHeader } from "$lib/components/ui/card";
     import { Button } from "$lib/components/ui/button";
+    import { page } from "$app/stores";
+    import { toast } from "svelte-sonner";
+    import { autoplay, seekAmount, startMuted } from "$lib/stores";
+    import { Label } from "$lib/components/ui/label";
+    import { Switch } from "$lib/components/ui/switch/";
+    import { Input } from "$lib/components/ui/input";
 
     export let data;
     let { instances } = data;
@@ -30,6 +30,15 @@
         | (typeof instanceList)[number]
         | undefined;
     const setSelected = (i: unknown) => (selected = i as typeof selected);
+    const readSelected = () => selected?.value;
+
+    $: if ($page.form?.instanceForm?.posted ?? false) {
+        toast.success(`Switched instance to ${readSelected()}`);
+    }
+
+    $: if ($page.form?.sponsorForm?.posted ?? false) {
+        toast.success(`Saved sponsor category preferences to cookies.`);
+    }
 </script>
 
 <SEO title="Settings" />
@@ -53,7 +62,12 @@
         {/if}
     </div>
 
-    <Form.Root method="POST" form={data.form} schema={formSchema} let:config>
+    <Form.Root
+        method="POST"
+        action="?/instance"
+        form={data.instanceForm}
+        schema={instanceSchema}
+        let:config>
         <div class="mb-2 flex flex-col gap-1">
             <Form.Field {config} name="instance">
                 <Form.Item>
@@ -105,13 +119,22 @@
                 Switch to instance
             </Form.Button>
         </div>
+    </Form.Root>
+
+    <Form.Root
+        method="POST"
+        action="?/sponsor"
+        form={data.sponsorForm}
+        schema={sponsorSchema}
+        let:config>
         <div class="flex flex-col gap-1 py-4">
             <div class="mb-2 flex flex-col gap-0">
                 <p class="text-xl font-semibold">Sponsorblock Categories</p>
                 <p class="text-sm text-muted-foreground">
                     Using <a href="https://sponsor.ajay.app/" target="_blank" class="underline">
-                        SponsorBlock
+                        SponsorBlock.
                     </a>
+                    Sponsor category preferences are stored in your cookies.
                 </p>
             </div>
             {#each validCategories as category}
@@ -130,4 +153,33 @@
             <Form.Button type="submit" variant="secondary" class="w-full">Save</Form.Button>
         </div>
     </Form.Root>
+
+    <div class="flex flex-col gap-1 py-4">
+        <div class="mb-2 flex flex-col gap-0">
+            <p class="text-xl font-semibold">Video player options</p>
+            <p class="text-sm text-muted-foreground">Automatically saves options to your browser</p>
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <div class="flex items-center justify-between">
+                <Label>Autoplay</Label>
+                <Switch bind:checked={$autoplay} id="autoplay" class="scale-90" />
+            </div>
+            <div class="flex items-center justify-between">
+                <Label>Start muted</Label>
+                <Switch bind:checked={$startMuted} id="startMuted" class="scale-90" />
+            </div>
+            <div class="flex items-center justify-between">
+                <Label>Seek amount</Label>
+                <Input
+                    type="text"
+                    inputmode="numeric"
+                    min="0"
+                    pattern="[0-9]*"
+                    bind:value={$seekAmount}
+                    id="seekAmount"
+                    class="h-8 w-16" />
+            </div>
+        </div>
+    </div>
 </main>
