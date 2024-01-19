@@ -1,8 +1,8 @@
-import { cookiesExtract } from "$lib/cookiesExtract";
+import { extract } from "$lib/cookies";
 
 export const actions = {
     subscribe: async ({ fetch, params, cookies }) => {
-        const { createPipedApi, authToken } = cookiesExtract(cookies);
+        const { createPipedApi, authToken } = extract(cookies);
 
         if (!authToken) {
             return {
@@ -18,7 +18,7 @@ export const actions = {
     },
 
     unsubscribe: async ({ fetch, params, cookies }) => {
-        const { createPipedApi, authToken } = cookiesExtract(cookies);
+        const { createPipedApi, authToken } = extract(cookies);
         if (!authToken) {
             return {
                 success: false,

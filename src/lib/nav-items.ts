@@ -27,11 +27,12 @@ const navItems: NavItem[] = [
         href: "/playlists",
         icon: ListVideo,
     },
-    {
-        label: "Settings",
-        href: "/settings",
-        icon: Settings,
-    },
 ];
+
+export const settings = {
+    label: "Settings",
+    href: "/settings",
+    icon: Settings,
+};
 
 export default navItems;

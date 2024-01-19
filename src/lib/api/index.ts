@@ -10,13 +10,18 @@ import type {
     sponsors_videoId,
     comments_videoId,
 } from "./types";
+import { browser } from "$app/environment";
 
 export const defaultInstance = "https://pipedapi.smnz.de";
 
-export function PipedApi(fetch = globalThis.fetch, baseUrl = defaultInstance) {
+export function PipedApi(fetchFunc = globalThis.fetch, baseUrl = defaultInstance) {
+    const UserAgent = browser ? navigator.userAgent : "Sluis/(https://github.com/nbeerten/sluis)";
+    const fetch = (url: RequestInfo | URL, init?: RequestInit) =>
+        fetchFunc(url, { ...init, headers: { ...init?.headers, "User-Agent": UserAgent } });
+
     return {
         getStream: ({ videoId }: { videoId: string }) => {
-            return fetch(`${baseUrl}/streams/${videoId}`, {}).then((r) =>
+            return fetch(`${baseUrl}/streams/${videoId}`).then((r) =>
                 r.json()
             ) as Promise<streams_videoId>;
         },
@@ -36,7 +41,7 @@ export function PipedApi(fetch = globalThis.fetch, baseUrl = defaultInstance) {
                           nextpage
                       )}`
                   ).then((r) => r.json()) as Promise<comments_videoId>)
-                : (fetch(`${baseUrl}/comments/${videoId}`, {}).then((r) =>
+                : (fetch(`${baseUrl}/comments/${videoId}`).then((r) =>
                       r.json()
                   ) as Promise<comments_videoId>);
 
@@ -56,7 +61,7 @@ export function PipedApi(fetch = globalThis.fetch, baseUrl = defaultInstance) {
                           nextpage
                       )}`
                   ).then((r) => r.json()) as Promise<channel_channelId>)
-                : (fetch(`${baseUrl}/channel/${channelId}`, {}).then((r) =>
+                : (fetch(`${baseUrl}/channel/${channelId}`).then((r) =>
                       r.json()
                   ) as Promise<channel_channelId>);
 
@@ -64,7 +69,7 @@ export function PipedApi(fetch = globalThis.fetch, baseUrl = defaultInstance) {
         },
 
         getChannelFromHandle: ({ handle }: { handle: string }) => {
-            const response = fetch(`${baseUrl}/@/${handle}`, {}).then((r) =>
+            const response = fetch(`${baseUrl}/@/${handle}`).then((r) =>
                 r.json()
             ) as Promise<channel_channelId>;
 
@@ -97,8 +102,7 @@ export function PipedApi(fetch = globalThis.fetch, baseUrl = defaultInstance) {
                 : (fetch(
                       `${baseUrl}/search?q=${encodeURIComponent(query)}&filter=${encodeURIComponent(
                           filter
-                      )}`,
-                      {}
+                      )}`
                   ).then((r) => r.json()) as Promise<search>);
             return response;
         },

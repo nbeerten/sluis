@@ -8,11 +8,11 @@ declare global {
         // interface Error {}
         // interface Locals {}
         interface PageData {
-            instanceList: Instances;
+            instances: Instances;
             subscriptions: false | subscriptions;
             loggedIn: boolean;
             seo: import("./lib/components/seo").SeoProps;
-            instance: { url: string };
+            instance: { url: string } & Instances[number];
         }
         // interface PageState {}
         // interface Platform {}

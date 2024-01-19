@@ -1,8 +1,9 @@
 import { error } from "@sveltejs/kit";
-import { cookiesExtract } from "$lib/cookiesExtract";
+import { extract } from "$lib/cookies";
 
-export const load = async ({ fetch, url, cookies }) => {
-    const { createPipedApi } = cookiesExtract(cookies);
+export const load = async ({ fetch, url, cookies, parent }) => {
+    const { instances } = await parent();
+    const { createPipedApi } = extract(cookies, instances);
 
     const query = url.searchParams.get("q");
     if (!query) {

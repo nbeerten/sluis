@@ -1,9 +1,11 @@
 import { error } from "@sveltejs/kit";
-import { cookiesExtract } from "$lib/cookiesExtract";
+import { extract } from "$lib/cookies";
 
-export const load = async ({ fetch, url, cookies }) => {
+export const load = async ({ fetch, url, cookies, parent }) => {
+    const { instances } = await parent();
+    const { createPipedApi, sponsorsettings, authToken } = extract(cookies, instances);
+
     const videoId = url.searchParams.get("v");
-    const { createPipedApi, sponsorsettings, authToken } = cookiesExtract(cookies);
 
     if (!videoId) {
         error(404, "Video not found");

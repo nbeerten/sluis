@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { fail, redirect } from "@sveltejs/kit";
-import { cookiesExtract } from "$lib/cookiesExtract";
+import { extract } from "$lib/cookies";
 
 const loginSchema = z.object({
     username: z.string().trim().min(1),
@@ -9,7 +9,7 @@ const loginSchema = z.object({
 
 export const actions = {
     default: async ({ request, cookies, fetch }) => {
-        const { createPipedApi } = cookiesExtract(cookies);
+        const { createPipedApi } = extract(cookies);
         const data = await request.formData();
 
         const formData = {

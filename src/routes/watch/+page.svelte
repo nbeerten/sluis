@@ -28,6 +28,7 @@
     import { page } from "$app/stores";
     import Comment from "$lib/components/comment.svelte";
     import type { sponsors_videoId } from "$lib/api/types.js";
+    import formatDuration from "format-duration";
 
     const config = {
         seekAmount: 10,
@@ -49,7 +50,9 @@
 
     let subscribed: boolean;
     $: subscribed =
-        subscriptions && subscriptions?.find((s) => s.url === video.uploaderUrl) !== undefined;
+        subscriptions &&
+        subscriptions.length > 0 &&
+        subscriptions?.find((s) => s.url === video.uploaderUrl) !== undefined;
 
     let videoElement: HTMLVideoElement | null = null;
 
@@ -253,6 +256,20 @@
             <hls-video src={video.hls} slot="media" crossorigin autoplay bind:this={videoElement}>
             </hls-video>
             <media-poster-image slot="poster" src={video.thumbnailUrl}></media-poster-image>
+
+            <media-control-bar class="media-control-bar p-0">
+                {#await data.streamed.sponsors}
+                    <media-time-range></media-time-range>
+                {:then awaitedSponsors}
+                    <media-time-range
+                        class="h-1.5 pb-2 pt-0.5"
+                        style="--media-range-track-background: {generateLinearGradient(
+                            awaitedSponsors
+                        ) || 'initial'}">
+                    </media-time-range>
+                {/await}
+            </media-control-bar>
+
             <media-control-bar class="media-control-bar">
                 <media-play-button></media-play-button>
                 <media-seek-backward-button seekoffset={config.seekAmount} class="hidden md:block">
@@ -260,16 +277,10 @@
                 <media-seek-forward-button seekoffset={config.seekAmount} class="hidden md:block">
                 </media-seek-forward-button>
                 <media-mute-button></media-mute-button>
-                <media-time-display showduration></media-time-display>
-                {#await data.streamed.sponsors}
-                    <media-time-range></media-time-range>
-                {:then awaitedSponsors}
-                    <media-time-range
-                        style="--media-range-track-background: {generateLinearGradient(
-                            awaitedSponsors
-                        ) || 'initial'}">
-                    </media-time-range>
-                {/await}
+                <media-time-display showduration class="tabular-nums"></media-time-display>
+                <span
+                    class="flex flex-grow flex-col justify-center bg-[var(--media-control-background)] text-center">
+                </span>
                 <media-pip-button></media-pip-button>
                 <media-fullscreen-button></media-fullscreen-button>
             </media-control-bar>
@@ -277,7 +288,7 @@
     </div>
     <div class="flex gap-2">
         <div class="grid w-full grid-cols-1 gap-8 xl:grid-cols-[1fr,24rem]">
-            <div class="space-y-2">
+            <div class="flex flex-col gap-2">
                 <Accordion>
                     <AccordionItem value="item-1">
                         <AccordionTrigger
@@ -324,6 +335,24 @@
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
+
+                {#if video.chapters.length > 0}
+                    <div
+                        class="flex min-w-0 flex-shrink flex-wrap justify-start gap-x-1.5 gap-y-1 border-b border-border pb-2">
+                        {#each video.chapters as chapter}
+                            <a
+                                class="flex flex-col gap-1 rounded-md border border-border px-2 py-1"
+                                href="/watch?v={$page.url.searchParams.get('v')}&t={chapter.start}">
+                                <p class="line-clamp-2 text-sm text-muted-foreground">
+                                    <span class="mr-0.5 text-primary">
+                                        {formatDuration(chapter.start * 1000)}
+                                    </span>
+                                    <span title={chapter.title}>{chapter.title}</span>
+                                </p>
+                            </a>
+                        {/each}
+                    </div>
+                {/if}
                 <div class="flex flex-col justify-between gap-3 xl:flex-row xl:items-center">
                     <div class="flex items-center justify-between gap-3 xl:justify-normal">
                         <div class="flex items-center gap-3">
@@ -445,21 +474,23 @@
                             <Switch bind:checked={$autoplay} id="autoplay" class="scale-90" />
                         </div>
                     </div>
-                    <VideoCard
-                        video={{
-                            ...video.relatedStreams[0],
-                            id: video.relatedStreams[0].url.slice(9),
-                            uploader: {
-                                name: video.relatedStreams[0].uploaderName,
-                                id: video.relatedStreams[0].uploaderUrl.slice(9),
-                                avatar: video.relatedStreams[0].uploaderAvatar,
-                                verified: video.relatedStreams[0].uploaderVerified,
-                            },
-                            uploadDate: video.relatedStreams[0].uploaded,
-                        }}
-                        lazyImage={false}
-                        bareCard
-                        horizontalCard />
+                    {#if video.relatedStreams[0] && video.relatedStreams[0].title && video.relatedStreams[0].uploaderUrl && video.relatedStreams[0].url}
+                        <VideoCard
+                            video={{
+                                ...video.relatedStreams[0],
+                                id: video.relatedStreams[0].url.slice(9),
+                                uploader: {
+                                    name: video.relatedStreams[0].uploaderName,
+                                    id: video.relatedStreams[0].uploaderUrl.slice(9),
+                                    avatar: video.relatedStreams[0].uploaderAvatar,
+                                    verified: video.relatedStreams[0].uploaderVerified,
+                                },
+                                uploadDate: video.relatedStreams[0].uploaded,
+                            }}
+                            lazyImage={false}
+                            bareCard
+                            horizontalCard />
+                    {/if}
                 </div>
                 <Accordion>
                     <AccordionItem value="item-1">
@@ -499,8 +530,8 @@
         --media-primary-color: theme(colors.foreground);
         --media-text-color: theme(colors.foreground);
 
-        --media-control-background: theme(colors.primary.foreground);
-        --media-control-hover-background: theme(colors.secondary.DEFAULT);
+        --media-control-background: theme(colors.primary.foreground / 0.75);
+        --media-control-hover-background: theme(colors.primary.foreground / 0.75);
         --media-font-family: theme(fontFamily.sans);
     }
 

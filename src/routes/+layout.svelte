@@ -2,7 +2,6 @@
     import "../app.pcss";
     import "inter-ui/inter-variable.css";
     import Sidebar from "$lib/components/sidebar.svelte";
-    import SidebarLogin from "$lib/components/sidebar-login.svelte";
     import SidebarMenu from "$lib/components/sidebar-menu.svelte";
     import SidebarSubscriptions from "$lib/components/sidebar-subscriptions.svelte";
     import Menu from "~icons/lucide/menu";
@@ -13,8 +12,7 @@
     import SEO from "$lib/components/seo";
 
     export let data;
-    let { subscriptions, instanceList } = data;
-    $: instanceList = data.instanceList;
+    let { subscriptions } = data;
     $: subscriptions = data.subscriptions;
 </script>
 
@@ -45,8 +43,6 @@
                                 </Sheet.Title>
                             </Sheet.Header>
                             <div class="flex flex-col gap-1">
-                                <SidebarLogin {instanceList} closeSheet />
-                                <hr class="my-2" />
                                 <SidebarMenu closeSheet />
                                 {#if subscriptions}
                                     <SidebarSubscriptions {subscriptions} closeSheet />
@@ -62,8 +58,6 @@
         </nav>
     </div>
     <Sidebar class="hidden space-y-4 md:block">
-        <SidebarLogin {instanceList} />
-        <hr />
         <SidebarMenu />
         {#if subscriptions}
             <SidebarSubscriptions {subscriptions} />

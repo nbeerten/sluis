@@ -21,6 +21,8 @@ export const formSchema = z.object({
     sponsor_music_offtopic: z.boolean(),
     sponsor_poi_highlight: z.boolean(),
     sponsor_filler: z.boolean(),
+
+    instance: z.string().url(),
 });
 
 export type FormSchema = typeof formSchema;

@@ -1,11 +1,15 @@
 import { fail } from "@sveltejs/kit";
 import { superValidate } from "sveltekit-superforms/server";
 import { formSchema } from "./schema";
-import { cookiesExtract } from "$lib/cookiesExtract";
+import { extract } from "$lib/cookies";
 import { outputObject } from "./schema";
 
-export const load = async ({ cookies }) => {
-    let { sponsorsettings } = cookiesExtract(cookies);
+export const load = async ({ cookies, parent }) => {
+    const {
+        instance: { url: instance },
+        instances,
+    } = await parent();
+    let { sponsorsettings } = extract(cookies, instances);
     if (!sponsorsettings) sponsorsettings = "";
     const sponsorCategories = structuredClone(outputObject as Record<string, boolean>);
 
@@ -16,7 +20,7 @@ export const load = async ({ cookies }) => {
     });
 
     return {
-        form: await superValidate(sponsorCategories, formSchema),
+        form: await superValidate({ ...sponsorCategories, instance }, formSchema),
     };
 };
 
@@ -28,6 +32,13 @@ export const actions = {
                 form,
             });
         }
+
+        event.cookies.set("instance", form.data.instance, {
+            path: "/",
+            httpOnly: false,
+            secure: false,
+        });
+        event.cookies.set("authToken", "", { expires: new Date(0), path: "/" });
 
         const sponsorsettings = Object.entries(form.data)
             .filter((i) => i[0].startsWith("sponsor"))

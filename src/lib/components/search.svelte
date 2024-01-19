@@ -19,7 +19,10 @@
     }
 
     let timer: number;
-    const debounce = (v: string) => {
+    const handleKeyup = (e: KeyboardEvent, v: string) => {
+        if (e.key === "Enter") {
+            open = false;
+        }
         clearTimeout(timer);
         timer = setTimeout(async () => {
             suggestions = v ? await fetchSuggestions(v) : [];
@@ -41,7 +44,7 @@
             autocomplete="off"
             class="w-full"
             bind:value
-            on:keyup={() => debounce(value)}
+            on:keyup={(e) => handleKeyup(e, value)}
             on:focusin={() => (open = true)} />
         {#if value && value.length > 0 && open && suggestions.length > 0}
             <div
