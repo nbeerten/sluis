@@ -7,7 +7,7 @@
     import { Button } from "$lib/components/ui/button";
     import { page } from "$app/stores";
     import { toast } from "svelte-sonner";
-    import { autoplay, seekAmount, startMuted } from "$lib/stores";
+    import { autoplay, seekAmount, startMuted, timeTillNext } from "$lib/stores";
     import { Label } from "$lib/components/ui/label";
     import { Switch } from "$lib/components/ui/switch/";
     import { Input } from "$lib/components/ui/input";
@@ -178,6 +178,17 @@
                     pattern="[0-9]*"
                     bind:value={$seekAmount}
                     id="seekAmount"
+                    class="h-8 w-16" />
+            </div>
+            <div class="flex items-center justify-between">
+                <Label>Time until next video</Label>
+                <Input
+                    type="text"
+                    inputmode="numeric"
+                    min="0"
+                    pattern="[0-9]*"
+                    bind:value={$timeTillNext}
+                    id="timeTillNext"
                     class="h-8 w-16" />
             </div>
         </div>

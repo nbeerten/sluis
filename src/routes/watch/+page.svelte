@@ -22,7 +22,7 @@
     import { Switch } from "$lib/components/ui/switch";
     import VideoCard from "$lib/components/video-card.svelte";
     import { goto } from "$app/navigation";
-    import { autoplay, seekAmount, startMuted } from "$lib/stores";
+    import { autoplay, seekAmount, startMuted, timeTillNext } from "$lib/stores";
     import { Label } from "$lib/components/ui/label";
     import { preloadData } from "$app/navigation";
     import { page } from "$app/stores";
@@ -91,8 +91,10 @@
 
     async function nextVideo() {
         if (videoElement) {
-            await preloadData(video.relatedStreams[0].url);
-            goto(video.relatedStreams[0].url);
+            setTimeout(async () => {
+                await preloadData(video.relatedStreams[0].url);
+                goto(video.relatedStreams[0].url);
+            }, $timeTillNext * 1000);
         }
     }
 
