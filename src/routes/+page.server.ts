@@ -1,4 +1,5 @@
 import { extract } from "$lib/cookies";
+import { error } from "@sveltejs/kit";
 
 export const actions = {
     switchInstance: async ({ cookies, request }) => {
@@ -26,17 +27,21 @@ export const actions = {
 };
 
 export const load = async ({ fetch, cookies, request }) => {
-    const { createPipedApi } = extract(cookies);
+    try {
+        const { createPipedApi } = extract(cookies);
 
-    let country = request.headers.get("CF-IPCountry") as string | "XX" | "T1" | null; // ISO-3166-1 alpha-2 or XX is unknown or T1 if Tor.
-    if (country === "XX" || country === "T1") {
-        country = "US";
-    } else if (country?.length !== 2) {
-        country = "US";
+        let country = request.headers.get("CF-IPCountry") as string | "XX" | "T1" | null; // ISO-3166-1 alpha-2 or XX is unknown or T1 if Tor.
+        if (country === "XX" || country === "T1") {
+            country = "US";
+        } else if (country?.length !== 2) {
+            country = "US";
+        }
+
+        return {
+            videos: await createPipedApi(fetch).getTrending({ region: country }),
+            country,
+        };
+    } catch (err: unknown) {
+        return error(500, { "message": `${(err as Error).name}: ${(err as Error).message}` });
     }
-
-    return {
-        videos: await createPipedApi(fetch).getTrending({ region: country }),
-        country,
-    };
 };

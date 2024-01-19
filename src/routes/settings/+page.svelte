@@ -11,6 +11,7 @@
     import { Label } from "$lib/components/ui/label";
     import { Switch } from "$lib/components/ui/switch/";
     import { Input } from "$lib/components/ui/input";
+    import Search from "$lib/components/search.svelte";
 
     export let data;
     let { instances } = data;
@@ -48,19 +49,21 @@
         <h1 class="text-3xl font-bold">Settings</h1>
     </hgroup>
 
-    <div class="flex flex-col gap-2 pb-4">
-        <div class="flex gap-2">
-            <Button href="/login" variant="default" class="w-full">
-                Login on {data.instance.name}
-            </Button>
-            <Button variant="default" disabled>Register on {data.instance.name}</Button>
+    {#if data.instance.name}
+        <div class="flex flex-col gap-2 pb-4">
+            <div class="flex gap-2">
+                <Button href="/login" variant="default" class="w-full">
+                    Login on {data.instance.name}
+                </Button>
+                <Button variant="default" disabled>Register on {data.instance.name}</Button>
+            </div>
+            {#if data.loggedIn}
+                <Button variant="outline" class="border-red-900 hover:bg-red-900" href="/logout">
+                    Log out of {data.instance.name}
+                </Button>
+            {/if}
         </div>
-        {#if data.loggedIn}
-            <Button variant="outline" class="border-red-900 hover:bg-red-900" href="/logout">
-                Log out of {data.instance.name}
-            </Button>
-        {/if}
-    </div>
+    {/if}
 
     <Form.Root
         method="POST"
@@ -76,7 +79,7 @@
                         preventScroll={false}
                         {selected}
                         onSelectedChange={(i) => setSelected(i)}>
-                        <Form.SelectTrigger class="w-full" />
+                        <Form.SelectTrigger class="w-full" placeholder="Selected an instance..." />
                         <Form.SelectContent
                             class="z-0 max-h-[30rem] overflow-y-scroll overscroll-contain">
                             {#each instanceList as { value, label, sublabel }}
@@ -100,14 +103,18 @@
                         <CardTitle>Instance Information</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <table class="text-sm text-muted-foreground">
-                            {#each Object.entries(instances.find((i) => i.api_url === selected?.value) ?? {}) as [key, value]}
-                                <tr>
-                                    <td class="pr-4 font-semibold">{key}</td>
-                                    <td>{value}</td>
-                                </tr>
-                            {/each}
-                        </table>
+                        {#if selected}
+                            <table class="text-sm text-muted-foreground">
+                                {#each Object.entries(instances.find((i) => i.api_url === selected?.value) ?? {}) as [key, value]}
+                                    <tr>
+                                        <td class="pr-4 font-semibold">{key}</td>
+                                        <td>{value}</td>
+                                    </tr>
+                                {/each}
+                            </table>
+                        {:else}
+                            <p class="text-muted-foreground leading-snug">Selected instance not available at this moment. Most likely cause is that the selected instance is offline or has an outage. Either select a different instance or try again later.</p>
+                        {/if}
                     </CardContent>
                 </Card>
             </div>
@@ -115,7 +122,7 @@
             <Form.Button
                 type="submit"
                 class="w-full"
-                disabled={selected?.value === data.instance.url}>
+                disabled={(selected?.value === data.instance.url) || !selected}>
                 Switch to instance
             </Form.Button>
         </div>
