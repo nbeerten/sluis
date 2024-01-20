@@ -3,6 +3,8 @@
     import { PipedApi } from "$lib/api";
     import InfiniteScroll from "$lib/components/infinite-scroll.svelte";
     import SEO from "$lib/components/seo";
+    import type { Snapshot } from "./$types.js";
+    import { tick } from "svelte";
 
     export let data;
     let { channel } = data;
@@ -11,17 +13,20 @@
     $: channel, resetVideos();
 
     function resetVideos() {
-        videos = [];
-        newBatch = channel.relatedStreams;
+        videos = channel.relatedStreams;
         nextpageToken = channel.nextpage;
     }
+
+    let scrollY: number;
+    let shouldScrollTo: number;
+    let shouldScrollBack = false;
 
     let nextpageToken = channel.nextpage;
     $: nextpageToken = channel.nextpage;
 
-    let videos: Awaited<ReturnType<ReturnType<typeof PipedApi>["getChannel"]>>["relatedStreams"] =
-        [];
-    let newBatch = channel.relatedStreams;
+    let videos = channel.relatedStreams;
+
+    let prevBatchLength = +Infinity;
 
     async function fetchMoreVideos() {
         if (!nextpageToken) return;
@@ -29,14 +34,43 @@
             channelId: channel.id,
             nextpage: nextpageToken,
         });
-        newBatch = response.relatedStreams;
+        videos = [...videos, ...response.relatedStreams];
+        prevBatchLength = response.relatedStreams.length;
         nextpageToken = response.nextpage;
     }
 
-    $: videos = [...videos, ...newBatch];
+    export const snapshot: Snapshot<{
+        videos: Awaited<ReturnType<ReturnType<typeof PipedApi>["getChannel"]>>["relatedStreams"];
+        nextpageToken: string;
+        prevBatchLength: number;
+        scrollY: number;
+    }> = {
+        capture: () => {
+            return {
+                videos,
+                nextpageToken,
+                prevBatchLength,
+                scrollY,
+            };
+        },
+        restore: (captured) => {
+            videos = captured.videos;
+            nextpageToken = captured.nextpageToken;
+            prevBatchLength = captured.prevBatchLength;
+
+            shouldScrollTo = captured.scrollY;
+            shouldScrollBack = true;
+
+            if (shouldScrollBack && shouldScrollTo !== null) {
+                tick().then(() => window.scrollTo({ top: shouldScrollTo }));
+            }
+        },
+    };
 </script>
 
 <SEO title={channel.name} robots={["noindex", "nofollow"]} />
+
+<svelte:window bind:scrollY />
 
 <div class="mb-5 grid grid-cols-1 gap-4 pt-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
     {#each videos as video, i}
@@ -60,7 +94,7 @@
     {/each}
 </div>
 <InfiniteScroll
-    hasMore={newBatch.length > 0}
+    hasMore={prevBatchLength > 0}
     onLoadMore={() => {
         fetchMoreVideos();
     }} />

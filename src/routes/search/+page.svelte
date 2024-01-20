@@ -7,6 +7,8 @@
     import ChannelCard from "$lib/components/channel-card.svelte";
     import { goto } from "$app/navigation";
     import SEO from "$lib/components/seo";
+    import type { Snapshot } from "./$types.js";
+    import { tick } from "svelte";
 
     export let data;
     let { results } = data;
@@ -15,28 +17,60 @@
     $: results, resetResults();
 
     function resetResults() {
-        videos = [];
-        newBatch = results.items;
+        videos = results.items;
         nextpageToken = results.nextpage;
     }
+
+    let scrollY: number;
+    let shouldScrollTo: number;
+    let shouldScrollBack = false;
 
     let nextpageToken = results.nextpage;
     $: nextpageToken = results.nextpage;
 
-    let videos: Awaited<ReturnType<ReturnType<typeof PipedApi>["getSearch"]>>["items"] = [];
-    let newBatch = results.items;
+    let videos = results.items;
+
+    let prevBatchLength = +Infinity;
 
     async function fetchMoreResults() {
+        if (!nextpageToken) return;
         const response = await PipedApi().getSearch({
             query: $page.url.searchParams.get("q") ?? "",
             filter: $page.url.searchParams.get("filter") ?? "videos",
             nextpage: nextpageToken,
         });
-        newBatch = response.items;
+        videos = [...videos, ...response.items];
+        prevBatchLength = response.items.length;
         nextpageToken = response.nextpage;
     }
 
-    $: videos = [...videos, ...newBatch];
+    export const snapshot: Snapshot<{
+        videos: (typeof results)["items"];
+        nextpageToken: string;
+        prevBatchLength: number;
+        scrollY: number;
+    }> = {
+        capture: () => {
+            return {
+                videos,
+                nextpageToken,
+                prevBatchLength,
+                scrollY,
+            };
+        },
+        restore: (captured) => {
+            videos = captured.videos;
+            nextpageToken = captured.nextpageToken;
+            prevBatchLength = captured.prevBatchLength;
+
+            shouldScrollTo = captured.scrollY;
+            shouldScrollBack = true;
+
+            if (shouldScrollBack && shouldScrollTo !== null) {
+                tick().then(() => window.scrollTo({ top: shouldScrollTo }));
+            }
+        },
+    };
 
     const filters = [
         { value: "videos", label: "Videos" } as const,
@@ -46,6 +80,8 @@
 </script>
 
 <SEO title="Search: {$page.url.searchParams.get('q')}" robots={["noindex", "nofollow"]} />
+
+<svelte:window bind:scrollY />
 
 <main>
     <hgroup class="flex justify-between">
@@ -100,7 +136,7 @@
         {/each}
     </div>
     <InfiniteScroll
-        hasMore={newBatch.length > 0}
+        hasMore={prevBatchLength > 0}
         onLoadMore={() => {
             fetchMoreResults();
         }} />

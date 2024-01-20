@@ -1,3 +1,5 @@
+import { dev } from "$app/environment";
+
 const instanceCache: { age: number; data?: Instances } = { age: 0 };
 
 export async function cachedInstances(fetch = globalThis.fetch) {
@@ -13,7 +15,10 @@ export async function cachedInstances(fetch = globalThis.fetch) {
         delete instanceCache.data;
     }
 
-    console.warn("Not using cached instances");
+    if (dev) {
+        // eslint-disable-next-line no-console
+        console.warn("Not using cached instances");
+    }
 
     const data = (await fetch(request).then((r) => r.json())) as Instances;
 

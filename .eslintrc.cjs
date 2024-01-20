@@ -12,6 +12,8 @@ module.exports = {
     parserOptions: {
         sourceType: "module",
         ecmaVersion: 2020,
+        project: true,
+        tsconfigRootDir: __dirname,
         extraFileExtensions: [".svelte"],
     },
     env: {
@@ -28,4 +30,8 @@ module.exports = {
             },
         },
     ],
+    rules: {
+        "no-console": 1,
+        "svelte/no-at-html-tags": "off",
+    }
 };

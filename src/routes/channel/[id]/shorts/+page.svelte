@@ -4,6 +4,8 @@
     import type { channels_tabs_items_shorts } from "$lib/api/types";
     import InfiniteScroll from "$lib/components/infinite-scroll.svelte";
     import SEO from "$lib/components/seo";
+    import type { Snapshot } from "./$types.js";
+    import { tick } from "svelte";
 
     export let data;
     let { channel, shorts } = data;
@@ -13,16 +15,20 @@
     $: channel, resetVideos();
 
     function resetVideos() {
-        videos = [];
-        newBatch = shorts.content as channels_tabs_items_shorts;
+        videos = shorts.content as channels_tabs_items_shorts;
         nextpageToken = channel.nextpage;
     }
+
+    let scrollY: number;
+    let shouldScrollTo: number;
+    let shouldScrollBack = false;
 
     let nextpageToken = shorts.nextpage;
     $: nextpageToken = shorts.nextpage;
 
-    let videos: channels_tabs_items_shorts = [];
-    let newBatch = shorts.content as channels_tabs_items_shorts;
+    let videos = shorts.content as channels_tabs_items_shorts;
+
+    let prevBatchLength = +Infinity;
 
     async function fetchMoreVideos() {
         if (!nextpageToken) return;
@@ -30,14 +36,43 @@
             data: channel.tabs.find((t) => t.name === "shorts")?.data as string,
             nextpage: nextpageToken,
         });
-        newBatch = response.content as channels_tabs_items_shorts;
+        videos = [...videos, ...(response.content as channels_tabs_items_shorts)];
+        prevBatchLength = response.content.length;
         nextpageToken = response.nextpage;
     }
 
-    $: videos = [...videos, ...newBatch];
+    export const snapshot: Snapshot<{
+        videos: channels_tabs_items_shorts;
+        nextpageToken: string;
+        prevBatchLength: number;
+        scrollY: number;
+    }> = {
+        capture: () => {
+            return {
+                videos,
+                nextpageToken,
+                prevBatchLength,
+                scrollY,
+            };
+        },
+        restore: (captured) => {
+            videos = captured.videos;
+            nextpageToken = captured.nextpageToken;
+            prevBatchLength = captured.prevBatchLength;
+
+            shouldScrollTo = captured.scrollY;
+            shouldScrollBack = true;
+
+            if (shouldScrollBack && shouldScrollTo !== null) {
+                tick().then(() => window.scrollTo({ top: shouldScrollTo }));
+            }
+        },
+    };
 </script>
 
 <SEO title={channel.name} robots={["noindex", "nofollow"]} />
+
+<svelte:window bind:scrollY />
 
 <div
     class="mb-5 grid grid-cols-2 gap-4 pt-5 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
@@ -64,7 +99,7 @@
     {/each}
 </div>
 <InfiniteScroll
-    hasMore={newBatch.length > 0}
+    hasMore={prevBatchLength > 0}
     onLoadMore={() => {
         fetchMoreVideos();
     }} />
