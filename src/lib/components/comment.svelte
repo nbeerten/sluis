@@ -26,13 +26,13 @@
     <Avatar>
         <AvatarImage src={comment.thumbnail} />
         <AvatarFallback>
-            {comment.author.slice(1, 2)}
+            {comment.author ? comment.author.slice(0, 1) : "?"}
         </AvatarFallback>
     </Avatar>
 
     <div class="flex flex-col">
         <p class="text-sm text-muted-foreground">
-            {comment.author}
+            {comment.author ? comment.author : "?"}
             {#if comment.verified}
                 <Check class="inline h-4 w-4" />
             {/if}

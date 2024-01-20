@@ -1,9 +1,6 @@
 import { error } from "@sveltejs/kit";
-import { extract } from "$lib/cookies";
 
-export const load = async ({ fetch, url, cookies }) => {
-    const { createPipedApi } = extract(cookies);
-
+export const load = async ({ fetch, url, locals }) => {
     const query = url.searchParams.get("q");
     if (!query) {
         error(404, { message: "Please provide a search query" });
@@ -14,7 +11,7 @@ export const load = async ({ fetch, url, cookies }) => {
         error(404, { message: "Please provide a search filter" });
     }
 
-    const api = createPipedApi(fetch);
+    const api = locals.createPipedApi(fetch);
     const results = await api.getSearch({ query, filter });
 
     return {

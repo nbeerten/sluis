@@ -1,10 +1,9 @@
-import { extract } from "$lib/cookies";
 import { error } from "@sveltejs/kit";
 
 export const actions = {
-    switchInstance: async ({ cookies, request }) => {
+    switchInstance: async ({ cookies, request, locals }) => {
         const data = await request.formData();
-        const cookiesInstance = cookies.get("instance")?.toString();
+        const cookiesInstance = locals.instance;
         const instance = data.get("instance")?.toString();
         if (!instance) {
             return {
@@ -26,10 +25,8 @@ export const actions = {
     },
 };
 
-export const load = async ({ fetch, cookies, request }) => {
+export const load = async ({ fetch, request, locals }) => {
     try {
-        const { createPipedApi } = extract(cookies);
-
         let country = request.headers.get("CF-IPCountry") as string | "XX" | "T1" | null; // ISO-3166-1 alpha-2 or XX is unknown or T1 if Tor.
         if (country === "XX" || country === "T1") {
             country = "US";
@@ -38,10 +35,13 @@ export const load = async ({ fetch, cookies, request }) => {
         }
 
         return {
-            videos: await createPipedApi(fetch).getTrending({ region: country }),
+            videos: await locals.createPipedApi(fetch).getTrending({ region: country }),
             country,
         };
     } catch (err: unknown) {
-        return error(500, { "message": `${(err as Error).name}: ${(err as Error).message}` });
+        return error(500, {
+            message: `${(err as Error).name}: ${(err as Error).message}`,
+            stack: (err as Error).stack,
+        });
     }
 };

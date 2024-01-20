@@ -1,25 +1,19 @@
 import { fail } from "@sveltejs/kit";
 import { superValidate } from "sveltekit-superforms/server";
 import { instanceSchema, sponsorSchema } from "./schema";
-import { extract } from "$lib/cookies";
 import { outputObject } from "./schema";
 
-export const load = async ({ cookies, parent }) => {
-    const {
-        instance: { url: instance },
-    } = await parent();
-    let { sponsorsettings } = extract(cookies);
-    if (!sponsorsettings) sponsorsettings = "";
+export const load = async ({ locals }) => {
     const sponsorCategories = structuredClone(outputObject as Record<string, boolean>);
 
-    sponsorsettings.split(",").forEach((i) => {
+    locals.sponsorsettings.split(",").forEach((i) => {
         if (Object.hasOwn(sponsorCategories, i)) {
             sponsorCategories[i] = true;
         }
     });
 
     return {
-        instanceForm: await superValidate({ instance: instance }, instanceSchema),
+        instanceForm: await superValidate({ instance: locals.instance }, instanceSchema),
         sponsorForm: await superValidate(sponsorCategories, sponsorSchema),
     };
 };

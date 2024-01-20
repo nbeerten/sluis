@@ -30,10 +30,6 @@
     import type { sponsors_videoId } from "$lib/api/types.js";
     import formatDuration from "format-duration";
 
-    const config = {
-        seekAmount: $seekAmount,
-    };
-
     const { format: formatNumber } = Intl.NumberFormat("en", { notation: "compact" });
 
     export let data;
@@ -497,6 +493,8 @@
                             {#each comments.comments as comment}
                                 <Comment {comment} channelName={video.uploader} />
                             {/each}
+                        {:catch}
+                            <p>Failed to load comments</p>
                         {/await}
                     </div>
                 </div>

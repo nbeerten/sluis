@@ -1,6 +1,5 @@
 import * as z from "zod";
 import { fail, redirect } from "@sveltejs/kit";
-import { extract } from "$lib/cookies";
 
 const loginSchema = z.object({
     username: z.string().trim().min(1),
@@ -8,8 +7,7 @@ const loginSchema = z.object({
 });
 
 export const actions = {
-    default: async ({ request, cookies, fetch }) => {
-        const { createPipedApi } = extract(cookies);
+    default: async ({ request, cookies, fetch, locals }) => {
         const data = await request.formData();
 
         const formData = {
@@ -28,7 +26,7 @@ export const actions = {
 
         const { username, password } = parsed.data;
 
-        const api = createPipedApi(fetch);
+        const api = locals.createPipedApi(fetch);
         const { token } = await api.getAuthToken({ username, password });
 
         if (!token) {

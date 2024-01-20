@@ -1,23 +1,21 @@
 import { getInstances } from "$lib/api";
-import { extract } from "$lib/cookies";
 
-export async function load({ fetch, cookies }) {
+export async function load({ fetch, locals }) {
     try {
         const instances = await getInstances();
-        const { authToken, instance, createPipedApi } = extract(cookies);
 
-        const subscriptions = authToken
-            ? await createPipedApi(fetch).getSubscriptions({ authToken })
+        const subscriptions = locals.authToken
+            ? await locals.createPipedApi(fetch).getSubscriptions({ authToken: locals.authToken })
             : (false as const);
 
         return {
             subscriptions,
             instance: {
-                url: instance,
-                ...(instances.find((i) => i.api_url === instance) || {}),
+                url: locals.instance,
+                ...(instances.find((i) => i.api_url === locals.instance) || {}),
             },
             instances,
-            loggedIn: !!authToken,
+            loggedIn: !!locals.authToken,
         };
     } catch {
         return {
@@ -38,7 +36,7 @@ export async function load({ fetch, cookies }) {
                 registration_disabled: null,
                 uptime_24h: null,
                 uptime_7d: null,
-                uptime_30d: null
+                uptime_30d: null,
             },
             instances: [],
             loggedIn: false,

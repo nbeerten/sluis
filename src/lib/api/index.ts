@@ -14,7 +14,7 @@ import { browser } from "$app/environment";
 
 export const defaultInstance = "https://pipedapi.smnz.de";
 
-export function PipedApi(fetchFunc = globalThis.fetch, baseUrl = defaultInstance, timeout = 1000) {
+export function PipedApi(fetchFunc = globalThis.fetch, baseUrl = defaultInstance, timeout = 5000) {
     const UserAgent = browser ? navigator.userAgent : "Sluis/(https://github.com/nbeerten/sluis)";
 
     const fetch = async (url: RequestInfo | URL, init?: RequestInit) =>

@@ -1,8 +1,5 @@
-import { extract } from "$lib/cookies";
-
-export async function load({ fetch, parent, cookies }) {
+export async function load({ fetch, parent, locals }) {
     const { channel } = await parent();
-    const { createPipedApi } = extract(cookies);
 
     const livestreamsTab = channel.tabs.find((tab) => tab.name === "livestreams");
 
@@ -16,7 +13,7 @@ export async function load({ fetch, parent, cookies }) {
         };
     }
 
-    const livestreams = await createPipedApi(fetch).getChannelTab({
+    const livestreams = await locals.createPipedApi(fetch).getChannelTab({
         data: livestreamsTab.data,
     });
 

@@ -11,7 +11,6 @@
     import { Label } from "$lib/components/ui/label";
     import { Switch } from "$lib/components/ui/switch/";
     import { Input } from "$lib/components/ui/input";
-    import Search from "$lib/components/search.svelte";
 
     export let data;
     let { instances } = data;
@@ -23,7 +22,7 @@
         sublabel: `${i.registered} users | ${i.locations} ${i.cdn ? " | CDN" : ""}`,
     }));
 
-    const validCategories = Object.entries(outputObject).map(([key, _]) =>
+    const validCategories = Object.entries(outputObject).map(([key]) =>
         key.slice("sponsor_".length)
     ) as (keyof typeof outputObject extends `sponsor_${infer T}` ? T : never)[];
 
@@ -113,7 +112,11 @@
                                 {/each}
                             </table>
                         {:else}
-                            <p class="text-muted-foreground leading-snug">Selected instance not available at this moment. Most likely cause is that the selected instance is offline or has an outage. Either select a different instance or try again later.</p>
+                            <p class="leading-snug text-muted-foreground">
+                                Selected instance not available at this moment. Most likely cause is
+                                that the selected instance is offline or has an outage. Either
+                                select a different instance or try again later.
+                            </p>
                         {/if}
                     </CardContent>
                 </Card>
@@ -122,7 +125,7 @@
             <Form.Button
                 type="submit"
                 class="w-full"
-                disabled={(selected?.value === data.instance.url) || !selected}>
+                disabled={selected?.value === data.instance.url || !selected}>
                 Switch to instance
             </Form.Button>
         </div>
