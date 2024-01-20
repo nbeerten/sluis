@@ -6,6 +6,8 @@
     import Pin from "~icons/lucide/pin";
     import Check from "~icons/lucide/check";
     import Heart from "~icons/lucide/heart";
+    import { Button } from "$lib/components/ui/button";
+    import { PipedApi } from "$lib/api";
 
     export let comment: comments_videoId["comments"][number];
     export let channelName: string;
@@ -20,6 +22,24 @@
 
         return newComment;
     }
+
+    let replies: comments_videoId["comments"] = [];
+    let nextPageReplies: string | null = null;
+
+    const fetchReplies = async (nextpage = comment.repliesPage) => {
+        if (nextpage === comment.repliesPage && replies.length > 0) return;
+
+        const v = $page.url.searchParams.get("v");
+        if (!v || !nextpage) return;
+        const response = await PipedApi(fetch, $page.data.instance.api_url).getComments({
+            videoId: v,
+            nextpage,
+        });
+        replies = [...replies, ...response.comments];
+        nextPageReplies = response.nextpage;
+    };
+
+    let expandReplies = false;
 </script>
 
 <div class="flex gap-2">
@@ -57,5 +77,39 @@
                 {/if}
             </p>
         </div>
+        {#if comment.replyCount > 0}
+            <div class="mt-2">
+                <Button
+                    variant="outline"
+                    size="xs"
+                    on:click={() => {
+                        expandReplies = !expandReplies;
+                        fetchReplies(comment.repliesPage);
+                    }}>
+                    {expandReplies ? "Hide" : "Show"}
+                    {comment.replyCount} replies
+                </Button>
+            </div>
+
+            {#if expandReplies}
+                <div class="mt-4 flex flex-col gap-2">
+                    {#each replies as reply}
+                        <svelte:self comment={reply} {channelName} />
+                    {/each}
+
+                    {#if nextPageReplies}
+                        <Button
+                            variant="outline"
+                            size="xs"
+                            on:click={() => {
+                                nextPageReplies && fetchReplies(nextPageReplies);
+                            }}
+                            class="mt-2 w-max">
+                            Load more
+                        </Button>
+                    {/if}
+                </div>
+            {/if}
+        {/if}
     </div>
 </div>

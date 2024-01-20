@@ -16,6 +16,7 @@
     import { onMount } from "svelte";
     import SEO from "$lib/components/seo";
     import { browser } from "$app/environment";
+    import YouTube from "~icons/lucide/youtube";
     import Share from "~icons/lucide/share-2";
     import Plus from "~icons/lucide/plus";
     import * as Dialog from "$lib/components/ui/dialog";
@@ -436,8 +437,12 @@
                     <div class="flex items-center justify-stretch gap-2">
                         <Button
                             variant="secondary"
-                            on:click={share}
-                            class="md:md-auto w-full gap-2">
+                            href="https://youtube.com/watch?v={$page.url.searchParams.get('v')}"
+                            class="w-max gap-2 md:w-auto">
+                            <YouTube class="h-4 w-4 text-red-500" />
+                            <span class="hidden md:inline">Open on YouTube</span>
+                        </Button>
+                        <Button variant="secondary" on:click={share} class="w-max gap-2 md:w-auto">
                             <Share class="h-4 w-4" />
                             <span class="hidden md:inline">Share</span>
                         </Button>
@@ -446,7 +451,7 @@
                                 <Button
                                     builders={[builder]}
                                     variant="secondary"
-                                    class="md:md-auto w-full gap-2">
+                                    class="w-full gap-2 md:w-auto">
                                     <Plus class="h-4 w-4" /> Add to playlist
                                 </Button>
                             </Dialog.Trigger>
@@ -485,18 +490,22 @@
                     </div>
                 </div>
                 <div class="flex flex-col gap-3 pt-2">
-                    <h2 class="text-xl font-semibold">Comments</h2>
-                    <div class="flex flex-col gap-4">
-                        {#await data.streamed.comments}
-                            <p>Loading...</p>
-                        {:then comments}
+                    {#await data.streamed.comments}
+                        <h2 class="text-xl font-semibold">Comments</h2>
+                        <p>Loading...</p>
+                    {:then comments}
+                        <h2 class="text-xl font-semibold">
+                            Comments ({formatNumber(comments.commentCount)})
+                        </h2>
+                        <div class="flex flex-col gap-4">
                             {#each comments.comments as comment}
                                 <Comment {comment} channelName={video.uploader} />
                             {/each}
-                        {:catch}
-                            <p>Failed to load comments</p>
-                        {/await}
-                    </div>
+                        </div>
+                    {:catch}
+                        <h2 class="text-xl font-semibold">Comments</h2>
+                        <p>Failed to load comments</p>
+                    {/await}
                 </div>
             </div>
             <div class="flex flex-col gap-2">
