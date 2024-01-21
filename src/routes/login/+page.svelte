@@ -11,11 +11,12 @@
 
 <SEO title="Login" robots={["noindex", "nofollow"]} />
 
-<main class="max-w-lg">
-    <hgroup>
-        <h1 class="text-3xl font-bold">Login on {data.instance.name}</h1>
+<main class="max-w-md">
+    <hgroup class="w-full">
+        <h1 class="text-3xl font-bold">Login</h1>
+        <p class="text-sm text-muted-foreground">On instance: {data.instance.name}</p>
     </hgroup>
-    <form method="POST" class="space-y-3 py-5" use:enhance>
+    <form method="POST" class="w-full space-y-3 py-5" use:enhance>
         <Input
             type="text"
             name="username"
@@ -32,7 +33,7 @@
         {/if}
         <Button type="submit" class="mt-4 w-full">
             Log in
-            <ArrowRight class="ml-auto h-5 w-5 text-gray-50" />
+            <ArrowRight class="ml-auto h-5 w-5" />
         </Button>
     </form>
 </main>

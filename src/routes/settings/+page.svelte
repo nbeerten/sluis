@@ -11,6 +11,11 @@
     import { Label } from "$lib/components/ui/label";
     import { Switch } from "$lib/components/ui/switch/";
     import { Input } from "$lib/components/ui/input";
+    import { toggleMode, mode } from "mode-watcher";
+    import Check from "~icons/lucide/check";
+    import X from "~icons/lucide/x";
+    import HelpCircle from "~icons/lucide/help-circle";
+    import * as HoverCard from "$lib/components/ui/hover-card";
 
     export let data;
     let { instances } = data;
@@ -39,6 +44,92 @@
     $: if ($page.form?.sponsorForm?.posted ?? false) {
         toast.success(`Saved sponsor category preferences to cookies.`);
     }
+
+    const { format: formatNumber } = Intl.NumberFormat("en", { notation: "compact" });
+
+    function formatInstanceInformation(i: (typeof instances)[number] | undefined) {
+        if (!i) return [];
+        return [
+            ["Name", i.name],
+            ["API url", i.api_url],
+            ["Locations", i.locations],
+            ["Version", i.version],
+            ["Up to date?", i.up_to_date],
+            ["Has CDN?", i.cdn],
+            ["Registered users", formatNumber(i.registered)],
+            [
+                "Last checked",
+                `${new Date(i.last_checked * 1000).toLocaleString("en-UK", { timeZone: "UTC" })} (UTC)`,
+            ],
+            ["Has cache?", i.cache],
+            ["Has S3 enabled?", i.s3_enabled],
+            ["Image proxy url", i.image_proxy_url],
+            ["Registration disabled?", i.registration_disabled],
+            ["Uptime last 24h", `${i.uptime_24h.toFixed(1)}%`],
+            ["Uptime last 7d", `${i.uptime_7d.toFixed(1)}%`],
+            ["Uptime last 30d", `${i.uptime_30d.toFixed(1)}%`],
+        ] as const;
+    }
+
+    function formatCategoryName(category: (typeof validCategories)[number]) {
+        const convert: Record<(typeof validCategories)[number], string> = {
+            sponsor: "Sponsors",
+            intro: "Intermission/Intro Animation",
+            outro: "Endcards/Credits",
+            preview: "Preview/Recap/Hook",
+            interaction: "Interaction Reminder (Subscribe)",
+            selfpromo: "Unpaid/Self Promotion",
+            music_offtopic: "Music: Non-Music Section",
+            filler: "Filler Tangent/Jokes",
+        } as const;
+        return convert[category];
+    }
+
+    function formatCategoryDescription(category: (typeof validCategories)[number]) {
+        const convert: Record<
+            (typeof validCategories)[number],
+            { href: string; description: string }
+        > = {
+            sponsor: {
+                href: "https://wiki.sponsor.ajay.app/w/Sponsor",
+                description: "Paid promotion, paid referrals and direct advertisements.",
+            },
+            intro: {
+                href: "https://wiki.sponsor.ajay.app/w/Intermission/Intro_Animation",
+                description:
+                    "An interval without actual content. Could be a pause, static frame, repeating animation.",
+            },
+            outro: {
+                href: "https://wiki.sponsor.ajay.app/w/Endcards/Credits",
+                description: "Credits or when the YouTube endcards appear.",
+            },
+            preview: {
+                href: "https://wiki.sponsor.ajay.app/w/Preview/Recap/Hook",
+                description:
+                    "Collection of clips that show what is coming up in in this video or other videos in a series where all information is repeated later in the video.",
+            },
+            interaction: {
+                href: "https://wiki.sponsor.ajay.app/w/Interaction_Reminder_(Subscribe)",
+                description: "Reminder that you are subscribed to the channel.",
+            },
+            selfpromo: {
+                href: "https://wiki.sponsor.ajay.app/w/Unpaid/Self_Promotion",
+                description:
+                    'Similar to "sponsor" except for unpaid or self promotion. This includes sections about merchandise, donations, or information about who they collaborated with.',
+            },
+            music_offtopic: {
+                href: "https://wiki.sponsor.ajay.app/w/Music:_Non-Music_Section",
+                description:
+                    "For use in music videos. This only should be used for sections of music videos that aren't already covered by another category.",
+            },
+            filler: {
+                href: "https://wiki.sponsor.ajay.app/w/Filler_Tangent",
+                description:
+                    "Tangential scenes added only for filler or humor that are not required to understand the main content of the video. This should not include segments providing context or background details.",
+            },
+        };
+        return convert[category];
+    }
 </script>
 
 <SEO title="Settings" />
@@ -48,6 +139,19 @@
         <h1 class="text-3xl font-bold">Settings</h1>
     </hgroup>
 
+    <p class="text-xl font-semibold">General</p>
+    <div class="flex items-center justify-between gap-2 py-2">
+        <Label for="darkMode">Dark mode</Label>
+        <Switch
+            id="darkMode"
+            checked={$mode === "dark"}
+            onCheckedChange={toggleMode}
+            class="scale-90" />
+    </div>
+
+    <hr class="my-2 border-border" />
+
+    <p class="pb-2 text-xl font-semibold">Instance</p>
     {#if data.instance.name}
         <div class="flex flex-col gap-2 pb-4">
             <div class="flex gap-2">
@@ -57,7 +161,10 @@
                 <Button variant="default" disabled>Register on {data.instance.name}</Button>
             </div>
             {#if data.loggedIn}
-                <Button variant="outline" class="border-red-900 hover:bg-red-900" href="/logout">
+                <Button
+                    variant="outline"
+                    class="border-red-600 hover:bg-red-600 hover:text-white dark:border-red-900 dark:text-inherit dark:hover:bg-red-900"
+                    href="/logout">
                     Log out of {data.instance.name}
                 </Button>
             {/if}
@@ -104,10 +211,20 @@
                     <CardContent>
                         {#if selected}
                             <table class="text-sm text-muted-foreground">
-                                {#each Object.entries(instances.find((i) => i.api_url === selected?.value) ?? {}) as [key, value]}
+                                {#each formatInstanceInformation(instances.find((i) => i.api_url === selected?.value)) as [key, value]}
                                     <tr>
                                         <td class="pr-4 font-semibold">{key}</td>
-                                        <td>{value}</td>
+                                        <td>
+                                            {#if typeof value === "boolean"}
+                                                {#if value}
+                                                    <Check />
+                                                {:else}
+                                                    <X />
+                                                {/if}
+                                            {:else}
+                                                {value}
+                                            {/if}
+                                        </td>
                                     </tr>
                                 {/each}
                             </table>
@@ -139,7 +256,7 @@
         let:config>
         <div class="flex flex-col gap-1 py-4">
             <div class="mb-2 flex flex-col gap-0">
-                <p class="text-xl font-semibold">Sponsorblock Categories</p>
+                <p class="text-xl font-semibold">Sponsorblock</p>
                 <p class="text-sm text-muted-foreground">
                     Using <a href="https://sponsor.ajay.app/" target="_blank" class="underline">
                         SponsorBlock.
@@ -151,7 +268,21 @@
                 <Form.Field {config} name="sponsor_{category}">
                     <Form.Item class="border-b border-border">
                         <div class="flex items-center justify-between gap-2">
-                            <Form.Label>{category}</Form.Label>
+                            <Form.Label class="flex items-center gap-2">
+                                {formatCategoryName(category)}
+                                <HoverCard.Root>
+                                    <HoverCard.Trigger
+                                        target="_blank"
+                                        href={formatCategoryDescription(category).href}>
+                                        <HelpCircle />
+                                    </HoverCard.Trigger>
+                                    <HoverCard.Content
+                                        side="right"
+                                        class="prose prose-neutral text-sm dark:prose-invert">
+                                        {formatCategoryDescription(category).description}
+                                    </HoverCard.Content>
+                                </HoverCard.Root>
+                            </Form.Label>
                             <Form.Checkbox />
                         </div>
                         <Form.Validation />
@@ -166,7 +297,7 @@
 
     <div class="flex flex-col gap-1 py-4">
         <div class="mb-2 flex flex-col gap-0">
-            <p class="text-xl font-semibold">Video player options</p>
+            <p class="text-xl font-semibold">Video player</p>
             <p class="text-sm text-muted-foreground">Automatically saves options to your browser</p>
         </div>
 

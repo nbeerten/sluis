@@ -339,7 +339,7 @@
                             </div>
                         </AccordionTrigger>
                         <AccordionContent>
-                            <p class="prose dark:prose-invert">
+                            <p class="prose prose-neutral dark:prose-invert">
                                 {@html video.description}
                             </p>
 

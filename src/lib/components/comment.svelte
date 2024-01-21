@@ -62,7 +62,9 @@
                 <Pin class="inline h-4 w-4" />
             {/if}
         </p>
-        <p class="prose prose-invert">{@html extractTimestamps(comment.commentText)}</p>
+        <p class="prose prose-neutral dark:prose-invert">
+            {@html extractTimestamps(comment.commentText)}
+        </p>
         <div class="mt-1.5">
             <p class="flex items-center gap-4 text-xs text-muted-foreground">
                 <span class="inline-flex items-center gap-2">

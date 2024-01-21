@@ -88,7 +88,7 @@
                             <Dialog.Header>
                                 <Dialog.Title>About</Dialog.Title>
                             </Dialog.Header>
-                            <p class="prose prose-invert">
+                            <p class="prose prose-neutral dark:prose-invert">
                                 {@html channel.description}
                             </p>
                         </Dialog.Content>
