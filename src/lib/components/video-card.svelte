@@ -43,7 +43,7 @@
         <div
             class={cn(
                 "relative flex justify-center",
-                bareCard ? "" : "px-6 pt-6",
+                bareCard ? "" : "mx-6 mt-6",
                 horizontalCard ? "pr-3" : "",
                 isShort ? "aspect-[9/16]" : "aspect-video"
             )}>
@@ -57,7 +57,7 @@
                 loading={lazyImage ? "lazy" : "eager"} />
             {#if !isShort}
                 <div
-                    class="absolute bottom-0.5 left-[calc(100%-7%)] -translate-x-full rounded-lg bg-background px-1 text-sm">
+                    class={cn("absolute bottom-0.5 right-1 rounded-lg bg-background px-1 text-sm", (horizontalCard) && "right-4")}>
                     {durationFormatter(video.duration * 1000)}
                 </div>
             {/if}
