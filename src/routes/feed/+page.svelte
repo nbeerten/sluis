@@ -3,6 +3,7 @@
     import { Tabs, TabsContent, TabsList, TabsTrigger } from "$lib/components/ui/tabs";
     import VideoCard from "$lib/components/video-card.svelte";
     import SEO from "$lib/components/seo";
+    import { bareCards } from "$lib/stores";
 
     export let data;
     let { videos, loggedIn } = data;
@@ -44,6 +45,7 @@
                                     uploadDate: video.uploaded,
                                     views: video.views,
                                 }}
+                                bareCard={$bareCards}
                                 lazyImage={i >= 8} />
                         {/each}
                     {:else}

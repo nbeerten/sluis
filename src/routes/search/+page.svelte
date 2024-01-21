@@ -9,6 +9,7 @@
     import SEO from "$lib/components/seo";
     import type { Snapshot } from "./$types.js";
     import { tick } from "svelte";
+    import { bareCards } from "$lib/stores";
 
     export let data;
     let { results } = data;
@@ -129,7 +130,8 @@
                         duration: item.duration,
                         uploadDate: item.uploaded,
                         views: item.views,
-                    }} />
+                    }}
+                    bareCard={$bareCards} />
             {:else if item.type === "channel"}
                 <ChannelCard channel={{ ...item, id: item.url.slice(9) }} />
             {/if}

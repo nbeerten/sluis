@@ -7,7 +7,7 @@
     import { Button } from "$lib/components/ui/button";
     import { page } from "$app/stores";
     import { toast } from "svelte-sonner";
-    import { autoplay, seekAmount, startMuted, timeTillNext } from "$lib/stores";
+    import { autoplay, seekAmount, startMuted, timeTillNext, bareCards } from "$lib/stores";
     import { Label } from "$lib/components/ui/label";
     import { Switch } from "$lib/components/ui/switch/";
     import { Input } from "$lib/components/ui/input";
@@ -146,6 +146,13 @@
             id="darkMode"
             checked={$mode === "dark"}
             onCheckedChange={toggleMode}
+            class="scale-90" />
+    </div>
+    <div class="flex items-center justify-between gap-2 py-2">
+        <Label for="bareCards">Bare (Borderless) Cards</Label>
+        <Switch
+            id="bareCards"
+            bind:checked={$bareCards}
             class="scale-90" />
     </div>
 

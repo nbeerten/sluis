@@ -36,7 +36,7 @@
 <Card
     class={cn(
         className,
-        bareCard && "border-none",
+        bareCard && "border-none mb-4",
         horizontalCard && "grid w-[28rem] max-w-full grid-cols-[11rem,1fr]"
     )}>
     <a href="/watch?v={video.id}" data-sveltekit-preload-data="tap">

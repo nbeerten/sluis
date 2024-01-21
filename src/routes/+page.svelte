@@ -1,6 +1,7 @@
 <script lang="ts">
     import VideoCard from "$lib/components/video-card.svelte";
     import SEO from "$lib/components/seo";
+    import { bareCards } from "$lib/stores";
 
     export let data;
 </script>
@@ -28,7 +29,8 @@
                     uploadDate: video.uploaded,
                     views: video.views,
                 }}
-                lazyImage={i >= 8} />
+                lazyImage={i >= 8}
+                bareCard={$bareCards} />
         {/each}
     </div>
 </main>
