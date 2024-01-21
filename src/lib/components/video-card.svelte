@@ -36,7 +36,7 @@
 <Card
     class={cn(
         className,
-        bareCard && "border-none mb-4",
+        bareCard && "mb-4 border-none",
         horizontalCard && "grid w-[28rem] max-w-full grid-cols-[11rem,1fr]"
     )}>
     <a href="/watch?v={video.id}" data-sveltekit-preload-data="tap">
@@ -57,7 +57,10 @@
                 loading={lazyImage ? "lazy" : "eager"} />
             {#if !isShort}
                 <div
-                    class={cn("absolute bottom-0.5 right-1 rounded-lg bg-background px-1 text-sm", (horizontalCard) && "right-4")}>
+                    class={cn(
+                        "absolute bottom-0.5 right-1 rounded-lg bg-background px-1 text-sm",
+                        horizontalCard && "right-4"
+                    )}>
                     {durationFormatter(video.duration * 1000)}
                 </div>
             {/if}

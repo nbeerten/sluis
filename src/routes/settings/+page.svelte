@@ -150,10 +150,7 @@
     </div>
     <div class="flex items-center justify-between gap-2 py-2">
         <Label for="bareCards">Bare (Borderless) Cards</Label>
-        <Switch
-            id="bareCards"
-            bind:checked={$bareCards}
-            class="scale-90" />
+        <Switch id="bareCards" bind:checked={$bareCards} class="scale-90" />
     </div>
 
     <hr class="my-2 border-border" />

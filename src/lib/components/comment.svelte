@@ -8,6 +8,7 @@
     import Heart from "~icons/lucide/heart";
     import { Button } from "$lib/components/ui/button";
     import { PipedApi } from "$lib/api";
+    import { slide } from "svelte/transition";
 
     export let comment: comments_videoId["comments"][number];
     export let channelName: string;
@@ -26,6 +27,8 @@
     let replies: comments_videoId["comments"] = [];
     let nextPageReplies: string | null = null;
 
+    let hasLoadedFirstPosts = false;
+
     const fetchReplies = async (nextpage = comment.repliesPage) => {
         if (nextpage === comment.repliesPage && replies.length > 0) return;
 
@@ -37,6 +40,7 @@
         });
         replies = [...replies, ...response.comments];
         nextPageReplies = response.nextpage;
+        if (nextpage === comment.repliesPage) hasLoadedFirstPosts = true;
     };
 
     let expandReplies = false;
@@ -44,9 +48,13 @@
 
 <div class="flex gap-2">
     <Avatar>
-        <AvatarImage src={comment.thumbnail} />
+        <AvatarImage
+            src={comment.thumbnail}
+            referrerpolicy="no-referrer"
+            crossorigin="anonymous"
+            loading="lazy" />
         <AvatarFallback>
-            {comment.author ? comment.author.slice(0, 1) : "?"}
+            {comment.author ? comment.author.slice(1, 2).toLowerCase() : "?"}
         </AvatarFallback>
     </Avatar>
 
@@ -93,8 +101,9 @@
                 </Button>
             </div>
 
-            {#if expandReplies}
-                <div class="mt-4 flex flex-col gap-2">
+            {#if expandReplies && hasLoadedFirstPosts}
+                <div class="mt-4"></div>
+                <div class="flex flex-col gap-2" transition:slide>
                     {#each replies as reply}
                         <svelte:self comment={reply} {channelName} />
                     {/each}

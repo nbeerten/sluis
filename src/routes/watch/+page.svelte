@@ -19,17 +19,17 @@
     import YouTube from "~icons/lucide/youtube";
     import Share from "~icons/lucide/share-2";
     import Plus from "~icons/lucide/plus";
+    import ThumbsUp from "~icons/lucide/thumbs-up";
+    import ThumbsDown from "~icons/lucide/thumbs-down";
     import * as Dialog from "$lib/components/ui/dialog";
-    import { Switch } from "$lib/components/ui/switch";
-    import VideoCard from "$lib/components/video-card.svelte";
     import { goto } from "$app/navigation";
     import { autoplay, seekAmount, startMuted, timeTillNext } from "$lib/stores";
-    import { Label } from "$lib/components/ui/label";
     import { preloadData } from "$app/navigation";
     import { page } from "$app/stores";
-    import Comment from "$lib/components/comment.svelte";
     import type { sponsors_videoId } from "$lib/api/types.js";
     import formatDuration from "format-duration";
+    import CommentSection from "./CommentSection.svelte";
+    import RelatedStreams from "./RelatedStreams.svelte";
 
     const { format: formatNumber } = Intl.NumberFormat("en", { notation: "compact" });
 
@@ -327,15 +327,28 @@
                 <Accordion>
                     <AccordionItem value="item-1">
                         <AccordionTrigger
-                            class="grid w-full grid-cols-[1fr,1rem] pb-2 pt-0 text-start">
+                            class="-mx-2 grid w-full grid-cols-[1fr,1rem] rounded-md px-2 py-2 pb-2 pt-0 text-start hover:bg-primary-foreground hover:no-underline">
                             <div class="flex flex-col gap-0">
                                 <h1 class="text-2xl font-bold">
                                     {video.title}
                                 </h1>
-                                <p class="block text-sm text-muted-foreground">
-                                    {formatNumber(video.views)} views • Uploaded
-                                    {formatTimeAgo(new Date(video.uploadDate))}
-                                </p>
+                                <div
+                                    class="flex flex-col gap-x-6 gap-y-1 text-sm text-muted-foreground md:flex-row">
+                                    <p class="block">
+                                        {formatNumber(video.views)} views • Uploaded
+                                        {formatTimeAgo(new Date(video.uploadDate))}
+                                    </p>
+                                    <div class="flex items-center gap-4">
+                                        <span class="flex items-center gap-2">
+                                            <ThumbsUp class="mb-0.5 h-4 w-4" />
+                                            {formatNumber(video.likes)}
+                                        </span>
+                                        <span class="flex items-center gap-2">
+                                            <ThumbsDown class="-mb-1 h-4 w-4" />
+                                            {formatNumber(video.dislikes)}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </AccordionTrigger>
                         <AccordionContent>
@@ -489,81 +502,26 @@
                         </Dialog.Root>
                     </div>
                 </div>
+                <div class="flex flex-col gap-2 py-4 xl:hidden">
+                    <RelatedStreams {video} />
+                </div>
                 <div class="flex flex-col gap-3 pt-2">
                     {#await data.streamed.comments}
                         <h2 class="text-xl font-semibold">Comments</h2>
                         <p>Loading...</p>
                     {:then comments}
-                        <h2 class="text-xl font-semibold">
-                            Comments ({formatNumber(comments.commentCount)})
-                        </h2>
-                        <div class="flex flex-col gap-4">
-                            {#each comments.comments as comment}
-                                <Comment {comment} channelName={video.uploader} />
-                            {/each}
-                        </div>
+                        <CommentSection
+                            {comments}
+                            {video}
+                            videoId={$page.url.searchParams.get("v")} />
                     {:catch}
                         <h2 class="text-xl font-semibold">Comments</h2>
                         <p>Failed to load comments</p>
                     {/await}
                 </div>
             </div>
-            <div class="flex flex-col gap-2">
-                <div class="flex flex-col gap-2">
-                    <div class="flex items-center justify-between gap-2">
-                        <p class="text-lg font-semibold">Next video</p>
-                        <div class="flex items-center gap-2 font-semibold">
-                            <Label for="autoplay" class="text-sm text-muted-foreground">
-                                Autoplay
-                            </Label>
-                            <Switch bind:checked={$autoplay} id="autoplay" class="scale-90" />
-                        </div>
-                    </div>
-                    {#if video.relatedStreams[0] && video.relatedStreams[0].title && video.relatedStreams[0].uploaderUrl && video.relatedStreams[0].url}
-                        <VideoCard
-                            video={{
-                                ...video.relatedStreams[0],
-                                id: video.relatedStreams[0].url.slice(9),
-                                uploader: {
-                                    name: video.relatedStreams[0].uploaderName,
-                                    id: video.relatedStreams[0].uploaderUrl.slice(9),
-                                    avatar: video.relatedStreams[0].uploaderAvatar,
-                                    verified: video.relatedStreams[0].uploaderVerified,
-                                },
-                                uploadDate: video.relatedStreams[0].uploaded,
-                            }}
-                            lazyImage={false}
-                            bareCard
-                            horizontalCard />
-                    {/if}
-                </div>
-                <Accordion>
-                    <AccordionItem value="item-1">
-                        <AccordionTrigger>Related videos</AccordionTrigger>
-                        <AccordionContent>
-                            <div class="flex flex-col gap-2">
-                                {#each video.relatedStreams.slice(1) as relatedStream}
-                                    {#if relatedStream && relatedStream.title && relatedStream.uploaderUrl && relatedStream.url}
-                                        <VideoCard
-                                            video={{
-                                                ...relatedStream,
-                                                id: relatedStream.url.slice(9),
-                                                uploader: {
-                                                    name: relatedStream.uploaderName,
-                                                    id: relatedStream.uploaderUrl.slice(9),
-                                                    avatar: relatedStream.uploaderAvatar,
-                                                    verified: relatedStream.uploaderVerified,
-                                                },
-                                                uploadDate: relatedStream.uploaded,
-                                            }}
-                                            bareCard
-                                            horizontalCard />
-                                    {/if}
-                                {/each}
-                            </div>
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
+            <div class="hidden flex-col gap-2 xl:flex">
+                <RelatedStreams {video} />
             </div>
         </div>
     </div>
