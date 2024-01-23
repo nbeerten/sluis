@@ -33,7 +33,7 @@ export const load = async ({ fetch, url, locals }) => {
                 playlists,
                 sponsors,
             },
-            video: video
+            video: video,
         };
     } catch (err) {
         return error(500, {

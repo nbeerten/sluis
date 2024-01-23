@@ -45,26 +45,35 @@
         currentTime = 0;
     }
 
-    function getSource(video: typeof data["video"]) {
-        if(video.livestream && video.hls) return {
-            type: "hls",
-            source: video.hls
-        };
+    function getSource(video: (typeof data)["video"]) {
+        if (video.livestream && video.hls)
+            return {
+                type: "hls",
+                source: video.hls,
+            };
 
-        if(video.dash) return {
-            type: "dash",
-            source: video.dash
-        };
+        if (video.dash)
+            return {
+                type: "dash",
+                source: video.dash,
+            };
 
         return {
             type: "dash",
-            source: "data:application/dash+xml;charset=utf-8;base64," + btoa(generate_dash_file_from_formats([...video.audioStreams, ...video.videoStreams], video.duration))
-        }
+            source:
+                "data:application/dash+xml;charset=utf-8;base64," +
+                btoa(
+                    generate_dash_file_from_formats(
+                        [...video.audioStreams, ...video.videoStreams],
+                        video.duration
+                    )
+                ),
+        };
     }
 
     let videoSource = {
         type: "dash",
-        source: ""
+        source: "",
     };
     $: videoSource = getSource(video);
 
@@ -119,10 +128,11 @@
     }
 
     onMount(() => {
-        if(videoSource.type === "dash") {
+        if (videoSource.type === "dash") {
             // @ts-expect-error Package has no types, needs no types
-            import("@luwes/dash-video-element");
-        }  else if(videoSource.type === "hls") {
+            // import("@luwes/dash-video-element");
+            import("shaka-video-element");
+        } else if (videoSource.type === "hls") {
             import("hls-video-element");
         }
 
@@ -282,58 +292,58 @@
     <div
         class="flex aspect-video max-h-[75vh] w-full justify-center overflow-hidden rounded-xl bg-black">
         <!-- {#if video.hls} -->
-            <media-controller style="width: 100%;">
-                {#if videoSource.type === "dash"}
-                    <dash-video
-                        src={videoSource.source}
-                        slot="media"
-                        muted={$startMuted}
-                        crossorigin
-                        autoplay
-                        bind:this={videoElement}>
-                    </dash-video>
-                {:else if videoSource.type === "hls"}
-                    <hls-video
-                        src={videoSource.source}
-                        slot="media"
-                        muted={$startMuted}
-                        crossorigin
-                        autoplay
-                        bind:this={videoElement}>
-                    </hls-video>
-                {/if}
-                <media-poster-image slot="poster" src={video.thumbnailUrl}></media-poster-image>
+        <media-controller style="width: 100%;">
+            {#if videoSource.type === "dash"}
+                <shaka-video
+                    src={videoSource.source}
+                    slot="media"
+                    muted={$startMuted}
+                    crossorigin
+                    autoplay
+                    bind:this={videoElement}>
+                </shaka-video>
+            {:else if videoSource.type === "hls"}
+                <hls-video
+                    src={videoSource.source}
+                    slot="media"
+                    muted={$startMuted}
+                    crossorigin
+                    autoplay
+                    bind:this={videoElement}>
+                </hls-video>
+            {/if}
+            <media-poster-image slot="poster" src={video.thumbnailUrl}></media-poster-image>
 
-                <media-control-bar class="media-control-bar p-0">
-                    {#await data.streamed.sponsors}
-                        <media-time-range class="h-1.5 pb-2 pt-0.5"></media-time-range>
-                    {:then awaitedSponsors}
-                        <media-time-range
-                            class="h-1.5 pb-2 pt-0.5"
-                            style="--media-range-track-background: {generateLinearGradient(
-                                awaitedSponsors
-                            ) || 'initial'}">
-                        </media-time-range>
-                    {/await}
-                </media-control-bar>
+            <media-control-bar class="media-control-bar p-0">
+                {#await data.streamed.sponsors}
+                    <media-time-range class="h-1.5 pb-2 pt-0.5"></media-time-range>
+                {:then awaitedSponsors}
+                    <media-time-range
+                        class="h-1.5 pb-2 pt-0.5"
+                        style="--media-range-track-background: {generateLinearGradient(
+                            awaitedSponsors
+                        ) || 'initial'}">
+                    </media-time-range>
+                {/await}
+            </media-control-bar>
 
-                <media-control-bar class="media-control-bar">
-                    <media-play-button></media-play-button>
-                    <media-seek-backward-button seekoffset={$seekAmount} class="hidden md:block">
-                    </media-seek-backward-button>
-                    <media-seek-forward-button seekoffset={$seekAmount} class="hidden md:block">
-                    </media-seek-forward-button>
-                    <media-mute-button></media-mute-button>
-                    <media-time-display showduration class="tabular-nums"></media-time-display>
-                    <span
-                        class="flex flex-grow flex-col justify-center bg-[var(--media-control-background)] text-center">
-                    </span>
-                    <media-pip-button></media-pip-button>
-                    <media-fullscreen-button></media-fullscreen-button>
-                </media-control-bar>
-            </media-controller>
+            <media-control-bar class="media-control-bar">
+                <media-play-button></media-play-button>
+                <media-seek-backward-button seekoffset={$seekAmount} class="hidden md:block">
+                </media-seek-backward-button>
+                <media-seek-forward-button seekoffset={$seekAmount} class="hidden md:block">
+                </media-seek-forward-button>
+                <media-mute-button></media-mute-button>
+                <media-time-display showduration class="tabular-nums"></media-time-display>
+                <span
+                    class="flex flex-grow flex-col justify-center bg-[var(--media-control-background)] text-center">
+                </span>
+                <media-pip-button></media-pip-button>
+                <media-fullscreen-button></media-fullscreen-button>
+            </media-control-bar>
+        </media-controller>
         <!-- {:else} -->
-            <!-- <div class="grid place-content-center">
+        <!-- <div class="grid place-content-center">
                 <div class="flex max-w-lg flex-col rounded-lg bg-background px-6 py-4">
                     <p class="text-lg font-semibold">
                         Sorry, but our player cannot play this video yet.

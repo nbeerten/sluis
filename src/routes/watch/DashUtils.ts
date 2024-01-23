@@ -1,14 +1,17 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 /**
- * Based on: https://github.com/TeamPiped/Piped/blob/cd9549b7a3e33341e7dfd8b08dd5ce8b09cc1a25/src/utils/DashUtils.js 
+ * Based on: https://github.com/TeamPiped/Piped/blob/cd9549b7a3e33341e7dfd8b08dd5ce8b09cc1a25/src/utils/DashUtils.js
  */
 
 // Based of https://github.com/GilgusMaximus/yt-dash-manifest-generator/blob/master/src/DashGenerator.js
 import type { streams_videoId } from "$lib/api/types";
 import { XMLBuilder } from "fast-xml-parser";
 
-export function generate_dash_file_from_formats(VideoFormats: [...streams_videoId["videoStreams"], ...streams_videoId["audioStreams"]], VideoLength: number) {
+export function generate_dash_file_from_formats(
+    VideoFormats: [...streams_videoId["videoStreams"], ...streams_videoId["audioStreams"]],
+    VideoLength: number
+) {
     const generatedJSON = generate_xmljs_json_from_data(VideoFormats, VideoLength);
     const builder = new XMLBuilder({
         ignoreAttributes: false,
@@ -19,7 +22,10 @@ export function generate_dash_file_from_formats(VideoFormats: [...streams_videoI
     return builder.build(generatedJSON);
 }
 
-function generate_xmljs_json_from_data(VideoFormatArray: [...streams_videoId["videoStreams"], ...streams_videoId["audioStreams"]], VideoLength: number) {
+function generate_xmljs_json_from_data(
+    VideoFormatArray: [...streams_videoId["videoStreams"], ...streams_videoId["audioStreams"]],
+    VideoLength: number
+) {
     const convertJSON = {
         "?xml": {
             _version: "1.0",
@@ -39,12 +45,14 @@ function generate_xmljs_json_from_data(VideoFormatArray: [...streams_videoId["vi
     return convertJSON;
 }
 
-function generate_adaptation_set(VideoFormatArray: [...streams_videoId["videoStreams"], ...streams_videoId["audioStreams"]]) {
+function generate_adaptation_set(
+    VideoFormatArray: [...streams_videoId["videoStreams"], ...streams_videoId["audioStreams"]]
+) {
     const adaptationSets = [];
 
     const mimeAudioObjs = [];
 
-    VideoFormatArray.forEach(videoFormat => {
+    VideoFormatArray.forEach((videoFormat) => {
         // the dual formats should not be used
         if (
             (videoFormat.mimeType.includes("video") && !videoFormat.videoOnly) ||
@@ -72,7 +80,7 @@ function generate_adaptation_set(VideoFormatArray: [...streams_videoId["videoStr
         });
     });
 
-    mimeAudioObjs.forEach(mimeAudioObj => {
+    mimeAudioObjs.forEach((mimeAudioObj) => {
         const adapSet = {
             _id: mimeAudioObj.audioTrackId,
             _lang: mimeAudioObj.audioTrackId?.substr(0, 2),
