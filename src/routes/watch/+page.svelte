@@ -10,7 +10,6 @@
     import { Button } from "$lib/components/ui/button";
     import Check from "~icons/lucide/check";
     import "media-chrome";
-    import "hls-video-element";
     import { enhance } from "$app/forms";
     import { toast } from "svelte-sonner";
     import { onMount } from "svelte";
@@ -30,6 +29,7 @@
     import formatDuration from "format-duration";
     import CommentSection from "./CommentSection.svelte";
     import RelatedStreams from "./RelatedStreams.svelte";
+    import { generate_dash_file_from_formats } from "./DashUtils";
 
     const { format: formatNumber } = Intl.NumberFormat("en", { notation: "compact" });
 
@@ -44,6 +44,29 @@
     function resetState() {
         currentTime = 0;
     }
+
+    function getSource(video: typeof data["video"]) {
+        if(video.livestream && video.hls) return {
+            type: "hls",
+            source: video.hls
+        };
+
+        if(video.dash) return {
+            type: "dash",
+            source: video.dash
+        };
+
+        return {
+            type: "dash",
+            source: "data:application/dash+xml;charset=utf-8;base64," + btoa(generate_dash_file_from_formats([...video.audioStreams, ...video.videoStreams], video.duration))
+        }
+    }
+
+    let videoSource = {
+        type: "dash",
+        source: ""
+    };
+    $: videoSource = getSource(video);
 
     let subscribed: boolean;
     $: subscribed =
@@ -96,6 +119,13 @@
     }
 
     onMount(() => {
+        if(videoSource.type === "dash") {
+            // @ts-expect-error Package has no types, needs no types
+            import("@luwes/dash-video-element");
+        }  else if(videoSource.type === "hls") {
+            import("hls-video-element");
+        }
+
         if (!browser) return;
 
         navigator.mediaSession.metadata = new window.MediaMetadata({
@@ -251,16 +281,27 @@
 <div class="space-y-6">
     <div
         class="flex aspect-video max-h-[75vh] w-full justify-center overflow-hidden rounded-xl bg-black">
-        {#if video.hls}
+        <!-- {#if video.hls} -->
             <media-controller style="width: 100%;">
-                <hls-video
-                    src={video.hls}
-                    slot="media"
-                    muted={$startMuted}
-                    crossorigin
-                    autoplay
-                    bind:this={videoElement}>
-                </hls-video>
+                {#if videoSource.type === "dash"}
+                    <dash-video
+                        src={videoSource.source}
+                        slot="media"
+                        muted={$startMuted}
+                        crossorigin
+                        autoplay
+                        bind:this={videoElement}>
+                    </dash-video>
+                {:else if videoSource.type === "hls"}
+                    <hls-video
+                        src={videoSource.source}
+                        slot="media"
+                        muted={$startMuted}
+                        crossorigin
+                        autoplay
+                        bind:this={videoElement}>
+                    </hls-video>
+                {/if}
                 <media-poster-image slot="poster" src={video.thumbnailUrl}></media-poster-image>
 
                 <media-control-bar class="media-control-bar p-0">
@@ -291,8 +332,8 @@
                     <media-fullscreen-button></media-fullscreen-button>
                 </media-control-bar>
             </media-controller>
-        {:else}
-            <div class="grid place-content-center">
+        <!-- {:else} -->
+            <!-- <div class="grid place-content-center">
                 <div class="flex max-w-lg flex-col rounded-lg bg-background px-6 py-4">
                     <p class="text-lg font-semibold">
                         Sorry, but our player cannot play this video yet.
@@ -318,8 +359,8 @@
                         </Button>
                     </div>
                 </div>
-            </div>
-        {/if}
+            </div> -->
+        <!-- {/if} -->
     </div>
     <div class="flex gap-2">
         <div class="grid w-full grid-cols-1 gap-8 xl:grid-cols-[1fr,24rem]">

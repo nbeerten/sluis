@@ -9,7 +9,7 @@ export type streams_videoId =
           uploaderAvatar: string;
           thumbnailUrl: string;
           hls: string;
-          dash: unknown;
+          dash: string;
           lbryId: unknown;
           category: string;
           license: string;
