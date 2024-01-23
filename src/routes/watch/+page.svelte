@@ -129,9 +129,7 @@
 
     onMount(() => {
         if (videoSource.type === "dash") {
-            // @ts-expect-error Package has no types, needs no types
-            // import("@luwes/dash-video-element");
-            import("shaka-video-element");
+            import("./shaka-video");
         } else if (videoSource.type === "hls") {
             import("hls-video-element");
         }
