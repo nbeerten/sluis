@@ -4,6 +4,7 @@ import BarChart3 from "~icons/lucide/bar-chart-3";
 import LayoutGrid from "~icons/lucide/layout-grid";
 import Settings from "~icons/lucide/Settings";
 import ListVideo from "~icons/lucide/list-video";
+import History from "~icons/lucide/history";
 
 type NavItem = {
     label: string;
@@ -26,6 +27,11 @@ const navItems: NavItem[] = [
         label: "Playlists",
         href: "/playlists",
         icon: ListVideo,
+    },
+    {
+        label: "Watch History",
+        href: "/history",
+        icon: History,
     },
 ];
 

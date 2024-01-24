@@ -3,6 +3,21 @@ import Dexie, { type Table } from "dexie";
 export interface Video {
     id?: string;
     progress: number;
+    video: {
+        id: string;
+        title: string;
+        thumbnail: string;
+        uploader: {
+            name: string;
+            id: string;
+            avatar: string;
+            verified: boolean;
+        };
+        duration: number;
+        uploadDate: Date | string | number;
+        views: number;
+    };
+    watchedAt: Date;
 }
 
 export class VideoProgressDb extends Dexie {
@@ -12,8 +27,8 @@ export class VideoProgressDb extends Dexie {
 
     constructor() {
         super("video_progress");
-        this.version(1).stores({
-            videos: "&id, progress", // Primary key and indexed props
+        this.version(2).stores({
+            videos: "&id, progress, watchedAt", // Primary key and indexed props
         });
     }
 }

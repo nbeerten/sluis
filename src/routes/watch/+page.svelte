@@ -21,7 +21,7 @@
     import ThumbsUp from "~icons/lucide/thumbs-up";
     import ThumbsDown from "~icons/lucide/thumbs-down";
     import * as Dialog from "$lib/components/ui/dialog";
-    import { goto } from "$app/navigation";
+    import { goto, beforeNavigate } from "$app/navigation";
     import { autoplay, seekAmount, startMuted, timeTillNext, subtitles } from "$lib/stores";
     import { preloadData } from "$app/navigation";
     import { page } from "$app/stores";
@@ -32,7 +32,6 @@
     import { generate_dash_file_from_formats } from "./DashUtils";
     import type ShakaVideoElement from "$lib/shaka-video";
     import Subtitles from "~icons/lucide/subtitles";
-    import type { VideoProgressDb } from "$lib/indexeddb";
 
     const { format: formatNumber } = Intl.NumberFormat("en", { notation: "compact" });
 
@@ -45,9 +44,12 @@
     $: video, resetState();
 
     let videoId = $page.url.searchParams.get("v");
+    $: videoId = $page.url.searchParams.get("v");
 
     function resetState() {
         currentTime = 0;
+        videoSource = getSource(video);
+        sponsorsData = false;
     }
 
     function getSource(video: (typeof data)["video"]) {
@@ -123,12 +125,10 @@
     }
 
     async function nextVideo() {
-        if (videoElement) {
-            setTimeout(async () => {
-                await preloadData(video.relatedStreams[0].url);
-                goto(video.relatedStreams[0].url);
-            }, $timeTillNext * 1000);
-        }
+        setTimeout(async () => {
+            await preloadData(video.relatedStreams[0].url);
+            goto(video.relatedStreams[0].url);
+        }, $timeTillNext * 1000);
     }
 
     onMount(() => {
@@ -137,9 +137,6 @@
         } else if (videoSource.type === "hls") {
             import("hls-video-element");
         }
-
-        let db: VideoProgressDb | null = null;
-        import("$lib/indexeddb").then((i) => (db = i.db));
 
         if (!browser) return;
 
@@ -190,15 +187,41 @@
                 videoElement.removeAttribute("src");
                 videoElement.load();
             }
-
-            if (db && videoId !== null) {
-                db.videos.put({
-                    id: videoId,
-                    progress: Number(((currentTime / video.duration) * 100).toFixed(2)),
-                });
-            }
         };
     });
+
+    beforeNavigate(async () => {
+        if (videoElement) {
+            await saveToIndexedDb(video, videoElement?.currentTime || 0);
+        }
+    });
+
+    async function saveToIndexedDb(v: typeof video, currentTime: number) {
+        if (!browser) return;
+
+        const db = (await import("$lib/indexeddb")).db;
+        if (db && videoId !== null) {
+            db.videos.put({
+                id: videoId,
+                progress: Number(((currentTime / v.duration) * 100).toFixed(2)),
+                video: {
+                    id: videoId,
+                    title: v.title,
+                    thumbnail: v.thumbnailUrl,
+                    uploader: {
+                        name: v.uploader,
+                        id: v.uploaderUrl.slice(9),
+                        avatar: v.uploaderAvatar,
+                        verified: v.uploaderVerified,
+                    },
+                    duration: v.duration,
+                    uploadDate: v.uploadDate,
+                    views: v.views,
+                },
+                watchedAt: new Date(Date.now()),
+            });
+        }
+    }
 
     const playerActions: { [key in MediaSessionAction]?: MediaSessionActionHandler } = {
         play: () => {
@@ -313,6 +336,21 @@
 
         return `linear-gradient(to right, ${gradient})`;
     }
+
+    /**
+     * Chapters
+     */
+
+    function currentChapter(chapters: (typeof video)["chapters"], currentTime: number) {
+        if (!chapters || !chapters.length) return;
+
+        return chapters.find((chapter, i) => {
+            return (
+                chapter.start <= currentTime &&
+                (i === chapters.length - 1 || chapters[i + 1].start > currentTime)
+            );
+        });
+    }
 </script>
 
 <SEO title={video.title} robots={["noindex", "nofollow"]} />
@@ -320,71 +358,81 @@
 <div class="space-y-6">
     <div
         class="flex aspect-video max-h-[75vh] w-full justify-center overflow-hidden rounded-xl bg-black">
-        <!-- {#if video.hls} -->
-        <media-controller style="width: 100%;">
-            {#if videoSource.type === "dash"}
-                <shaka-video
-                    src={videoSource.source}
-                    slot="media"
-                    muted={$startMuted}
-                    crossorigin
-                    autoplay
-                    subtitles={JSON.stringify(video.subtitles)}
-                    bind:this={videoElement}>
-                </shaka-video>
-            {:else if videoSource.type === "hls"}
-                <hls-video
-                    src={videoSource.source}
-                    slot="media"
-                    muted={$startMuted}
-                    crossorigin
-                    autoplay
-                    bind:this={videoElement}>
-                </hls-video>
-            {/if}
-            <media-poster-image slot="poster" src={video.thumbnailUrl}></media-poster-image>
+        {#key videoSource}
+            <!-- {#if video.hls} -->
+            <media-controller style="width: 100%;">
+                {#if videoSource.type === "dash"}
+                    <shaka-video
+                        src={videoSource.source}
+                        slot="media"
+                        muted={$startMuted}
+                        crossorigin
+                        autoplay
+                        subtitles={JSON.stringify(video.subtitles)}
+                        bind:this={videoElement}>
+                    </shaka-video>
+                {:else if videoSource.type === "hls"}
+                    <hls-video
+                        src={videoSource.source}
+                        slot="media"
+                        muted={$startMuted}
+                        crossorigin
+                        autoplay
+                        bind:this={videoElement}>
+                    </hls-video>
+                {/if}
+                <media-poster-image slot="poster" src={video.thumbnailUrl}></media-poster-image>
 
-            <media-control-bar class="media-control-bar p-0">
-                {#await data.streamed.sponsors}
-                    <media-time-range class="h-1.5 pb-2 pt-0.5"></media-time-range>
-                {:then awaitedSponsors}
-                    <media-time-range
-                        class="h-1.5 pb-2 pt-0.5"
-                        style="--media-range-track-background: {generateLinearGradient(
-                            awaitedSponsors
-                        ) || 'initial'}">
-                    </media-time-range>
-                {/await}
-            </media-control-bar>
+                <media-control-bar class="media-control-bar p-0">
+                    {#await data.streamed.sponsors}
+                        <media-time-range class="h-1.5 pb-2 pt-0.5"></media-time-range>
+                    {:then awaitedSponsors}
+                        <media-time-range
+                            class="h-1.5 pb-2 pt-0.5"
+                            style="--media-range-track-background: {generateLinearGradient(
+                                awaitedSponsors
+                            ) || 'initial'}">
+                        </media-time-range>
+                    {/await}
+                </media-control-bar>
 
-            <media-control-bar class="media-control-bar">
-                <media-play-button></media-play-button>
-                <media-seek-backward-button seekoffset={$seekAmount} class="hidden md:block">
-                </media-seek-backward-button>
-                <media-seek-forward-button seekoffset={$seekAmount} class="hidden md:block">
-                </media-seek-forward-button>
-                <media-mute-button></media-mute-button>
-                <media-time-display showduration class="tabular-nums"></media-time-display>
-                <span
-                    class="flex flex-grow flex-col justify-center bg-[var(--media-control-background)] text-center">
-                </span>
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <media-captions-button
-                    on:click={() => toggleSubtitlesVisibility()}
-                    role="button"
-                    tabindex="0">
-                    <div slot="icon">
-                        {#if $subtitles}
-                            <Subtitles class="h-6 w-6" />
-                        {:else}
-                            <Subtitles class="h-6 w-6" />
-                        {/if}
-                    </div>
-                </media-captions-button>
-                <media-pip-button></media-pip-button>
-                <media-fullscreen-button></media-fullscreen-button>
-            </media-control-bar>
-        </media-controller>
+                <media-control-bar class="media-control-bar">
+                    <media-play-button></media-play-button>
+                    <media-seek-backward-button seekoffset={$seekAmount} class="hidden md:block">
+                    </media-seek-backward-button>
+                    <media-seek-forward-button seekoffset={$seekAmount} class="hidden md:block">
+                    </media-seek-forward-button>
+                    <media-mute-button></media-mute-button>
+                    <media-time-display showduration class="tabular-nums"></media-time-display>
+                    {#if video.chapters.length > 0}
+                        <span class="mb-0.5 flex items-center bg-[var(--media-control-background)]">
+                            {"•"}
+                        </span>
+                        <span class="flex items-center bg-[var(--media-control-background)] px-4">
+                            {currentChapter(video.chapters, currentTime)?.title}
+                        </span>
+                    {/if}
+                    <span
+                        class="flex flex-grow flex-col justify-center bg-[var(--media-control-background)] text-center">
+                    </span>
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <media-captions-button
+                        on:click={() => toggleSubtitlesVisibility()}
+                        role="button"
+                        tabindex="0">
+                        <div slot="icon">
+                            {#if $subtitles}
+                                <Subtitles class="h-6 w-6" />
+                            {:else}
+                                <Subtitles class="h-6 w-6" />
+                            {/if}
+                        </div>
+                    </media-captions-button>
+                    <media-pip-button></media-pip-button>
+                    <media-fullscreen-button></media-fullscreen-button>
+                </media-control-bar>
+            </media-controller>
+        {/key}
         <!-- {:else} -->
         <!-- <div class="grid place-content-center">
                 <div class="flex max-w-lg flex-col rounded-lg bg-background px-6 py-4">
