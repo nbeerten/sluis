@@ -22,7 +22,8 @@ class ShakaVideoElement extends CustomVideoElement {
         this.player = null;
 
         if (shaka.Player.isBrowserSupported()) {
-            this.player = new shaka.Player(this.nativeEl);
+            this.player = new shaka.Player();
+            this.player.attach(this.nativeEl);
 
             // Listen for error events.
             this.player.addEventListener("error", onErrorEvent);

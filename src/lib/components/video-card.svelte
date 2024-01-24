@@ -5,6 +5,7 @@
     import { default as durationFormatter } from "format-duration";
     import Check from "~icons/lucide/check";
     import { cn } from "$lib/utils";
+    import { onMount } from "svelte";
 
     export let video: {
         id: string;
@@ -31,6 +32,25 @@
     export { className as class };
 
     const { format: formatNumber } = Intl.NumberFormat("en", { notation: "compact" });
+
+    let progress: number | false = false;
+
+    onMount(async () => {
+        const db = await import("$lib/indexeddb").then((i) => i.db);
+
+        if (db) {
+            db.videos.get(video.id).then((data) => {
+                if (data) {
+                    progress = Number(data.progress.toFixed(2));
+                }
+            });
+        }
+    });
+
+    const toSec = (progress: number | false) =>
+        progress ? Math.round((progress / 100) * video.duration) : false;
+
+    let videoUrl = (id: string, t?: number | false) => `/watch?v=${id}${t ? `&t=${t}` : ""}`;
 </script>
 
 <Card
@@ -39,10 +59,10 @@
         bareCard && "mb-4 border-none",
         horizontalCard && "grid w-[28rem] max-w-full grid-cols-[11rem,1fr]"
     )}>
-    <a href="/watch?v={video.id}" data-sveltekit-preload-data="tap">
+    <a href={videoUrl(video.id, toSec(progress))} data-sveltekit-preload-data="tap">
         <div
             class={cn(
-                "relative flex justify-center",
+                "relative flex justify-center overflow-clip rounded-lg",
                 bareCard ? "" : "mx-6 mt-6",
                 horizontalCard ? "pr-3" : "",
                 isShort ? "aspect-[9/16]" : "aspect-video"
@@ -59,9 +79,16 @@
                 <div
                     class={cn(
                         "absolute bottom-0.5 right-1 rounded-lg bg-background px-1 text-sm",
-                        horizontalCard && "right-4"
+                        horizontalCard && "right-4",
+                        progress && "bottom-2.5"
                     )}>
                     {durationFormatter(video.duration * 1000)}
+                </div>
+            {/if}
+            {#if progress}
+                <div
+                    class="absolute bottom-0 left-0 right-0 h-1.5 bg-primary-foreground/30"
+                    style="background-image: linear-gradient(to right, rgb(220 38 38) 0%, rgb(220 38 38) {progress}%, transparent {progress}%);">
                 </div>
             {/if}
         </div>
@@ -93,7 +120,7 @@
                 <CardTitle
                     class={cn("line-clamp-2 text-base", horizontalCard && "text-sm font-semibold")}
                     title={video.title}>
-                    <a href="/watch?v={video.id}" data-sveltekit-preload-data="tap">
+                    <a href={videoUrl(video.id, toSec(progress))} data-sveltekit-preload-data="tap">
                         {video.title}
                     </a>
                 </CardTitle>

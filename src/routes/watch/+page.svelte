@@ -32,6 +32,7 @@
     import { generate_dash_file_from_formats } from "./DashUtils";
     import type ShakaVideoElement from "$lib/shaka-video";
     import Subtitles from "~icons/lucide/subtitles";
+    import type { VideoProgressDb } from "$lib/indexeddb";
 
     const { format: formatNumber } = Intl.NumberFormat("en", { notation: "compact" });
 
@@ -42,6 +43,8 @@
     $: loggedIn = data.loggedIn;
 
     $: video, resetState();
+
+    let videoId = $page.url.searchParams.get("v");
 
     function resetState() {
         currentTime = 0;
@@ -106,7 +109,6 @@
             } else {
                 videoElement.currentTime = Number(startAt);
             }
-            videoElement.play();
         }
     }
 
@@ -136,6 +138,9 @@
             import("hls-video-element");
         }
 
+        let db: VideoProgressDb | null = null;
+        import("$lib/indexeddb").then((i) => (db = i.db));
+
         if (!browser) return;
 
         navigator.mediaSession.metadata = new window.MediaMetadata({
@@ -150,11 +155,10 @@
 
         if (videoElement) {
             videoElement.addEventListener("loadedmetadata", () => {
-                const startAt = $page.url.searchParams.get("t");
-
-                if (startAt && videoElement) {
-                    videoElement.currentTime = Number(startAt);
-                }
+                // const startAt = $page.url.searchParams.get("t");
+                // if (startAt && videoElement) {
+                //     videoElement.currentTime = Number(startAt);
+                // }
             });
 
             videoElement.addEventListener("loadeddata", () => {
@@ -169,7 +173,7 @@
                 }
             });
 
-            videoElement.addEventListener("timeupdate", () => {
+            videoElement.addEventListener("timeupdate", async () => {
                 if (videoElement !== null && "currentTime" in videoElement)
                     currentTime = videoElement.currentTime || 0;
                 else currentTime = 0;
@@ -185,6 +189,13 @@
                 videoElement.pause();
                 videoElement.removeAttribute("src");
                 videoElement.load();
+            }
+
+            if (db && videoId !== null) {
+                db.videos.put({
+                    id: videoId,
+                    progress: Number(((currentTime / video.duration) * 100).toFixed(2)),
+                });
             }
         };
     });
@@ -593,10 +604,7 @@
                         <h2 class="text-xl font-semibold">Comments</h2>
                         <p>Loading...</p>
                     {:then comments}
-                        <CommentSection
-                            {comments}
-                            {video}
-                            videoId={$page.url.searchParams.get("v")} />
+                        <CommentSection {comments} {video} {videoId} />
                     {:catch}
                         <h2 class="text-xl font-semibold">Comments</h2>
                         <p>Failed to load comments</p>
