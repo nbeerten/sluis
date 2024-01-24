@@ -24,8 +24,8 @@ dependencies:
     specifier: ^3.0.2
     version: 3.0.2
   formsnap:
-    specifier: ^0.4.2
-    version: 0.4.2(svelte@4.2.9)(sveltekit-superforms@1.13.4)(zod@3.22.4)
+    specifier: ^0.4.3
+    version: 0.4.3(svelte@4.2.9)(sveltekit-superforms@1.13.4)(zod@3.22.4)
   hls-video-element:
     specifier: ^1.1.1
     version: 1.1.1
@@ -39,8 +39,8 @@ dependencies:
     specifier: ^0.1.2
     version: 0.1.2(svelte@4.2.9)
   shaka-player:
-    specifier: ^4.7.6
-    version: 4.7.6
+    specifier: ^4.7.7
+    version: 4.7.7
   shaka-video-element:
     specifier: ^0.0.6
     version: 0.0.6
@@ -74,8 +74,8 @@ devDependencies:
     specifier: ^4.20240117.0
     version: 4.20240117.0
   '@iconify-json/lucide':
-    specifier: ^1.1.157
-    version: 1.1.157
+    specifier: ^1.1.158
+    version: 1.1.158
   '@sveltejs/adapter-auto':
     specifier: ^3.1.1
     version: 3.1.1(@sveltejs/kit@2.4.3)
@@ -452,8 +452,8 @@ packages:
     resolution: {integrity: sha512-6EwiSjwWYP7pTckG6I5eyFANjPhmPjUX9JRLUSfNPC7FX7zK9gyZAfUEaECL6ALTpGX5AjnBq3C9XmVWPitNpw==}
     dev: true
 
-  /@iconify-json/lucide@1.1.157:
-    resolution: {integrity: sha512-r53yiAAL6EZocHuHdeV2tL6G23aU70HdMEMs8sfv3SLyxwv4DSDHZ64yVj4lD12t8nkTxO6Lkj79yY1NQDn8dA==}
+  /@iconify-json/lucide@1.1.158:
+    resolution: {integrity: sha512-cWn5cmKpRw/ihGmpKMkQlTt8fikIBW0aX1OC5KSB6vJV3XXW8UV9RByWgsTbYR/L/8AbsJsUF1Y8PICYEMQuJg==}
     dependencies:
       '@iconify/types': 2.0.0
     dev: true
@@ -1559,8 +1559,8 @@ packages:
     resolution: {integrity: sha512-pKzJDSRgK2lqAiPW3uizDaIJaJnataZclsahz25UMwfdryBGDa+1HlbXGjzpMvX/2kMh4O0sNevFXKaEfCjHsA==}
     dev: false
 
-  /formsnap@0.4.2(svelte@4.2.9)(sveltekit-superforms@1.13.4)(zod@3.22.4):
-    resolution: {integrity: sha512-iUhGDUcjUW9tCOYLZ1rbNR1wkjtEbrXDxhUnl7+zPKjP5K8ikDfhZWH1cquKdUcHJoSE7M/Rruvg0fNQMjSNtA==}
+  /formsnap@0.4.3(svelte@4.2.9)(sveltekit-superforms@1.13.4)(zod@3.22.4):
+    resolution: {integrity: sha512-PWVq78XVUHhAU1tcVGKeGamk6B4Opkk1uVNRW2YofiQpnA5Bry1c3TQjB9cVDw5u4oAwmDvIoAzVHlrAIgc+tw==}
     peerDependencies:
       svelte: ^4.0.0
       sveltekit-superforms: ^1.7.1
@@ -2638,8 +2638,8 @@ packages:
       has-property-descriptors: 1.0.1
     dev: true
 
-  /shaka-player@4.7.6:
-    resolution: {integrity: sha512-7AB3jQLtNFpdxxI1YiuFPGIGCVr25EtWAmmWJvHvhvRbJULe4VrP7UL4TXlHLiJ/fONFdjM61xfI2vh15upEwA==}
+  /shaka-player@4.7.7:
+    resolution: {integrity: sha512-3riRBqd+h4nAQbyY9ub23DcandkxxFS14cmsFZvA72mPRjuNmWBQ/5cfgStXMBQrOx0AqXjCyAAno7CpCaL2Rg==}
     engines: {node: '>=14'}
     dependencies:
       eme-encryption-scheme-polyfill: 2.1.1
@@ -2649,7 +2649,7 @@ packages:
     resolution: {integrity: sha512-DVKwRI9/ly1qcS/7256FKF+o5CIal0pH5jsQtWQupwAvWHdV8HCekUcqQYcRrPd7bB7BiLPkVyDUK4yC3E5ymw==}
     dependencies:
       custom-video-element: 0.0.2
-      shaka-player: 4.7.6
+      shaka-player: 4.7.7
     dev: false
 
   /shebang-command@2.0.0:

@@ -7,7 +7,14 @@
     import { Button } from "$lib/components/ui/button";
     import { page } from "$app/stores";
     import { toast } from "svelte-sonner";
-    import { autoplay, seekAmount, startMuted, timeTillNext, bareCards } from "$lib/stores";
+    import {
+        autoplay,
+        seekAmount,
+        startMuted,
+        timeTillNext,
+        bareCards,
+        subtitles,
+    } from "$lib/stores";
     import { Label } from "$lib/components/ui/label";
     import { Switch } from "$lib/components/ui/switch/";
     import { Input } from "$lib/components/ui/input";
@@ -307,12 +314,16 @@
 
         <div class="flex flex-col gap-2">
             <div class="flex items-center justify-between">
-                <Label>Autoplay</Label>
+                <Label for="autoplay">Autoplay</Label>
                 <Switch bind:checked={$autoplay} id="autoplay" class="scale-90" />
             </div>
             <div class="flex items-center justify-between">
-                <Label>Start muted</Label>
+                <Label for="startMuted">Start muted</Label>
                 <Switch bind:checked={$startMuted} id="startMuted" class="scale-90" />
+            </div>
+            <div class="flex items-center justify-between">
+                <Label for="subtitles">Show subtitles</Label>
+                <Switch bind:checked={$subtitles} id="subtitles" class="scale-90" />
             </div>
             <div class="flex items-center justify-between">
                 <Label>Seek amount</Label>

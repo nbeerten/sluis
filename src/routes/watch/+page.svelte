@@ -22,7 +22,7 @@
     import ThumbsDown from "~icons/lucide/thumbs-down";
     import * as Dialog from "$lib/components/ui/dialog";
     import { goto } from "$app/navigation";
-    import { autoplay, seekAmount, startMuted, timeTillNext } from "$lib/stores";
+    import { autoplay, seekAmount, startMuted, timeTillNext, subtitles } from "$lib/stores";
     import { preloadData } from "$app/navigation";
     import { page } from "$app/stores";
     import type { sponsors_videoId } from "$lib/api/types.js";
@@ -30,6 +30,8 @@
     import CommentSection from "./CommentSection.svelte";
     import RelatedStreams from "./RelatedStreams.svelte";
     import { generate_dash_file_from_formats } from "./DashUtils";
+    import type ShakaVideoElement from "$lib/shaka-video";
+    import Subtitles from "~icons/lucide/subtitles";
 
     const { format: formatNumber } = Intl.NumberFormat("en", { notation: "compact" });
 
@@ -83,7 +85,7 @@
         subscriptions.length > 0 &&
         subscriptions?.find((s) => s.url === video.uploaderUrl) !== undefined;
 
-    let videoElement: HTMLVideoElement | null = null;
+    let videoElement: ShakaVideoElement | null = null;
 
     function share() {
         if (navigator) {
@@ -129,7 +131,7 @@
 
     onMount(() => {
         if (videoSource.type === "dash") {
-            import("./shaka-video");
+            import("$lib/shaka-video");
         } else if (videoSource.type === "hls") {
             import("hls-video-element");
         }
@@ -150,7 +152,15 @@
             videoElement.addEventListener("loadedmetadata", () => {
                 const startAt = $page.url.searchParams.get("t");
 
-                if (startAt && videoElement) videoElement.currentTime = Number(startAt);
+                if (startAt && videoElement) {
+                    videoElement.currentTime = Number(startAt);
+                }
+            });
+
+            videoElement.addEventListener("loadeddata", () => {
+                if ($subtitles) {
+                    if (videoElement) videoElement.player?.setTextTrackVisibility(true);
+                }
             });
 
             videoElement.addEventListener("ended", async () => {
@@ -210,6 +220,16 @@
             }
         },
     };
+
+    function toggleSubtitlesVisibility() {
+        if (videoElement) {
+            const currentVisibility = videoElement.player?.isTextTrackVisible();
+            videoElement.player?.setTextTrackVisibility(true);
+
+            $subtitles = !currentVisibility;
+            // eslint-disable-next-line no-console
+        } else console.error("Failed to toggle subtitles");
+    }
 
     /**
      * Sponsors
@@ -298,6 +318,7 @@
                     muted={$startMuted}
                     crossorigin
                     autoplay
+                    subtitles={JSON.stringify(video.subtitles)}
                     bind:this={videoElement}>
                 </shaka-video>
             {:else if videoSource.type === "hls"}
@@ -336,6 +357,19 @@
                 <span
                     class="flex flex-grow flex-col justify-center bg-[var(--media-control-background)] text-center">
                 </span>
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <media-captions-button
+                    on:click={() => toggleSubtitlesVisibility()}
+                    role="button"
+                    tabindex="0">
+                    <div slot="icon">
+                        {#if $subtitles}
+                            <Subtitles class="h-6 w-6" />
+                        {:else}
+                            <Subtitles class="h-6 w-6" />
+                        {/if}
+                    </div>
+                </media-captions-button>
                 <media-pip-button></media-pip-button>
                 <media-fullscreen-button></media-fullscreen-button>
             </media-control-bar>
