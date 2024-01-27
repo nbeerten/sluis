@@ -13,9 +13,9 @@
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^4.20240117.0",
-        "@iconify-json/lucide": "^1.1.158",
+        "@iconify-json/lucide": "^1.1.159",
         "@sveltejs/adapter-auto": "^3.1.1",
-        "@sveltejs/kit": "^2.4.3",
+        "@sveltejs/kit": "^2.5.0",
         "@sveltejs/vite-plugin-svelte": "^3.0.1",
         "@tailwindcss/typography": "^0.5.10",
         "@types/eslint": "8.56.2",
@@ -49,7 +49,7 @@
         "fast-xml-parser": "^4.3.3",
         "format-duration": "^3.0.2",
         "formsnap": "^0.4.3",
-        "hls-video-element": "^1.1.1",
+        "hls-video-element": "^1.1.2",
         "inter-ui": "^4.0.1",
         "media-chrome": "^2.1.0",
         "mode-watcher": "^0.1.2",
@@ -60,7 +60,7 @@
         "sveltekit-superforms": "^1.13.4",
         "tailwind-merge": "^2.2.1",
         "tailwind-variants": "^0.1.20",
-        "unplugin-icons": "^0.18.2",
+        "unplugin-icons": "^0.18.3",
         "vidstack": "^1.9.8",
         "zod": "^3.22.4"
     }
