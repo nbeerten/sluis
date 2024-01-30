@@ -275,11 +275,11 @@
         sponsorsData = data;
     });
 
-    $: if (browser && videoElement) {
-        const inSegment = isInSponsorSegment(sponsorsData, currentTime);
-        if (inSegment !== false) {
-            videoElement.currentTime = inSegment;
-        }
+    let inSegment: number | false = false;
+    $: inSegment = isInSponsorSegment(sponsorsData, currentTime);
+
+    $: if (inSegment !== false && videoElement) {
+        videoElement.currentTime = inSegment;
     }
 
     function isInSponsorSegment(
