@@ -3,6 +3,8 @@
     import VideoCard from "$lib/components/video-card.svelte";
     import { liveQuery, type Observable } from "dexie";
     import { bareCards } from "$lib/stores";
+    import { Button } from "$lib/components/ui/button";
+    import { browser } from "$app/environment";
 
     let history: Observable<
         {
@@ -33,11 +35,19 @@
                 .then((videos) => videos.map((v) => v.video));
         });
     });
+
+    async function clearHistory() {
+        if(!browser) return;
+
+        const db = (await import("$lib/indexeddb")).db;
+        db.videos.clear();
+    }
 </script>
 
 <main>
-    <hgroup>
+    <hgroup class="flex justify-between">
         <h1 class="text-3xl font-bold">Watch history</h1>
+        <Button variant="destructive" on:click={clearHistory}>Clear</Button>
     </hgroup>
 
     <div class="grid grid-cols-1 gap-4 py-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
