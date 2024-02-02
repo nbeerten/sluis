@@ -13,8 +13,7 @@
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^4.20240129.0",
-        "@iconify-json/lucide": "^1.1.160",
-        "@sveltejs/adapter-auto": "^3.1.1",
+        "@iconify-json/lucide": "^1.1.162",
         "@sveltejs/kit": "^2.5.0",
         "@sveltejs/vite-plugin-svelte": "^3.0.2",
         "@tailwindcss/typography": "^0.5.10",
@@ -26,7 +25,6 @@
         "eslint": "^8.56.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-svelte": "^2.35.1",
-        "patch-package": "^8.0.0",
         "postcss": "^8.4.33",
         "postcss-load-config": "^5.0.2",
         "prettier": "^3.2.4",
@@ -53,15 +51,13 @@
         "inter-ui": "^4.0.1",
         "media-chrome": "^2.1.0",
         "mode-watcher": "^0.2.0",
-        "shaka-player": "^4.7.8",
-        "shaka-video-element": "^0.0.6",
+        "shaka-player": "^4.7.9",
         "svelte-persisted-store": "^0.9.0",
         "svelte-sonner": "^0.3.11",
         "sveltekit-superforms": "^1.13.4",
         "tailwind-merge": "^2.2.1",
         "tailwind-variants": "^0.1.20",
         "unplugin-icons": "^0.18.3",
-        "vidstack": "^1.10.2",
         "zod": "^3.22.4"
     }
 }
