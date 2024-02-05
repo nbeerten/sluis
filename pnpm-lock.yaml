@@ -18,8 +18,8 @@ dependencies:
     specifier: ^0.0.2
     version: 0.0.2
   dexie:
-    specifier: 4.0.1-beta.6
-    version: 4.0.1-beta.6
+    specifier: 4.0.1-beta.7
+    version: 4.0.1-beta.7
   fast-xml-parser:
     specifier: ^4.3.4
     version: 4.3.4
@@ -60,8 +60,8 @@ dependencies:
     specifier: ^0.1.20
     version: 0.1.20(tailwindcss@3.4.1)
   unplugin-icons:
-    specifier: ^0.18.3
-    version: 0.18.3
+    specifier: ^0.18.5
+    version: 0.18.5
   zod:
     specifier: ^3.22.4
     version: 3.22.4
@@ -95,8 +95,8 @@ devDependencies:
     specifier: ^10.4.17
     version: 10.4.17(postcss@8.4.33)
   bits-ui:
-    specifier: ^0.16.0
-    version: 0.16.0(svelte@4.2.9)
+    specifier: ^0.17.0
+    version: 0.17.0(svelte@4.2.9)
   eslint:
     specifier: ^8.56.0
     version: 8.56.0
@@ -113,14 +113,14 @@ devDependencies:
     specifier: ^5.0.2
     version: 5.0.2(postcss@8.4.33)
   prettier:
-    specifier: ^3.2.4
-    version: 3.2.4
+    specifier: ^3.2.5
+    version: 3.2.5
   prettier-plugin-svelte:
     specifier: ^3.1.2
-    version: 3.1.2(prettier@3.2.4)(svelte@4.2.9)
+    version: 3.1.2(prettier@3.2.5)(svelte@4.2.9)
   prettier-plugin-tailwindcss:
     specifier: ^0.5.11
-    version: 0.5.11(prettier-plugin-svelte@3.1.2)(prettier@3.2.4)
+    version: 0.5.11(prettier-plugin-svelte@3.1.2)(prettier@3.2.5)
   svelte:
     specifier: 4.2.9
     version: 4.2.9
@@ -452,8 +452,8 @@ packages:
   /@iconify/types@2.0.0:
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
 
-  /@iconify/utils@2.1.20:
-    resolution: {integrity: sha512-t8TeKlYK/5i9yTY9VAGAE4P0qQHd/0vH+VSRO+bdpxlt8wqB6f2I0/IrciRsdeFZPMoL8IICgP7lgl2ZtbG8Tw==}
+  /@iconify/utils@2.1.22:
+    resolution: {integrity: sha512-6UHVzTVXmvO8uS6xFF+L/QTSpTzA/JZxtgU+KYGFyDYMEObZ1bu/b5l+zNJjHy+0leWjHI+C0pXlzGvv3oXZMA==}
     dependencies:
       '@antfu/install-pkg': 0.1.1
       '@antfu/utils': 0.7.7
@@ -461,6 +461,7 @@ packages:
       debug: 4.3.4
       kolorist: 1.8.0
       local-pkg: 0.5.0
+      mlly: 1.5.0
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -468,7 +469,7 @@ packages:
   /@internationalized/date@3.5.1:
     resolution: {integrity: sha512-LUQIfwU9e+Fmutc/DpRTGXSdgYZLBegi4wygCWDSVmUdLTaMHsQyASDiJtREwanwKuQLq0hY76fCJ9J/9I2xOQ==}
     dependencies:
-      '@swc/helpers': 0.5.3
+      '@swc/helpers': 0.5.6
     dev: true
 
   /@isaacs/cliui@8.0.2:
@@ -507,8 +508,8 @@ packages:
       '@jridgewell/resolve-uri': 3.1.1
       '@jridgewell/sourcemap-codec': 1.4.15
 
-  /@melt-ui/svelte@0.68.0(svelte@4.2.9):
-    resolution: {integrity: sha512-/QvA98hnYEodZtHJ71+ocum/WWp30hVNt3F8uiZKnNYwZDaiQYjlyR9AaGKYcZLCe6R68op1mfCzc0kTzJilyA==}
+  /@melt-ui/svelte@0.71.2(svelte@4.2.9):
+    resolution: {integrity: sha512-GDUErhAphEoEOLpcBjQ84BgzRR6M3344fQE4QYFffwT7aedWak7CvNsECgeig1Y5xvfDmeEaFnGlOQXIBucJYw==}
     peerDependencies:
       svelte: '>=3 <5'
     dependencies:
@@ -714,8 +715,8 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@swc/helpers@0.5.3:
-    resolution: {integrity: sha512-FaruWX6KdudYloq1AHD/4nU+UsMTdNE8CKyrseXWEcgjDAbvkwJg2QGPAnfIJLIWsjZOSPLOAykK6fuYp4vp4A==}
+  /@swc/helpers@0.5.6:
+    resolution: {integrity: sha512-aYX01Ke9hunpoCexYAgQucEpARGQ5w/cqHFrIR+e9gdKb1QWTsVJuTJ2ozQzIAxLyRQe/m+2RqzkyOOGiMKRQA==}
     dependencies:
       tslib: 2.6.2
     dev: true
@@ -988,13 +989,13 @@ packages:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
     engines: {node: '>=8'}
 
-  /bits-ui@0.16.0(svelte@4.2.9):
-    resolution: {integrity: sha512-HEkuVDyUG9dTWtKujKpdDsGOe9GRmuYOEF9yGbjVwNazxMQDQa9deUX8vM3ofGBWaJgr1cEu88p38kP5Z5gQ8w==}
+  /bits-ui@0.17.0(svelte@4.2.9):
+    resolution: {integrity: sha512-K73jjco1qPmvGXMQtTkZG6K36UmNrPR21u+C1jzoRWmF3NnUfDP4hPJnAci0LosUycfvOxtaHB1M4awvLvQXyQ==}
     peerDependencies:
       svelte: ^4.0.0
     dependencies:
       '@internationalized/date': 3.5.1
-      '@melt-ui/svelte': 0.68.0(svelte@4.2.9)
+      '@melt-ui/svelte': 0.71.2(svelte@4.2.9)
       nanoid: 5.0.5
       svelte: 4.2.9
     dev: true
@@ -1161,8 +1162,8 @@ packages:
   /devalue@4.3.2:
     resolution: {integrity: sha512-KqFl6pOgOW+Y6wJgu80rHpo2/3H07vr8ntR9rkkFIRETewbf5GaYYcakYfiKz89K+sLsuPkQIZaXDMjUObZwWg==}
 
-  /dexie@4.0.1-beta.6:
-    resolution: {integrity: sha512-NOexH4Rn8mrdSg/bn3YNFdPzQ1vPNxgPYLGWGU46z26NYGW1XmC0hhjjttwx9jYwba1K9Ypo1ZbZLNKtK6INSg==}
+  /dexie@4.0.1-beta.7:
+    resolution: {integrity: sha512-jWR02VWpPOZNMQo0YlOQzUXdpHQu2NDbUTW/HUNDjhYnP4j3LVsLtghb3TrFpilHJeL3Nn86wzrmx3Sd8svfKg==}
     dev: false
 
   /didyoumean@1.2.2:
@@ -2259,17 +2260,17 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
-  /prettier-plugin-svelte@3.1.2(prettier@3.2.4)(svelte@4.2.9):
+  /prettier-plugin-svelte@3.1.2(prettier@3.2.5)(svelte@4.2.9):
     resolution: {integrity: sha512-7xfMZtwgAWHMT0iZc8jN4o65zgbAQ3+O32V6W7pXrqNvKnHnkoyQCGCbKeUyXKZLbYE0YhFRnamfxfkEGxm8qA==}
     peerDependencies:
       prettier: ^3.0.0
       svelte: ^3.2.0 || ^4.0.0-next.0 || ^5.0.0-next.0
     dependencies:
-      prettier: 3.2.4
+      prettier: 3.2.5
       svelte: 4.2.9
     dev: true
 
-  /prettier-plugin-tailwindcss@0.5.11(prettier-plugin-svelte@3.1.2)(prettier@3.2.4):
+  /prettier-plugin-tailwindcss@0.5.11(prettier-plugin-svelte@3.1.2)(prettier@3.2.5):
     resolution: {integrity: sha512-AvI/DNyMctyyxGOjyePgi/gqj5hJYClZ1avtQvLlqMT3uDZkRbi4HhGUpok3DRzv9z7Lti85Kdj3s3/1CeNI0w==}
     engines: {node: '>=14.21.3'}
     peerDependencies:
@@ -2318,12 +2319,12 @@ packages:
       prettier-plugin-twig-melody:
         optional: true
     dependencies:
-      prettier: 3.2.4
-      prettier-plugin-svelte: 3.1.2(prettier@3.2.4)(svelte@4.2.9)
+      prettier: 3.2.5
+      prettier-plugin-svelte: 3.1.2(prettier@3.2.5)(svelte@4.2.9)
     dev: true
 
-  /prettier@3.2.4:
-    resolution: {integrity: sha512-FWu1oLHKCrtpO1ypU6J0SbK2d9Ckwysq6bHj/uaCP26DxrPpppCLQRGVuqAxSTvhF00AcvDRyYrLNW7ocBhFFQ==}
+  /prettier@3.2.5:
+    resolution: {integrity: sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==}
     engines: {node: '>=14'}
     hasBin: true
     dev: true
@@ -2844,8 +2845,8 @@ packages:
     resolution: {integrity: sha512-o+ORpgGwaYQXgqGDwd+hkS4PuZ3QnmqMMxRuajK/a38L6fTpcE5GPIfrf+L/KemFzfUpeUQc1rRS1iDBozvnFA==}
     dev: false
 
-  /unplugin-icons@0.18.3:
-    resolution: {integrity: sha512-6EHPMXOq7XL8JAULzX0o3KqOsJHhYfpDfB1WvBWwZJH/PutIkV/ahRpHytucQ1evfRFuv/DVIozEmFIhP1xRxA==}
+  /unplugin-icons@0.18.5:
+    resolution: {integrity: sha512-KVNAohXbZ7tVcG1C3p6QaC7wU9Qrj7etv4XvsMMJAxr5LccQZ+Iuv5LOIv/7GtqXaGN1BuFCqRO1ErsHEgEXdQ==}
     peerDependencies:
       '@svgr/core': '>=7.0.0'
       '@svgx/core': ^1.0.1
@@ -2866,7 +2867,7 @@ packages:
     dependencies:
       '@antfu/install-pkg': 0.3.1
       '@antfu/utils': 0.7.7
-      '@iconify/utils': 2.1.20
+      '@iconify/utils': 2.1.22
       debug: 4.3.4
       kolorist: 1.8.0
       local-pkg: 0.5.0
