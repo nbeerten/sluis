@@ -21,13 +21,13 @@
         "@typescript-eslint/eslint-plugin": "^6.20.0",
         "@typescript-eslint/parser": "^6.20.0",
         "autoprefixer": "^10.4.17",
-        "bits-ui": "^0.16.0",
+        "bits-ui": "^0.17.0",
         "eslint": "^8.56.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-svelte": "^2.35.1",
         "postcss": "^8.4.33",
         "postcss-load-config": "^5.0.2",
-        "prettier": "^3.2.4",
+        "prettier": "^3.2.5",
         "prettier-plugin-svelte": "^3.1.2",
         "prettier-plugin-tailwindcss": "^0.5.11",
         "svelte": "4.2.9",
@@ -43,7 +43,7 @@
         "@sveltejs/adapter-cloudflare": "^4.1.0",
         "clsx": "^2.1.0",
         "custom-video-element": "^0.0.2",
-        "dexie": "4.0.1-beta.6",
+        "dexie": "4.0.1-beta.7",
         "fast-xml-parser": "^4.3.4",
         "format-duration": "^3.0.2",
         "formsnap": "^0.4.3",
@@ -57,7 +57,7 @@
         "sveltekit-superforms": "^1.13.4",
         "tailwind-merge": "^2.2.1",
         "tailwind-variants": "^0.1.20",
-        "unplugin-icons": "^0.18.3",
+        "unplugin-icons": "^0.18.5",
         "zod": "^3.22.4"
     }
 }
