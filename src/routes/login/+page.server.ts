@@ -33,7 +33,7 @@ export const actions = {
             return fail(400, { username, error: "Invalid credentials" });
         }
 
-        cookies.set("authToken", token, { path: "/", httpOnly: false });
+        cookies.set("authToken", token, { path: "/", httpOnly: false, expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365) }); // 1 year
 
         redirect(302, "/");
     },

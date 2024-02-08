@@ -31,6 +31,7 @@ export const actions = {
             path: "/",
             httpOnly: false,
             secure: false,
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
         });
         event.cookies.set("authToken", "", { expires: new Date(0), path: "/" });
 
@@ -56,6 +57,7 @@ export const actions = {
             path: "/",
             httpOnly: false,
             secure: false,
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
         });
 
         return {
