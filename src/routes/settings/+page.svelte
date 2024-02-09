@@ -165,13 +165,14 @@
     <p class="pb-2 text-xl font-semibold">Instance</p>
     {#if data.instance.name}
         <div class="flex flex-col gap-2 pb-4">
-            <div class="flex gap-2">
-                <Button href="/login" variant="default" class="w-full">
-                    Login on {data.instance.name}
-                </Button>
-                <Button variant="default" disabled>Register on {data.instance.name}</Button>
-            </div>
-            {#if data.loggedIn}
+            {#if !data.loggedIn}
+                <div class="flex gap-2">
+                    <Button href="/login" variant="default" class="w-full">
+                        Login on {data.instance.name}
+                    </Button>
+                    <Button variant="default" disabled>Register on {data.instance.name}</Button>
+                </div>
+            {:else}
                 <Button
                     variant="outline"
                     class="border-red-600 hover:bg-red-600 hover:text-white dark:border-red-900 dark:text-inherit dark:hover:bg-red-900"

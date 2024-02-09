@@ -12,7 +12,7 @@ import type {
 } from "./types";
 import { browser } from "$app/environment";
 
-export const defaultInstance = "https://pipedapi.smnz.de";
+export const defaultInstance = "https://pipedapi.kavin.rocks";
 
 export function PipedApi(fetchFunc = globalThis.fetch, baseUrl = defaultInstance, timeout = 5000) {
     const UserAgent = browser ? navigator.userAgent : "Sluis/(https://github.com/nbeerten/sluis)";

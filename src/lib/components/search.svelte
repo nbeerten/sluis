@@ -36,7 +36,7 @@
     class="flex w-full justify-center"
     use:clickoutside
     on:clickoutside={() => (open = false)}>
-    <div class="relative w-full md:w-[40rem]">
+    <div class="relative w-full max-w-[60svw] md:max-w-[40rem]">
         <Input
             type="search"
             name="q"

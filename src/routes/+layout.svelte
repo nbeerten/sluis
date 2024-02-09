@@ -11,6 +11,7 @@
     import { Toaster } from "$lib/components/ui/sonner";
     import SEO from "$lib/components/seo";
     import { ModeWatcher } from "mode-watcher";
+    import GitHub from "~icons/lucide/github";
 
     export let data;
     let { subscriptions } = data;
@@ -25,11 +26,17 @@
 <div class="relative flex min-h-screen flex-col">
     <div class="mb-4 h-16">
         <nav
-            class="fixed left-0 top-0 z-10 grid h-16 w-screen grid-cols-[auto,1fr,auto] items-center border-b bg-background py-2 md:grid-cols-[16rem,1fr,16rem]">
+            class="fixed left-0 top-0 z-10 grid h-16 w-full grid-cols-[auto,1fr,auto] justify-between items-center border-b bg-background py-2 md:grid-cols-[16rem,1fr,16rem]">
             <div class="flex px-3 md:w-64 md:pt-2">
-                <h2
-                    class="mb-2 hidden items-center gap-3 px-4 text-2xl font-extrabold dark:text-[#ffe7b3] md:flex">
-                    Sluis
+                <h2 class="mb-2 hidden flex-col justify-center gap-0.5 px-4 md:flex">
+                    <span class="text-2xl font-extrabold leading-none dark:text-[#ffe7b3]">
+                        Sluis
+                    </span>
+                    <span class="text-xs leading-none text-muted-foreground">
+                        Based on <a href="https://piped.video" target="_blank" class="underline">
+                            piped.video
+                        </a>
+                    </span>
                 </h2>
                 <div class="relative flex md:hidden">
                     <Sheet.Root>
@@ -40,9 +47,15 @@
                         </Sheet.Trigger>
                         <Sheet.Content side="left" class="space-y-4">
                             <Sheet.Header>
-                                <Sheet.Title
-                                    class="flex items-center gap-2 text-2xl font-extrabold text-[#ffe7b3]">
-                                    Sluis
+                                <Sheet.Title class="mb-2 flex-col justify-center gap-0.5 px-4 flex">
+                                    <span class="text-2xl font-extrabold leading-none dark:text-[#ffe7b3]">
+                                        Sluis
+                                    </span>
+                                    <span class="text-xs leading-none text-muted-foreground">
+                                        Based on <a href="https://piped.video" target="_blank" class="underline">
+                                            piped.video
+                                        </a>
+                                    </span>
                                 </Sheet.Title>
                             </Sheet.Header>
                             <div class="flex flex-col gap-3">
@@ -55,8 +68,11 @@
                     </Sheet.Root>
                 </div>
             </div>
-            <div class="flex justify-center pr-2 md:pr-0">
+            <div class="flex justify-center pr-2 md:pr-0 flex-grow">
                 <Search />
+            </div>
+            <div class="flex justify-end px-3">
+                <a href="https://github.com/nbeerten/sluis" target="_blank" rel="noreferrer"><GitHub /></a>
             </div>
         </nav>
     </div>
