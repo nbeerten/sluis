@@ -93,7 +93,10 @@
             videoElement.addEventListener("timeupdate", async () => {
                 if (videoElement !== null && "currentTime" in videoElement) {
                     currentTime = videoElement.currentTime || 0;
-                    navigator.mediaSession.setPositionState({ duration: video.duration, position: currentTime });
+                    navigator.mediaSession.setPositionState({
+                        duration: video.duration,
+                        position: currentTime,
+                    });
                 } else currentTime = 0;
             });
 
@@ -115,7 +118,7 @@
             navigator.mediaSession.playbackState = "none";
             navigator.mediaSession.setPositionState({ duration: 0, position: 0 });
 
-            destroy = true;  
+            destroy = true;
         };
     });
 
@@ -262,9 +265,8 @@
             <media-control-bar class="media-control-bar p-0">
                 <media-time-range
                     class="h-1.5 pb-2 pt-0.5"
-                    style="--media-range-track-background: {generateLinearGradient(
-                        sponsors
-                    ) || 'initial'}">
+                    style="--media-range-track-background: {generateLinearGradient(sponsors) ||
+                        'initial'}">
                 </media-time-range>
             </media-control-bar>
 

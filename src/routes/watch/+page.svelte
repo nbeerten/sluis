@@ -103,7 +103,7 @@
         {#await import("./VideoPlayer.svelte") then { default: VideoPlayer }}
             {#key video}
                 {#await data.streamed.sponsors then sponsors}
-                    <VideoPlayer {video} {sponsors} nextVideo={nextVideo} bind:currentTime={currentTime} />
+                    <VideoPlayer {video} {sponsors} {nextVideo} bind:currentTime />
                 {/await}
             {/key}
         {/await}

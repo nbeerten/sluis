@@ -37,7 +37,7 @@
     });
 
     async function clearHistory() {
-        if(!browser) return;
+        if (!browser) return;
 
         const db = (await import("$lib/indexeddb")).db;
         db.videos.clear();
