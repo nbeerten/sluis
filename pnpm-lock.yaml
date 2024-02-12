@@ -18,8 +18,8 @@ dependencies:
     specifier: ^0.0.2
     version: 0.0.2
   dexie:
-    specifier: 4.0.1-beta.7
-    version: 4.0.1-beta.7
+    specifier: 4.0.1-beta.9
+    version: 4.0.1-beta.9
   fast-xml-parser:
     specifier: ^4.3.4
     version: 4.3.4
@@ -1442,8 +1442,8 @@ packages:
   /devalue@4.3.2:
     resolution: {integrity: sha512-KqFl6pOgOW+Y6wJgu80rHpo2/3H07vr8ntR9rkkFIRETewbf5GaYYcakYfiKz89K+sLsuPkQIZaXDMjUObZwWg==}
 
-  /dexie@4.0.1-beta.7:
-    resolution: {integrity: sha512-jWR02VWpPOZNMQo0YlOQzUXdpHQu2NDbUTW/HUNDjhYnP4j3LVsLtghb3TrFpilHJeL3Nn86wzrmx3Sd8svfKg==}
+  /dexie@4.0.1-beta.9:
+    resolution: {integrity: sha512-/m2G39sxv6NiL1OqwZN1YsE7sLUx3C9V8wnHLhmgT3phfTMz8LbWQ8b21D9cy/IhvyLkcVwisuoRiPVh60prIw==}
     dev: false
 
   /didyoumean@1.2.2:
