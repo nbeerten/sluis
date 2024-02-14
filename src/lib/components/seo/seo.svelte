@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { page } from "$app/stores";
+
     export let title: string;
     export let description: string | undefined = undefined;
     export let image: string | undefined = undefined;
@@ -18,8 +20,8 @@
         <meta name="twitter:description" content={description} />
     {/if}
     {#if image}
-        <meta property="og:image" content={image} />
-        <meta name="twitter:image" content={image} />
+        <meta property="og:image" content={new URL(image, $page.url).toString()} />
+        <meta name="twitter:image" content={new URL(image, $page.url).toString()} />
     {/if}
 
     {#if robots && robots.length > 0}
