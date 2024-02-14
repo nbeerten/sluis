@@ -18,7 +18,7 @@
     $: subscriptions = data.subscriptions;
 </script>
 
-<SEO title="Home" robots={["nofollow"]} image="/og" />
+<SEO title="Home" robots={["nofollow"]} />
 
 <ModeWatcher defaultMode="dark" />
 <Toaster position="bottom-right" theme="system" closeButton={true} />
