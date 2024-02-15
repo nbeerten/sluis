@@ -39,13 +39,28 @@
     }
 
     let aboutDialogOpen = false;
+
+    function escape(htmlStr: string) {
+        return htmlStr
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function linkifyText(text: string): string {
+        return text
+            .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>')
+            .replace(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}/gi, '<a href="mailto:$&">$&</a>');
+    }
 </script>
 
 <SEO title={channel.name} robots={["noindex", "nofollow"]} />
 
 <main>
     <hgroup class="space-y-4">
-        <div class="overflow-hidden rounded-xl bg-primary-foreground [aspect-ratio:6/1]">
+        <div class="overflow-hidden rounded-xl bg-primary-foreground [aspect-ratio:2436/403]">
             <img src={channel.bannerUrl} alt="Banner" class="h-full w-full object-contain" />
         </div>
         <div class="flex flex-col justify-between md:flex-row md:items-center">
@@ -88,8 +103,8 @@
                             <Dialog.Header>
                                 <Dialog.Title>About</Dialog.Title>
                             </Dialog.Header>
-                            <p class="prose prose-neutral dark:prose-invert">
-                                {@html channel.description}
+                            <p class="prose prose-neutral whitespace-pre-line dark:prose-invert">
+                                {@html linkifyText(escape(channel.description.trim()))}
                             </p>
                         </Dialog.Content>
                     </Dialog.Root>
