@@ -1,11 +1,24 @@
 <script lang="ts">
-    import * as Form from "$lib/components/ui/form";
+    import {
+        FormButton,
+        FormControl,
+        FormField,
+        FormFieldErrors,
+        FormLabel,
+    } from "$lib/components/ui/form";
+    import {
+        Select,
+        SelectContent,
+        SelectInput,
+        SelectItem,
+        SelectTrigger,
+        SelectValue,
+    } from "$lib/components/ui/select";
     import { sponsorSchema, instanceSchema } from "./schema";
     import { outputObject } from "./schema";
     import SEO from "$lib/components/seo";
     import { Card, CardTitle, CardContent, CardHeader } from "$lib/components/ui/card";
     import { Button } from "$lib/components/ui/button";
-    import { page } from "$app/stores";
     import { toast } from "svelte-sonner";
     import {
         autoplay,
@@ -23,12 +36,36 @@
     import X from "~icons/lucide/x";
     import HelpCircle from "~icons/lucide/help-circle";
     import * as HoverCard from "$lib/components/ui/hover-card";
+    import { superForm } from "sveltekit-superforms";
+    import { zodClient } from "sveltekit-superforms/adapters";
+    import { Checkbox } from "$lib/components/ui/checkbox";
+    import type { Instances } from "$lib/api";
 
     export let data;
     let { instances } = data;
     $: instances = data.instances;
 
-    const instanceList = instances.map((i) => ({
+    const instanceForm = superForm(data.instanceForm, {
+        validators: zodClient(instanceSchema),
+        resetForm: false,
+    });
+    const {
+        form: instanceFormData,
+        enhance: instanceEnhance,
+        posted: instanceFormPosted,
+    } = instanceForm;
+
+    const sponsorForm = superForm(data.sponsorForm, {
+        validators: zodClient(sponsorSchema),
+        resetForm: false,
+    });
+    const {
+        form: sponsorFormData,
+        enhance: sponsorEnhance,
+        posted: sponsorFormPosted,
+    } = sponsorForm;
+
+    const instanceList = (instances as Instances).map((i) => ({
         value: i.api_url,
         label: `${i.name} (${i.uptime_30d.toFixed(1)}%)`,
         sublabel: `${i.registered} users | ${i.locations} ${i.cdn ? " | CDN" : ""}`,
@@ -41,14 +78,20 @@
     let selected = instanceList.find((i) => i.value === data.instance.url) as
         | (typeof instanceList)[number]
         | undefined;
-    const setSelected = (i: unknown) => (selected = i as typeof selected);
-    const readSelected = () => selected?.value;
 
-    $: if ($page.form?.instanceForm?.posted ?? false) {
-        toast.success(`Switched instance to ${readSelected()}`);
+    $: selectedInstance = $instanceFormData.instance
+        ? {
+              label: instanceList.find((i) => i.value === $instanceFormData.instance)?.label,
+              value: $instanceFormData.instance,
+          }
+        : undefined;
+
+    const readInstance = () => $instanceFormData.instance;
+    $: if ($instanceFormPosted ?? false) {
+        toast.success(`Switched instance to ${readInstance()}`);
     }
 
-    $: if ($page.form?.sponsorForm?.posted ?? false) {
+    $: if ($sponsorFormPosted ?? false) {
         toast.success(`Saved sponsor category preferences to cookies.`);
     }
 
@@ -183,37 +226,38 @@
         </div>
     {/if}
 
-    <Form.Root
-        method="POST"
-        action="?/instance"
-        form={data.instanceForm}
-        schema={instanceSchema}
-        let:config>
+    <form method="POST" action="?/instance" use:instanceEnhance>
         <div class="mb-2 flex flex-col gap-1">
-            <Form.Field {config} name="instance">
-                <Form.Item>
-                    <Form.Label>Instance</Form.Label>
-                    <Form.Select
+            <FormField form={instanceForm} name="instance">
+                <FormControl let:attrs>
+                    <FormLabel>Instance</FormLabel>
+                    <Select
+                        items={instanceList}
                         preventScroll={false}
-                        {selected}
-                        onSelectedChange={(i) => setSelected(i)}>
-                        <Form.SelectTrigger class="w-full" placeholder="Selected an instance..." />
-                        <Form.SelectContent
+                        selected={selectedInstance}
+                        onSelectedChange={(v) => {
+                            v && ($instanceFormData.instance = v.value);
+                        }}>
+                        <SelectInput name={attrs.name} />
+                        <SelectTrigger class="w-full" {...attrs}>
+                            <SelectValue placeholder="Selected an instance..." />
+                        </SelectTrigger>
+                        <SelectContent
                             class="z-0 max-h-[30rem] overflow-y-scroll overscroll-contain">
                             {#each instanceList as { value, label, sublabel }}
-                                <Form.SelectItem
+                                <SelectItem
                                     {value}
                                     {label}
                                     class="flex-col items-start justify-center text-left">
                                     <span>{label}</span>
                                     <span class="text-xs text-muted-foreground">{sublabel}</span>
-                                </Form.SelectItem>
+                                </SelectItem>
                             {/each}
-                        </Form.SelectContent>
-                    </Form.Select>
-                    <Form.Validation />
-                </Form.Item>
-            </Form.Field>
+                        </SelectContent>
+                    </Select>
+                </FormControl>
+                <FormFieldErrors />
+            </FormField>
 
             <div>
                 <Card>
@@ -251,21 +295,16 @@
                 </Card>
             </div>
 
-            <Form.Button
+            <FormButton
                 type="submit"
                 class="w-full"
-                disabled={selected?.value === data.instance.url || !selected}>
+                disabled={selectedInstance?.value === data.instance.url || !selectedInstance}>
                 Switch to instance
-            </Form.Button>
+            </FormButton>
         </div>
-    </Form.Root>
+    </form>
 
-    <Form.Root
-        method="POST"
-        action="?/sponsor"
-        form={data.sponsorForm}
-        schema={sponsorSchema}
-        let:config>
+    <form method="POST" action="?/sponsor" use:sponsorEnhance>
         <div class="flex flex-col gap-1 py-4">
             <div class="mb-2 flex flex-col gap-0">
                 <p class="text-xl font-semibold">Sponsorblock</p>
@@ -277,10 +316,13 @@
                 </p>
             </div>
             {#each validCategories as category}
-                <Form.Field {config} name="sponsor_{category}">
-                    <Form.Item class="border-b border-border">
+                <FormField
+                    form={sponsorForm}
+                    name="sponsor_{category}"
+                    class="border-b border-border">
+                    <FormControl let:attrs>
                         <div class="flex items-center justify-between gap-2">
-                            <Form.Label class="flex items-center gap-2">
+                            <FormLabel class="flex items-center gap-2">
                                 {formatCategoryName(category)}
                                 <HoverCard.Root>
                                     <HoverCard.Trigger
@@ -294,18 +336,23 @@
                                         {formatCategoryDescription(category).description}
                                     </HoverCard.Content>
                                 </HoverCard.Root>
-                            </Form.Label>
-                            <Form.Checkbox />
+                            </FormLabel>
+                            <Checkbox bind:checked={$sponsorFormData[`sponsor_${category}`]} />
+                            <input
+                                hidden
+                                type="checkbox"
+                                {...attrs}
+                                bind:checked={$sponsorFormData[`sponsor_${category}`]} />
                         </div>
-                        <Form.Validation />
-                    </Form.Item>
-                </Form.Field>
+                    </FormControl>
+                    <FormFieldErrors />
+                </FormField>
             {/each}
         </div>
         <div class="flex justify-end gap-2">
-            <Form.Button type="submit" variant="secondary" class="w-full">Save</Form.Button>
+            <FormButton variant="secondary" class="w-full">Save</FormButton>
         </div>
-    </Form.Root>
+    </form>
 
     <div class="flex flex-col gap-1 py-4">
         <div class="mb-2 flex flex-col gap-0">

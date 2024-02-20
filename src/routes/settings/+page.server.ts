@@ -1,5 +1,6 @@
 import { fail } from "@sveltejs/kit";
 import { superValidate } from "sveltekit-superforms/server";
+import { zod } from "sveltekit-superforms/adapters";
 import { instanceSchema, sponsorSchema } from "./schema";
 import { outputObject } from "./schema";
 
@@ -13,14 +14,14 @@ export const load = async ({ locals }) => {
     });
 
     return {
-        instanceForm: await superValidate({ instance: locals.instance }, instanceSchema),
-        sponsorForm: await superValidate(sponsorCategories, sponsorSchema),
+        instanceForm: await superValidate({ instance: locals.instance }, zod(instanceSchema)),
+        sponsorForm: await superValidate(sponsorCategories, zod(sponsorSchema)),
     };
 };
 
 export const actions = {
     instance: async (event) => {
-        const instanceForm = await superValidate(event, instanceSchema);
+        const instanceForm = await superValidate(event, zod(instanceSchema));
         if (!instanceForm.valid) {
             return fail(400, {
                 instanceForm,
@@ -41,7 +42,7 @@ export const actions = {
     },
 
     sponsor: async (event) => {
-        const sponsorForm = await superValidate(event, sponsorSchema);
+        const sponsorForm = await superValidate(event, zod(sponsorSchema));
         if (!sponsorForm.valid) {
             return fail(400, {
                 sponsorForm,
