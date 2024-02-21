@@ -5,6 +5,7 @@
     import { bareCards } from "$lib/stores";
     import { Button } from "$lib/components/ui/button";
     import { browser } from "$app/environment";
+    import SEO from "$lib/components/seo";
 
     let history: Observable<
         {
@@ -43,6 +44,8 @@
         db.videos.clear();
     }
 </script>
+
+<SEO title="Watch History" robots={["noindex", "nofollow"]} />
 
 <main>
     <hgroup class="flex justify-between">

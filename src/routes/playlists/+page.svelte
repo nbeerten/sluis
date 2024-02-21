@@ -1,5 +1,8 @@
 <script lang="ts">
+    import SEO from "$lib/components/seo";
 </script>
+
+<SEO title="Playlists" robots={["noindex", "nofollow"]} />
 
 <main>
     <hgroup>
