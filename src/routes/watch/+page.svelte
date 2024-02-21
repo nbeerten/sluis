@@ -72,9 +72,20 @@
 
         const db = (await import("$lib/indexeddb")).db;
         if (db && videoId !== null) {
+            const progressPercentage = Number(((currentTime / v.duration) * 100).toFixed(2));
+
+            const existingVideoProgress = await db.videos.get(videoId);
+
+            if (
+                existingVideoProgress !== undefined &&
+                existingVideoProgress.progress > progressPercentage
+            ) {
+                return;
+            }
+
             db.videos.put({
                 id: videoId,
-                progress: Number(((currentTime / v.duration) * 100).toFixed(2)),
+                progress: progressPercentage,
                 video: {
                     id: videoId,
                     title: v.title,
