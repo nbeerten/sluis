@@ -279,7 +279,7 @@
                 <media-mute-button></media-mute-button>
                 <media-time-display showduration class="tabular-nums"></media-time-display>
                 {#if video.chapters.length > 0}
-                    <span class="flex items-center bg-[var(--media-control-background)] h-full">
+                    <span class="flex h-full items-center bg-[var(--media-control-background)]">
                         {"•"}
                     </span>
                     <span class="flex items-center bg-[var(--media-control-background)] px-4">

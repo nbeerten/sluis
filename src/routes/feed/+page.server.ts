@@ -1,11 +1,6 @@
-export const load = async ({ fetch, locals, parent }) => {
-    const { loggedIn } = await parent();
-    if (!loggedIn) {
-        return { loggedIn };
-    }
-
+export const load = async ({ fetch, locals }) => {
     if (!locals.authToken) {
-        return { loggedIn };
+        return { loggedIn: false };
     }
 
     return {

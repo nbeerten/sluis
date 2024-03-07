@@ -1,12 +1,17 @@
-import { getInstances } from "$lib/api";
+import { cachedInstances } from "$lib/api/instances";
 
 export async function load({ fetch, locals }) {
     try {
-        const instances = await getInstances();
+        const instancesPromise = cachedInstances();
 
-        const subscriptions = locals.authToken
-            ? await locals.createPipedApi(fetch).getSubscriptions({ authToken: locals.authToken })
+        const subscriptionsPromise = locals.authToken
+            ? locals.createPipedApi(fetch).getSubscriptions({ authToken: locals.authToken })
             : (false as const);
+
+        const [instances, subscriptions] = await Promise.all([
+            instancesPromise,
+            subscriptionsPromise,
+        ]);
 
         return {
             subscriptions,

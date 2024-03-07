@@ -27,11 +27,3 @@ export const actions = {
         };
     },
 };
-
-export const load = async ({ parent }) => {
-    const { channel, isSubscribed } = await parent();
-    return {
-        channel,
-        isSubscribed,
-    };
-};
