@@ -21,7 +21,7 @@
 <SEO title="Home" robots={["nofollow"]} />
 
 <ModeWatcher defaultMode="dark" />
-<Toaster position="bottom-right" theme="system" closeButton={true} />
+<Toaster position="bottom-right" theme="system" closeButton={false} />
 
 <div class="relative flex min-h-screen flex-col">
     <div class="mb-4 h-16">

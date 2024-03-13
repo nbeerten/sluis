@@ -1,0 +1,36 @@
+[
+    {
+        "name": "smnz.de",
+        "api_url": "https://pipedapi.smnz.de",
+        "locations": "🇩🇪",
+        "version": "2024-02-08-32f8c9b",
+        "up_to_date": true,
+        "cdn": false,
+        "registered": 1473,
+        "last_checked": 1710343975,
+        "cache": false,
+        "s3_enabled": false,
+        "image_proxy_url": "https://pipedimageproxy.smnz.de",
+        "registration_disabled": true,
+        "uptime_24h": 99.592834,
+        "uptime_7d": 99.09133,
+        "uptime_30d": 99.20198
+    },
+    {
+        "name": "adminforge.de",
+        "api_url": "https://pipedapi.adminforge.de",
+        "locations": "🇩🇪",
+        "version": "2024-02-08-32f8c9b",
+        "up_to_date": true,
+        "cdn": false,
+        "registered": 6600,
+        "last_checked": 1710343975,
+        "cache": true,
+        "s3_enabled": false,
+        "image_proxy_url": "https://pipedimg.adminforge.de",
+        "registration_disabled": false,
+        "uptime_24h": 96.411095,
+        "uptime_7d": 98.8471,
+        "uptime_30d": 98.65389
+    }
+]

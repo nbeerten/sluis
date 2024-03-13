@@ -10,12 +10,15 @@
         AccordionItem,
         AccordionTrigger,
     } from "$lib/components/ui/accordion";
+    import { queue } from "$lib/stores";
+    import { Card, CardTitle, CardContent} from "$lib/components/ui/card";
+    import CardHeader from "$lib/components/ui/card/card-header.svelte";
 
     export let video: streams_videoId;
 </script>
 
 {#if "message" in video === false}
-    <div class="flex flex-col gap-2">
+    <!-- <div class="flex flex-col gap-2">
         <div class="flex items-center justify-between gap-2">
             <p class="text-lg font-semibold">Next video</p>
             <div class="flex items-center gap-2 font-semibold">
@@ -40,6 +43,45 @@
                 bareCard
                 horizontalCard />
         {/if}
+    </div> -->
+    <div class="bg-primary-foreground px-3 py-2 rounded-md flex gap-2 flex-col">
+        <p class="text-lg font-semibold">Queue ({$queue.length})</p>
+        <div class="flex flex-col gap-2">
+            {#if $queue.length > 0}
+                {#each $queue as queueVideo}
+                    <VideoCard video={queueVideo} horizontalCard bareCard />
+                {/each}
+            {:else} 
+                <p class="text-sm text-muted-foreground">No videos in queue</p>
+
+                <hr />
+
+                <div class="flex items-center justify-between gap-2">
+                    <p class="text-lg font-semibold">Next video</p>
+                    <div class="flex items-center gap-2 font-semibold">
+                        <Label for="autoplay" class="text-sm text-muted-foreground">Autoplay</Label>
+                        <Switch bind:checked={$autoplay} id="autoplay" class="scale-90" />
+                    </div>
+                </div>
+                {#if video.relatedStreams[0] && video.relatedStreams[0].title && video.relatedStreams[0].uploaderUrl && video.relatedStreams[0].url}
+                    <VideoCard
+                        video={{
+                            ...video.relatedStreams[0],
+                            id: video.relatedStreams[0].url.slice(9),
+                            uploader: {
+                                name: video.relatedStreams[0].uploaderName,
+                                id: video.relatedStreams[0].uploaderUrl.slice(9),
+                                avatar: video.relatedStreams[0].uploaderAvatar,
+                                verified: video.relatedStreams[0].uploaderVerified,
+                            },
+                            uploadDate: video.relatedStreams[0].uploaded,
+                        }}
+                        lazyImage={false}
+                        bareCard
+                        horizontalCard />
+                {/if}
+            {/if}
+        </div>
     </div>
     <Accordion>
         <AccordionItem value="item-1">

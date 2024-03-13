@@ -21,7 +21,7 @@
     import ThumbsDown from "~icons/lucide/thumbs-down";
     import * as Dialog from "$lib/components/ui/dialog";
     import { goto, beforeNavigate } from "$app/navigation";
-    import { timeTillNext } from "$lib/stores";
+    import { autoplay, queue, timeTillNext } from "$lib/stores";
     import { preloadData } from "$app/navigation";
     import { page } from "$app/stores";
     import formatDuration from "format-duration";
@@ -57,10 +57,19 @@
     let currentTime = 0;
 
     async function nextVideo() {
-        setTimeout(async () => {
-            await preloadData(video.relatedStreams[0].url);
-            goto(video.relatedStreams[0].url);
-        }, $timeTillNext * 1000);
+        if($queue.length > 0) {
+            setTimeout(async () => {
+                const url = `/watch?v=${$queue[0].id}`;
+                await preloadData(url);
+                $queue = $queue.slice(1);
+                goto(url);
+            }, $timeTillNext * 1000);
+        } else if($autoplay) {
+            setTimeout(async () => {
+                await preloadData(video.relatedStreams[0].url);
+                goto(video.relatedStreams[0].url);
+            }, $timeTillNext * 1000);
+        }
     }
 
     beforeNavigate(async () => {
@@ -118,109 +127,6 @@
                 {/await}
             {/key}
         {/await}
-        <!-- {#key video}
-            <media-controller style="width: 100%;">
-                {#if videoSource.type === "dash"}
-                    <shaka-video
-                        src={videoSource.source}
-                        slot="media"
-                        muted={$startMuted}
-                        crossorigin
-                        autoplay
-                        subtitles={JSON.stringify(video.subtitles)}
-                        bind:this={videoElement}>
-                    </shaka-video>
-                {:else if videoSource.type === "hls"}
-                    <hls-video
-                        src={videoSource.source}
-                        slot="media"
-                        muted={$startMuted}
-                        crossorigin
-                        autoplay
-                        bind:this={videoElement}>
-                    </hls-video>
-                {/if}
-                <media-poster-image slot="poster" src={video.thumbnailUrl}></media-poster-image>
-
-                <media-control-bar class="media-control-bar p-0">
-                    {#await data.streamed.sponsors}
-                        <media-time-range class="h-1.5 pb-2 pt-0.5"></media-time-range>
-                    {:then awaitedSponsors}
-                        <media-time-range
-                            class="h-1.5 pb-2 pt-0.5"
-                            style="--media-range-track-background: {generateLinearGradient(
-                                awaitedSponsors
-                            ) || 'initial'}">
-                        </media-time-range>
-                    {/await}
-                </media-control-bar>
-
-                <media-control-bar class="media-control-bar">
-                    <media-play-button></media-play-button>
-                    <media-seek-backward-button seekoffset={$seekAmount} class="hidden md:block">
-                    </media-seek-backward-button>
-                    <media-seek-forward-button seekoffset={$seekAmount} class="hidden md:block">
-                    </media-seek-forward-button>
-                    <media-mute-button></media-mute-button>
-                    <media-time-display showduration class="tabular-nums"></media-time-display>
-                    {#if video.chapters.length > 0}
-                        <span class="mb-0.5 flex items-center bg-[var(--media-control-background)]">
-                            {"•"}
-                        </span>
-                        <span class="flex items-center bg-[var(--media-control-background)] px-4">
-                            {currentChapter(video.chapters, currentTime)?.title}
-                        </span>
-                    {/if}
-                    <span
-                        class="flex flex-grow flex-col justify-center bg-[var(--media-control-background)] text-center">
-                    </span>
-                    !-- svelte-ignore a11y-click-events-have-key-events --
-                    <media-captions-button
-                        on:click={() => toggleSubtitlesVisibility()}
-                        role="button"
-                        tabindex="0">
-                        <div slot="icon">
-                            {#if $subtitles}
-                                <Subtitles class="h-6 w-6" />
-                            {:else}
-                                <Subtitles class="h-6 w-6" />
-                            {/if}
-                        </div>
-                    </media-captions-button>
-                    <media-pip-button></media-pip-button>
-                    <media-fullscreen-button></media-fullscreen-button>
-                </media-control-bar>
-            </media-controller>
-        {/key} -->
-        <!-- {:else} -->
-        <!-- <div class="grid place-content-center">
-                <div class="flex max-w-lg flex-col rounded-lg bg-background px-6 py-4">
-                    <p class="text-lg font-semibold">
-                        Sorry, but our player cannot play this video yet.
-                    </p>
-                    <p class="min-w-0 text-muted-foreground">
-                        This video is most likely a livestream or a premiere, which means that there
-                        isn't a HLS source available.
-                    </p>
-                    <div class="flex gap-2 pt-3">
-                        <Button
-                            class="w-full"
-                            target="_blank"
-                            variant="secondary"
-                            href="https://piped.video/watch?v={$page.url.searchParams.get('v')}">
-                            Watch on piped.video
-                        </Button>
-                        <Button
-                            class="w-full"
-                            target="_blank"
-                            variant="outline"
-                            href="https://youtube.com/watch?v={$page.url.searchParams.get('v')}">
-                            Watch on YouTube
-                        </Button>
-                    </div>
-                </div>
-            </div> -->
-        <!-- {/if} -->
     </div>
     <div class="flex gap-2">
         <div class="grid w-full grid-cols-1 gap-8 xl:grid-cols-[1fr,24rem]">

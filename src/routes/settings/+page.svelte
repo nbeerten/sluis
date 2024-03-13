@@ -25,7 +25,6 @@
         seekAmount,
         startMuted,
         timeTillNext,
-        bareCards,
         subtitles,
     } from "$lib/stores";
     import { Label } from "$lib/components/ui/label";
@@ -197,10 +196,6 @@
             checked={$mode === "dark"}
             onCheckedChange={toggleMode}
             class="scale-90" />
-    </div>
-    <div class="flex items-center justify-between gap-2 py-2">
-        <Label for="bareCards">Bare (Borderless) Cards</Label>
-        <Switch id="bareCards" bind:checked={$bareCards} class="scale-90" />
     </div>
 
     <hr class="my-2 border-border" />

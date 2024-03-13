@@ -5,7 +5,6 @@
     import SEO from "$lib/components/seo";
     import type { Snapshot } from "./$types.js";
     import { tick } from "svelte";
-    import { bareCards } from "$lib/stores";
 
     export let data;
     let { channel } = data;
@@ -91,7 +90,6 @@
                 views: video.views,
             }}
             lazyImage={i >= 8}
-            bareCard={$bareCards}
             showChannel={false} />
     {/each}
 </div>

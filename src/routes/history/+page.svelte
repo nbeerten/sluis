@@ -2,7 +2,6 @@
     import { onMount } from "svelte";
     import VideoCard from "$lib/components/video-card.svelte";
     import { liveQuery, type Observable } from "dexie";
-    import { bareCards } from "$lib/stores";
     import { Button } from "$lib/components/ui/button";
     import { browser } from "$app/environment";
     import SEO from "$lib/components/seo";
@@ -56,7 +55,7 @@
     <div class="grid grid-cols-1 gap-4 py-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {#if $history}
             {#each $history as video, i}
-                <VideoCard {video} lazyImage={i >= 8} bareCard={$bareCards} />
+                <VideoCard {video} lazyImage={i >= 8} />
             {/each}
         {/if}
     </div>
