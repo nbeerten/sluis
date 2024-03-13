@@ -11,8 +11,6 @@
         AccordionTrigger,
     } from "$lib/components/ui/accordion";
     import { queue } from "$lib/stores";
-    import { Card, CardTitle, CardContent} from "$lib/components/ui/card";
-    import CardHeader from "$lib/components/ui/card/card-header.svelte";
 
     export let video: streams_videoId;
 </script>
@@ -44,14 +42,14 @@
                 horizontalCard />
         {/if}
     </div> -->
-    <div class="bg-primary-foreground px-3 py-2 rounded-md flex gap-2 flex-col">
+    <div class="flex flex-col gap-2 rounded-md bg-primary-foreground px-3 py-2">
         <p class="text-lg font-semibold">Queue ({$queue.length})</p>
         <div class="flex flex-col gap-2">
             {#if $queue.length > 0}
                 {#each $queue as queueVideo}
                     <VideoCard video={queueVideo} horizontalCard bareCard />
                 {/each}
-            {:else} 
+            {:else}
                 <p class="text-sm text-muted-foreground">No videos in queue</p>
 
                 <hr />

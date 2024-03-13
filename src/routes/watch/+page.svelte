@@ -57,14 +57,14 @@
     let currentTime = 0;
 
     async function nextVideo() {
-        if($queue.length > 0) {
+        if ($queue.length > 0) {
             setTimeout(async () => {
                 const url = `/watch?v=${$queue[0].id}`;
                 await preloadData(url);
                 $queue = $queue.slice(1);
                 goto(url);
             }, $timeTillNext * 1000);
-        } else if($autoplay) {
+        } else if ($autoplay) {
             setTimeout(async () => {
                 await preloadData(video.relatedStreams[0].url);
                 goto(video.relatedStreams[0].url);

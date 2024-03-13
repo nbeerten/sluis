@@ -20,13 +20,7 @@
     import { Card, CardTitle, CardContent, CardHeader } from "$lib/components/ui/card";
     import { Button } from "$lib/components/ui/button";
     import { toast } from "svelte-sonner";
-    import {
-        autoplay,
-        seekAmount,
-        startMuted,
-        timeTillNext,
-        subtitles,
-    } from "$lib/stores";
+    import { autoplay, seekAmount, startMuted, timeTillNext, subtitles } from "$lib/stores";
     import { Label } from "$lib/components/ui/label";
     import { Switch } from "$lib/components/ui/switch/";
     import { Input } from "$lib/components/ui/input";

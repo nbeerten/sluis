@@ -1,7 +1,14 @@
 <script lang="ts">
     import { Avatar, AvatarFallback, AvatarImage } from "$lib/components/ui/avatar";
     import { Button } from "$lib/components/ui/button";
-    import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator } from "$lib/components/ui/dropdown-menu";
+    import {
+        DropdownMenu,
+        DropdownMenuContent,
+        DropdownMenuTrigger,
+        DropdownMenuGroup,
+        DropdownMenuItem,
+        DropdownMenuSeparator,
+    } from "$lib/components/ui/dropdown-menu";
     import { Card, CardDescription, CardHeader, CardTitle } from "$lib/components/ui/card";
     import { formatTimeAgo } from "$lib/format-time-ago";
     import { default as durationFormatter } from "format-duration";
@@ -68,7 +75,7 @@
 
         $queue = [...$queue, video];
         toast.success("Added to queue");
-    }
+    };
 
     const playNext = () => {
         if (inQueue) {
@@ -79,21 +86,21 @@
 
         toast.success("Added to the beginning of the queue");
         $queue = [video, ...$queue];
-    }
+    };
 
     const removeFromQueue = () => {
         toast.success("Removed from queue");
         $queue = $queue.filter((q) => q.id !== video.id);
-    }
+    };
 
     $: inQueue = $queue.some((q) => q.id === video.id);
 </script>
 
 <Card
     class={cn(
-        className,
         bareCard && "mb-4 border-none bg-inherit",
-        horizontalCard && "grid w-[28rem] max-w-full grid-cols-[11rem,1fr]"
+        horizontalCard && "grid w-[28rem] max-w-full grid-cols-[11rem,1fr]",
+        className
     )}>
     <a href={videoUrl(video.id, toSec(progress))} data-sveltekit-preload-data="tap">
         <div
@@ -184,21 +191,32 @@
             <div class="flex items-start">
                 <DropdownMenu preventScroll={false}>
                     <DropdownMenuTrigger asChild let:builder>
-                        <Button builders={[builder]} variant="ghost" class="h-8 w-8 p-0 rounded-full"> <EllipsisVertical class="h-4 w-4" /> </Button>
+                        <Button
+                            builders={[builder]}
+                            variant="ghost"
+                            class="-mr-2 h-8 w-8 rounded-full p-0">
+                            <EllipsisVertical class="h-4 w-4" />
+                        </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent side="bottom" align="end" class="min-w-[15ch]">
                         <DropdownMenuGroup>
-                            <DropdownMenuItem class="flex items-center gap-2" on:click={() => playNext()}>
+                            <DropdownMenuItem
+                                class="flex items-center gap-2"
+                                on:click={() => playNext()}>
                                 <ListStart class="h-5 w-5" />
                                 <span>Play next</span>
                             </DropdownMenuItem>
-                            <DropdownMenuItem class="flex items-center gap-2" on:click={() => addToQueue()}>
+                            <DropdownMenuItem
+                                class="flex items-center gap-2"
+                                on:click={() => addToQueue()}>
                                 <ListEnd class="h-5 w-5" />
                                 <span>Add to queue</span>
                             </DropdownMenuItem>
                             {#if inQueue}
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem class="flex items-center gap-2" on:click={() => removeFromQueue()}>
+                                <DropdownMenuItem
+                                    class="flex items-center gap-2"
+                                    on:click={() => removeFromQueue()}>
                                     <ListX class="h-5 w-5" />
                                     <span>Remove from queue</span>
                                 </DropdownMenuItem>

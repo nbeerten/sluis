@@ -12,6 +12,7 @@
     import SEO from "$lib/components/seo";
     import { ModeWatcher } from "mode-watcher";
     import GitHub from "~icons/lucide/github";
+    import Queue from "$lib/components/floating-queue.svelte";
 
     export let data;
     let { subscriptions } = data;
@@ -21,7 +22,7 @@
 <SEO title="Home" robots={["nofollow"]} />
 
 <ModeWatcher defaultMode="dark" />
-<Toaster position="bottom-right" theme="system" closeButton={false} />
+<Toaster position="top-right" theme="system" closeButton={false} />
 
 <div class="relative flex min-h-screen flex-col">
     <div class="mb-4 h-16">
@@ -89,6 +90,7 @@
         {/if}
     </Sidebar>
     <div class="w-full px-4 md:pl-64 md:pr-16">
+        <Queue />
         <slot />
     </div>
 </div>
