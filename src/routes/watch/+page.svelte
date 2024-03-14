@@ -66,8 +66,9 @@
             }, $timeTillNext * 1000);
         } else if ($autoplay) {
             setTimeout(async () => {
-                await preloadData(video.relatedStreams[0].url);
-                goto(video.relatedStreams[0].url);
+                const recommendedVideo = video.relatedStreams.filter((v) => v.type === "stream")[0];
+                await preloadData(recommendedVideo.url);
+                goto(recommendedVideo.url);
             }, $timeTillNext * 1000);
         }
     }

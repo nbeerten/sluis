@@ -13,6 +13,10 @@
     import { queue } from "$lib/stores";
 
     export let video: streams_videoId;
+
+    const recommendedVideo = !("message" in video)
+        ? video.relatedStreams.filter((v) => v.type === "stream")[0]
+        : null;
 </script>
 
 {#if "message" in video === false}
@@ -61,22 +65,24 @@
                         <Switch bind:checked={$autoplay} id="autoplay" class="scale-90" />
                     </div>
                 </div>
-                {#if video.relatedStreams[0] && video.relatedStreams[0].title && video.relatedStreams[0].uploaderUrl && video.relatedStreams[0].url}
+                {#if recommendedVideo && recommendedVideo.title && recommendedVideo.uploaderUrl && recommendedVideo.url}
                     <VideoCard
                         video={{
-                            ...video.relatedStreams[0],
-                            id: video.relatedStreams[0].url.slice(9),
+                            ...recommendedVideo,
+                            id: recommendedVideo.url.slice(9),
                             uploader: {
-                                name: video.relatedStreams[0].uploaderName,
-                                id: video.relatedStreams[0].uploaderUrl.slice(9),
-                                avatar: video.relatedStreams[0].uploaderAvatar,
-                                verified: video.relatedStreams[0].uploaderVerified,
+                                name: recommendedVideo.uploaderName,
+                                id: recommendedVideo.uploaderUrl.slice(9),
+                                avatar: recommendedVideo.uploaderAvatar,
+                                verified: recommendedVideo.uploaderVerified,
                             },
-                            uploadDate: video.relatedStreams[0].uploaded,
+                            uploadDate: recommendedVideo.uploaded,
                         }}
                         lazyImage={false}
                         bareCard
                         horizontalCard />
+                {:else}
+                    {JSON.stringify(recommendedVideo)}
                 {/if}
             {/if}
         </div>
