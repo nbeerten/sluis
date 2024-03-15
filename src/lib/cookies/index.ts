@@ -1,8 +1,12 @@
 import type { Cookies } from "@sveltejs/kit";
-import { PipedApi, defaultInstance } from "$lib/api";
+import { PipedApi, defaultInstance, type Instances } from "$lib/api";
 import { cachedInstances } from "$lib/api/instances";
 
-export async function extract(cookies: Cookies, fetch = globalThis.fetch) {
+export async function extract(
+    cookies: Cookies,
+    fetch = globalThis.fetch,
+    instances: Instances | undefined = undefined
+) {
     const allCookies = Object.freeze(cookies.getAll());
 
     const authToken = () => allCookies.find((c) => c.name === "authToken")?.value || false;
@@ -11,7 +15,7 @@ export async function extract(cookies: Cookies, fetch = globalThis.fetch) {
         const cookieInstance =
             allCookies.find((c) => c.name === "instance")?.value || defaultInstance;
 
-        const instances = await cachedInstances(fetch);
+        instances ||= await cachedInstances(fetch);
 
         if (!instances) {
             throw new Error(

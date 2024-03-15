@@ -5,7 +5,14 @@ export async function handle({ event, resolve }) {
 
     event.locals = extracted;
 
-    return resolve(event);
+    const response = await resolve(event);
+
+    response.headers.set(
+        "Content-Security-Policy",
+        `default-src 'self' data:; script-src 'self' data: 'unsafe-inline'; style-src 'self' data: 'unsafe-inline' 'unsafe-hashes'; img-src *; media-src * blob:; connect-src *;`
+    );
+
+    return response;
 }
 
 export const handleError = async ({ error, status, message }) => {

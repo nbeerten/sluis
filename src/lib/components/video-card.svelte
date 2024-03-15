@@ -159,9 +159,12 @@
                     </a>
                 </div>
             {/if}
-            <div class="flex-grow">
+            <div class="max-w-[calc(100%-5rem)] flex-grow">
                 <CardTitle
-                    class={cn("line-clamp-2 text-base", horizontalCard && "text-sm font-semibold")}
+                    class={cn(
+                        "line-clamp-2 break-words text-base",
+                        horizontalCard && "text-sm font-semibold"
+                    )}
                     title={video.title}>
                     <a href={videoUrl(video.id, toSec(progress))} data-sveltekit-preload-data="tap">
                         {video.title}
