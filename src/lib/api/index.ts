@@ -122,6 +122,27 @@ export function PipedApi(fetchFunc = globalThis.fetch, baseUrl = defaultInstance
             }).then((r) => r.json()) as Promise<{ token: string }>;
         },
 
+        postRegister: ({ username, password }: { username: string; password: string }) => {
+            return fetch(`${baseUrl}/register`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ username, password }),
+            }).then((r) => r.json()) as Promise<{ token: string }>;
+        },
+
+        postUserDelete: ({ authToken, password }: { authToken: string; password: string }) => {
+            return fetch(`${baseUrl}/user/delete`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: authToken,
+                },
+                body: JSON.stringify({ password }),
+            }).then((r) => r.json()) as Promise<{ username: boolean }>;
+        },
+
         getFeed: ({ authToken }: { authToken: string }) => {
             return fetch(`${baseUrl}/feed?authToken=${encodeURIComponent(authToken)}`, {}).then(
                 (r) => r.json()

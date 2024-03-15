@@ -17,7 +17,7 @@ export async function load({ fetch, locals }) {
             subscriptions,
             instance: {
                 url: locals.instance,
-                ...(instances.find((i) => i.api_url === locals.instance) || {}),
+                ...(instances ? instances.find((i) => i.api_url === locals.instance) : {} || {}),
             },
             instances,
             loggedIn: !!locals.authToken,

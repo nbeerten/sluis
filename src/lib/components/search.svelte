@@ -26,7 +26,7 @@
         clearTimeout(timer);
         timer = setTimeout(async () => {
             suggestions = v ? await fetchSuggestions(v) : [];
-        }, 250);
+        }, 250) as unknown as number;
     };
 </script>
 

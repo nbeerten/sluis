@@ -1,7 +1,7 @@
-import { fail } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 import { superValidate } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
-import { instanceSchema, sponsorSchema } from "./schema";
+import { deleteAccountSchema, instanceSchema, sponsorSchema } from "./schema";
 import { outputObject } from "./schema";
 
 export const load = async ({ locals }) => {
@@ -16,6 +16,7 @@ export const load = async ({ locals }) => {
     return {
         instanceForm: await superValidate({ instance: locals.instance }, zod(instanceSchema)),
         sponsorForm: await superValidate(sponsorCategories, zod(sponsorSchema)),
+        deleteAccountForm: await superValidate(zod(deleteAccountSchema)),
     };
 };
 
@@ -64,5 +65,39 @@ export const actions = {
         return {
             sponsorForm,
         };
+    },
+
+    deleteAccount: async (event) => {
+        const deleteAccountForm = await superValidate(event, zod(deleteAccountSchema));
+        if (!deleteAccountForm.valid) {
+            return fail(400, {
+                deleteAccountForm,
+            });
+        }
+
+        const { password } = deleteAccountForm.data;
+
+        const authToken = event.cookies.get("authToken");
+
+        if (!authToken) {
+            return fail(400, {
+                deleteAccountForm,
+                error: "You need to be logged in to delete your account.",
+            });
+        }
+
+        const api = event.locals.createPipedApi(event.fetch);
+        const { username } = await api.postUserDelete({ authToken, password });
+
+        if (!username) {
+            return fail(400, {
+                deleteAccountForm,
+                error: "Could not delete your account.",
+            });
+        }
+
+        event.cookies.set("authToken", "", { expires: new Date(0), path: "/" });
+
+        redirect(302, "/");
     },
 };

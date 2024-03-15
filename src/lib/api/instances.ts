@@ -4,12 +4,6 @@ const instanceCache: { age: number; data?: Instances } = { age: 0 };
 
 export async function cachedInstances(fetch = globalThis.fetch) {
     try {
-        const request = new Request("https://piped-instances.kavin.rocks/", {
-            cf: {
-                cacheTtl: 60 * 60 * 24,
-            },
-        });
-
         if (instanceCache.data && Date.now() - instanceCache.age < 60 * 60 * 24) {
             return instanceCache.data;
         } else if (instanceCache.data && Date.now() - instanceCache.age > 60 * 60 * 24) {
@@ -21,6 +15,12 @@ export async function cachedInstances(fetch = globalThis.fetch) {
             console.warn("Not using cached instances");
         }
 
+        const request = new Request("https://piped-instances.kavin.rocks/", {
+            cf: {
+                cacheTtl: 60 * 60 * 24,
+            },
+        });
+
         const data = (await fetch(request).then((r) => r.json())) as Instances;
 
         instanceCache.age = Date.now();
@@ -31,9 +31,9 @@ export async function cachedInstances(fetch = globalThis.fetch) {
         // eslint-disable-next-line no-console
         console.error(e);
 
-        return import("./backup.json", { assert: { type: "json" } }).then(
-            (r) => r.default
-        ) as Promise<Instances>;
+        // return import("./backup.json", { assert: { type: "json" } }).then(
+        //     (r) => r.default
+        // ) as Promise<Instances>;
     }
 }
 

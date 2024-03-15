@@ -1,29 +1,33 @@
 import type { Cookies } from "@sveltejs/kit";
-import { PipedApi, defaultInstance, type Instances } from "$lib/api";
+import { PipedApi, defaultInstance } from "$lib/api";
 import { cachedInstances } from "$lib/api/instances";
 
-export function extract(cookies: Cookies, fetch = globalThis.fetch) {
+export async function extract(cookies: Cookies, fetch = globalThis.fetch) {
     const allCookies = Object.freeze(cookies.getAll());
 
     const authToken = () => allCookies.find((c) => c.name === "authToken")?.value || false;
 
-    const instance = () => {
+    const getInstance = async () => {
         const cookieInstance =
             allCookies.find((c) => c.name === "instance")?.value || defaultInstance;
 
-        let instances: Instances | undefined;
-        cachedInstances(fetch).then((i) => (instances = i));
+        const instances = await cachedInstances(fetch);
 
         if (!instances) {
-            return cookieInstance;
+            throw new Error(
+                "Instances API (https://piped-instances.kavin.rocks/) is not available. Please try again later."
+            );
         }
 
         if (instances && instances.some((i) => i.api_url === cookieInstance)) {
             return cookieInstance;
         } else {
-            return defaultInstance;
+            throw new Error(
+                "Currently selected instance is offline. Please select another instance. <br><b>If you can't, delete your cookies and try again.</b>"
+            );
         }
     };
+    const instance = await getInstance();
 
     const sponsorsettings = () => allCookies.find((c) => c.name === "sponsorsettings")?.value || "";
 
@@ -32,7 +36,7 @@ export function extract(cookies: Cookies, fetch = globalThis.fetch) {
             return authToken();
         },
         get instance() {
-            return instance();
+            return instance;
         },
         get sponsorsettings() {
             return sponsorsettings();

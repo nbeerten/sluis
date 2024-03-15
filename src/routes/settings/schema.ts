@@ -29,3 +29,7 @@ export const instanceSchema = z.object({
 
 export type SponsorSchema = typeof sponsorSchema;
 export type InstanceSchema = typeof instanceSchema;
+
+export const deleteAccountSchema = z.object({
+    password: z.string().min(1),
+});

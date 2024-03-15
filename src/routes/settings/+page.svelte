@@ -14,7 +14,7 @@
         SelectTrigger,
         SelectValue,
     } from "$lib/components/ui/select";
-    import { sponsorSchema, instanceSchema } from "./schema";
+    import { sponsorSchema, instanceSchema, deleteAccountSchema } from "./schema";
     import { outputObject } from "./schema";
     import SEO from "$lib/components/seo";
     import { Card, CardTitle, CardContent, CardHeader } from "$lib/components/ui/card";
@@ -28,11 +28,21 @@
     import Check from "~icons/lucide/check";
     import X from "~icons/lucide/x";
     import HelpCircle from "~icons/lucide/help-circle";
+    import ExternalLink from "~icons/lucide/external-link";
     import * as HoverCard from "$lib/components/ui/hover-card";
     import { superForm } from "sveltekit-superforms";
     import { zodClient } from "sveltekit-superforms/adapters";
     import { Checkbox } from "$lib/components/ui/checkbox";
     import type { Instances } from "$lib/api";
+    import {
+        Dialog,
+        DialogContent,
+        DialogTrigger,
+        DialogDescription,
+        DialogTitle,
+        DialogHeader,
+        DialogFooter,
+    } from "$lib/components/ui/dialog";
 
     export let data;
     let { instances } = data;
@@ -57,6 +67,16 @@
         enhance: sponsorEnhance,
         posted: sponsorFormPosted,
     } = sponsorForm;
+
+    const deleteAccountForm = superForm(data.deleteAccountForm, {
+        validators: zodClient(deleteAccountSchema),
+        resetForm: false,
+    });
+    const {
+        form: deleteAccountFormData,
+        enhance: deleteAccountEnhance,
+        posted: deleteAccountFormPosted,
+    } = deleteAccountForm;
 
     const instanceList = (instances as Instances).map((i) => ({
         value: i.api_url,
@@ -88,9 +108,13 @@
         toast.success(`Saved sponsor category preferences to cookies.`);
     }
 
+    $: if ($deleteAccountFormPosted ?? false) {
+        toast.success(`Deleted account.`);
+    }
+
     const { format: formatNumber } = Intl.NumberFormat("en", { notation: "compact" });
 
-    function formatInstanceInformation(i: (typeof instances)[number] | undefined) {
+    function formatInstanceInformation(i: Instances[number] | undefined) {
         if (!i) return [];
         return [
             ["Name", i.name],
@@ -202,15 +226,63 @@
                     <Button href="/login" variant="default" class="w-full">
                         Login on {data.instance.name}
                     </Button>
-                    <Button variant="default" disabled>Register on {data.instance.name}</Button>
+                    {#if !data.instance.registration_disabled}
+                        <Button variant="default" href="/register">
+                            Register on {data.instance.name}
+                            <ExternalLink class="ml-2 h-4 w-4" />
+                        </Button>
+                    {:else}
+                        <Button variant="default" disabled>
+                            Register on {data.instance.name}
+                            <ExternalLink class="ml-2 h-4 w-4" />
+                        </Button>
+                    {/if}
                 </div>
             {:else}
-                <Button
-                    variant="outline"
-                    class="border-red-600 hover:bg-red-600 hover:text-white dark:border-red-900 dark:text-inherit dark:hover:bg-red-900"
-                    href="/logout">
-                    Log out of {data.instance.name}
-                </Button>
+                <div class="flex gap-2">
+                    <Button
+                        variant="outline"
+                        class="w-full border-red-600 hover:bg-red-600 hover:text-white dark:border-red-900 dark:text-inherit dark:hover:bg-red-900"
+                        href="/logout">
+                        Log out of {data.instance.name}
+                    </Button>
+
+                    <Dialog>
+                        <DialogTrigger asChild let:builder>
+                            <Button
+                                variant="outline"
+                                class="border-red-600 hover:bg-red-600 hover:text-white dark:border-red-900 dark:text-inherit dark:hover:bg-red-900"
+                                builders={[builder]}>
+                                Delete account
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent class="sm:max-w-[30rem]">
+                            <DialogHeader>
+                                <DialogTitle>Delete account</DialogTitle>
+                                <DialogDescription>
+                                    Are you sure you want to delete your account on {data.instance
+                                        .name}?
+                                </DialogDescription>
+                            </DialogHeader>
+                            <form method="POST" action="?/deleteAccount" use:deleteAccountEnhance>
+                                <FormField form={deleteAccountForm} name="password">
+                                    <FormControl let:attrs>
+                                        <FormLabel>Password</FormLabel>
+                                        <Input
+                                            type="password"
+                                            autocomplete="current-password"
+                                            {...attrs}
+                                            bind:value={$deleteAccountFormData.password} />
+                                    </FormControl>
+                                    <FormFieldErrors />
+                                </FormField>
+                                <DialogFooter>
+                                    <Button variant="destructive" type="submit">Delete</Button>
+                                </DialogFooter>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
+                </div>
             {/if}
         </div>
     {/if}
@@ -254,7 +326,7 @@
                         <CardTitle>Instance Information</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {#if selected}
+                        {#if selected && instances}
                             <table class="text-sm text-muted-foreground">
                                 {#each formatInstanceInformation(instances.find((i) => i.api_url === selected?.value)) as [key, value]}
                                     <tr>

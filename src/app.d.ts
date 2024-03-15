@@ -12,8 +12,9 @@ declare global {
         interface Error {
             message: string;
             stack?: string;
+            status?: number;
         }
-        interface Locals extends Writeable<ReturnType<typeof extract>> {}
+        interface Locals extends Writeable<Awaited<ReturnType<typeof extract>>> {}
         interface PageData {
             instances: Instances;
             subscriptions: false | subscriptions;
