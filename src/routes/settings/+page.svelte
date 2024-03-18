@@ -229,12 +229,10 @@
                     {#if !data.instance.registration_disabled}
                         <Button variant="default" href="/register">
                             Register on {data.instance.name}
-                            <ExternalLink class="ml-2 h-4 w-4" />
                         </Button>
                     {:else}
                         <Button variant="default" disabled>
                             Register on {data.instance.name}
-                            <ExternalLink class="ml-2 h-4 w-4" />
                         </Button>
                     {/if}
                 </div>
