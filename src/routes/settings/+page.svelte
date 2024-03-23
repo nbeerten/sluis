@@ -28,7 +28,6 @@
     import Check from "~icons/lucide/check";
     import X from "~icons/lucide/x";
     import HelpCircle from "~icons/lucide/help-circle";
-    import ExternalLink from "~icons/lucide/external-link";
     import * as HoverCard from "$lib/components/ui/hover-card";
     import { superForm } from "sveltekit-superforms";
     import { zodClient } from "sveltekit-superforms/adapters";
