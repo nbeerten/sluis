@@ -1,6 +1,11 @@
+![Sluis channel page of the official Google channel](./thumb.webp)
+
 # Sluis
 
 Sluis is a new, desktop-optimised frontend for Piped, a privacy-focused Youtube alternative (read more about Piped and how it works here: [TeamPiped/Piped](https://github.com/TeamPiped/Piped)).
+
+> [!NOTE]
+> Read more: [www.nilsbeerten.nl/blog/sluis](https://www.nilsbeerten.nl/blog/sluis)
 
 ### Features
 
