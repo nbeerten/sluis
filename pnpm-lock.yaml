@@ -9,8 +9,8 @@ devDependencies:
     specifier: ^4.20240320.1
     version: 4.20240320.1
   '@iconify-json/lucide':
-    specifier: ^1.1.177
-    version: 1.1.177
+    specifier: ^1.1.178
+    version: 1.1.178
   '@svelte-put/clickoutside':
     specifier: ^3.0.1
     version: 3.0.1
@@ -39,8 +39,8 @@ devDependencies:
     specifier: ^10.4.19
     version: 10.4.19(postcss@8.4.38)
   bits-ui:
-    specifier: ^0.20.0
-    version: 0.20.0(svelte@4.2.12)
+    specifier: ^0.20.1
+    version: 0.20.1(svelte@4.2.12)
   clsx:
     specifier: ^2.1.0
     version: 2.1.0
@@ -48,8 +48,8 @@ devDependencies:
     specifier: ^0.0.2
     version: 0.0.2
   dexie:
-    specifier: 4.0.1-beta.14
-    version: 4.0.1-beta.14
+    specifier: 4.0.1-rc.1
+    version: 4.0.1-rc.1
   eslint:
     specifier: ^8.57.0
     version: 8.57.0
@@ -987,8 +987,8 @@ packages:
     resolution: {integrity: sha512-6EwiSjwWYP7pTckG6I5eyFANjPhmPjUX9JRLUSfNPC7FX7zK9gyZAfUEaECL6ALTpGX5AjnBq3C9XmVWPitNpw==}
     dev: true
 
-  /@iconify-json/lucide@1.1.177:
-    resolution: {integrity: sha512-SQbHei3LEBDR+7O8odUWWWncIovVfJ1oulG9+MaLysNU/7BwjsEuALnGPH3mIYS57mZ2MlLvPr5yj3TILTLU/Q==}
+  /@iconify-json/lucide@1.1.178:
+    resolution: {integrity: sha512-IW5Z3ytfOPtcAlIgeMCGNrbPD/wfOBOyUAXEUgNhGTWxJICtbeHQkmL4mEoJmScSkjpZvyevxOC9kfdJG8VBtg==}
     dependencies:
       '@iconify/types': 2.0.0
     dev: true
@@ -1066,8 +1066,8 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
 
-  /@melt-ui/svelte@0.76.0(svelte@4.2.12):
-    resolution: {integrity: sha512-X1ktxKujjLjOBt8LBvfckHGDMrkHWceRt1jdsUTf0EH76ikNPP1ofSoiV0IhlduDoCBV+2YchJ8kXCDfDXfC9Q==}
+  /@melt-ui/svelte@0.76.2(svelte@4.2.12):
+    resolution: {integrity: sha512-7SbOa11tXUS95T3fReL+dwDs5FyJtCEqrqG3inRziDws346SYLsxOQ6HmX+4BkIsQh1R8U3XNa+EMmdMt38lMA==}
     peerDependencies:
       svelte: '>=3 <5'
     dependencies:
@@ -1243,8 +1243,8 @@ packages:
     dev: true
     optional: true
 
-  /@sinclair/typebox@0.32.19:
-    resolution: {integrity: sha512-AUphm4Py6t+q5b6TU8OA9YRgeGfogsWy2oZvYLRCxt6d+mPkT0Mc4j+BusQYMGJH47DJe3/fKkLtmWPrKP1nzQ==}
+  /@sinclair/typebox@0.32.20:
+    resolution: {integrity: sha512-ziK497ILSIYMxD/thl496idIb03IZPlha04itLQu1xAFQbumWZ+Dj4PMMCkDRpAYhvVSdmRlTjGu2B2MA5RplQ==}
     requiresBuild: true
     dev: true
     optional: true
@@ -1681,13 +1681,13 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /bits-ui@0.20.0(svelte@4.2.12):
-    resolution: {integrity: sha512-cAQHnVV4anto6zrtTHGDa/Rxjhp2sFdCL1zLoqOvQIW8cJ5iz9V0+pKvi439pi5zllALM7WosXEz2E8twA50qA==}
+  /bits-ui@0.20.1(svelte@4.2.12):
+    resolution: {integrity: sha512-P0JRuWn+XpFYsAbGnPlyPVKab88v2S8Q57cUI3LZdh0nulO7fgxbXgBHgEAmmgNk63XxyvhmfYz44kZFRrHtLA==}
     peerDependencies:
       svelte: ^4.0.0
     dependencies:
       '@internationalized/date': 3.5.2
-      '@melt-ui/svelte': 0.76.0(svelte@4.2.12)
+      '@melt-ui/svelte': 0.76.2(svelte@4.2.12)
       nanoid: 5.0.6
       svelte: 4.2.12
     dev: true
@@ -1910,8 +1910,8 @@ packages:
     resolution: {integrity: sha512-KqFl6pOgOW+Y6wJgu80rHpo2/3H07vr8ntR9rkkFIRETewbf5GaYYcakYfiKz89K+sLsuPkQIZaXDMjUObZwWg==}
     dev: true
 
-  /dexie@4.0.1-beta.14:
-    resolution: {integrity: sha512-1Glgs4nyHUriknstBku1T0Qz9qxJbHQy49JFeDEacHQK+XljN/sn1zyIH/HwouQ7a+WAdWHInm51i0GqWOAyHg==}
+  /dexie@4.0.1-rc.1:
+    resolution: {integrity: sha512-rfdQX5NQmXjLxxFusgnaczT+3hHz96Nz68atDyhWdAAjfFeTmrco7JkLdWHA0YpX7be1O1NRZ5AyAYILhmgoZg==}
     dev: true
 
   /didyoumean@1.2.2:
@@ -3828,7 +3828,7 @@ packages:
       ts-deepmerge: 7.0.0
     optionalDependencies:
       '@gcornut/valibot-json-schema': 0.0.26(@types/json-schema@7.0.15)(esbuild-runner@2.2.2)(esbuild@0.20.2)(valibot@0.30.0)
-      '@sinclair/typebox': 0.32.19
+      '@sinclair/typebox': 0.32.20
       '@sodaru/yup-to-json-schema': 2.0.1
       '@vinejs/vine': 1.8.0
       arktype: 1.0.29-alpha
