@@ -27,7 +27,7 @@ export async function extract(
             return cookieInstance;
         } else {
             throw new Error(
-                "Currently selected instance is offline. Please select another instance. <br><b>If you can't, delete your cookies and try again.</b>"
+                `Currently selected instance (${cookieInstance}) is offline. Please select another instance. <br><b>If you can't, delete your cookies and try again.</b>`
             );
         }
     };
