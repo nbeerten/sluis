@@ -121,13 +121,15 @@
 <div class="space-y-6">
     <div
         class="flex aspect-video max-h-[75vh] w-full justify-center overflow-hidden rounded-xl bg-black">
-        {#await import("./VideoPlayer.svelte") then { default: VideoPlayer }}
-            {#key video}
-                {#await data.streamed.sponsors then sponsors}
-                    <VideoPlayer {video} {sponsors} {nextVideo} bind:currentTime />
-                {/await}
-            {/key}
-        {/await}
+        {#if browser}
+            {#await import("./VideoPlayer.svelte") then { default: VideoPlayer }}
+                {#key video}
+                    {#await data.streamed.sponsors then sponsors}
+                        <VideoPlayer {video} {sponsors} {nextVideo} bind:currentTime />
+                    {/await}
+                {/key}
+            {/await}
+        {/if}
     </div>
     <div class="flex gap-2">
         <div class="grid w-full grid-cols-1 gap-8 xl:grid-cols-[1fr,24rem]">

@@ -19,28 +19,28 @@
     let destroy = false;
 
     function getSource(video: streams_videoId_base) {
-        if (video.livestream && video.hls)
+        if (video.livestream && video.hls) {
             return {
                 type: "hls",
                 source: video.hls,
             };
+        }
 
-        if (video.dash)
+        if (video.dash) {
             return {
                 type: "dash",
                 source: video.dash,
             };
+        }
+
+        const generated = generate_dash_file_from_formats(
+            [...video.audioStreams, ...video.videoStreams],
+            video.duration
+        );
 
         return {
             type: "dash",
-            source:
-                "data:application/dash+xml;charset=utf-8;base64," +
-                btoa(
-                    generate_dash_file_from_formats(
-                        [...video.audioStreams, ...video.videoStreams],
-                        video.duration
-                    )
-                ),
+            source: "data:application/dash+xml;charset=utf-8;base64," + btoa(generated),
         };
     }
 
